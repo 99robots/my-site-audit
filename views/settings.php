@@ -1,61 +1,78 @@
-<div class="nnr-wrap">
+<?php
+/* ===================================================================
+ *
+ * My Site Audit https://mysiteaudit.com
+ *
+ * Created: 10/22/15
+ * Package: Views/Settings
+ * File: settings.php
+ * Author: Kyle Benk
+ *
+ *
+ * Copyright 2015
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * ================================================================= */
 
-	<?php require_once('header.php'); ?>
+// Exit if accessed directly
 
-	<div class="nnr-container">
+if ( ! defined( 'ABSPATH' ) ) exit;
 
-		<?php // Display any messaages
+require_once('header.php'); ?>
 
-		if (isset($_GET['message_text']) && $_GET['message_text'] != '') {
+<h1><?php _e("Settings", 'msa'); ?></h1>
 
-			$status = isset($_GET['message_status']) ? $_GET['message_status'] : 'warning';
+<form method="post">
 
-			?>
-			<div class="alert alert-<?php echo $status; ?> alert-dismissible" role="alert">
-				<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				<?php echo stripcslashes(esc_attr($_GET['message_text'])); ?>
-			</div>
-			<?php
+	<table class="form-table">
+		<tbody>
 
-		} ?>
+			<!-- Shared Count API Key -->
 
-		<h1 id="nnr-heading"><?php _e("Settings", self::$text_domain); ?></h1>
+			<tr>
+				<th scope="row"><label for="msa-shared-count-api-key"><?php _e("Shared Count API Key", 'msa'); ?></label></th>
+				<td>
+					<input type="text" class="regular-text msa-shared-count-api-key" id="msa-shared-count-api-key" name="msa-shared-count-api-key" value="<?php echo isset($settings['shared_count_api_key']) ? esc_attr($settings['shared_count_api_key']) : ''; ?>"/>
+					<p class="description"><?php _e('Input your', 'msa'); ?> <a href="https://admin.sharedcount.com/admin/user/home.php" target="_blank"><?php _e("Shared Count API Key", 'msa'); ?></a> <?php _e('in order to get the', 'msa'); ?> <a href="https://admin.sharedcount.com/faq.php" target="_blank"><?php _e("share count data", 'msa'); ?></a> <?php _e('for your site\'s posts.', 'msa'); ?></p>
+				</td>
+			</tr>
 
-		<form method="post" class="form-horizontal">
+			<!-- Test Shared Count -->
 
-			<div class="form-group">
-				<label for="<?php echo self::$prefix_dash; ?>shared-count-api-key" class="col-sm-3 control-label"><?php _e("Shared Count API Key", self::$text_domain); ?></label>
-				<div class="col-sm-9">
-					<input type="text" class="form-control <?php echo self::$prefix_dash; ?>shared-count-api-key" id="<?php echo self::$prefix_dash; ?>shared-count-api-key" name="<?php echo self::$prefix_dash; ?>shared-count-api-key" value="<?php echo isset($settings['shared_count_api_key']) ? esc_attr($settings['shared_count_api_key']) : ''; ?>" placeholder="">
-					<em class="help-block"><?php _e('Input your', self::$text_domain); ?> <a href="https://admin.sharedcount.com/admin/user/home.php" target="_blank"><?php _e("Shared Count API Key", self::$text_domain); ?></a> <?php _e('in order to get the', self::$text_domain); ?> <a href="https://admin.sharedcount.com/faq.php" target="_blank"><?php _e("share count data", self::$text_domain); ?></a> <?php _e('for your site\'s posts.', self::$text_domain); ?></em>
-				</div>
-			</div>
+			<tr>
+				<th scope="row"><label for="msa-shared-count-test"></label></th>
+				<td>
+					<button class="button msa-shared-count-test"><?php _e("Test", 'msa'); ?></button>
+				</td>
+			</tr>
 
-			<div class="form-group">
-				<label for="<?php echo self::$prefix_dash; ?>shared-count-test" class="col-sm-3 control-label"></label>
-				<div class="col-sm-9">
-					<button type="submit-settings" class="btn btn-default <?php echo self::$prefix_dash; ?>shared-count-test"><?php _e("Test", self::$text_domain); ?></button>
-				</div>
-			</div>
+			<!-- Use Shared Count -->
 
-			<div class="form-group">
-				<label for="<?php echo self::$prefix_dash; ?>use-shared-count" class="col-sm-3 control-label"><?php _e("Use Shared Count", self::$text_domain); ?></label>
-				<div class="col-sm-9">
-					<input type="checkbox" class="<?php echo self::$prefix_dash; ?>use-shared-count" id="<?php echo self::$prefix_dash; ?>use-shared-count" name="<?php echo self::$prefix_dash; ?>use-shared-count" <?php echo isset($settings['use_shared_count']) && $settings['use_shared_count'] ? 'checked="checked"' : ''; ?>>
-					<em class="help-block"><?php _e("Do you want to use Shared Count Data with your author stats?", self::$text_domain); ?></em>
-				</div>
-			</div>
+			<tr>
+				<th scope="row"><label for="msa-use-shared-count"><?php _e("Use Shared Count", 'msa'); ?></label></th>
+				<td>
+					<input type="checkbox" class="msa-use-shared-count" id="msa-use-shared-count" name="msa-use-shared-count" <?php echo isset($settings['use_shared_count']) && $settings['use_shared_count'] ? 'checked="checked"' : ''; ?>>
+					<p class="description"><?php _e("Do you want to use Shared Count Data with your author stats?", 'msa'); ?></p>
+				</td>
+			</tr>
 
-			<button type="submit" name="submit" class="btn btn-info">
-				<i class="fa fa-hdd-o"></i> <?php _e("Save", self::$text_domain); ?>
-			</button>
+		</tbody>
 
-			<?php wp_nonce_field(self::$prefix . 'settings'); ?>
+	</table>
 
-		</form>
+	<?php submit_button(); ?>
 
-	</div>
+	<?php wp_nonce_field('msa-settings'); ?>
 
-	<?php require_once('footer.php'); ?>
+</form>
 
-</div>
+<?php require_once('footer.php'); ?>

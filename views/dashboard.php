@@ -1,76 +1,71 @@
-<div class="nnr-wrap">
+<?php
 
-	<?php require_once('header.php'); ?>
+/* ===================================================================
+ *
+ * My Site Audit https://mysiteaudit.com
+ *
+ * Created: 10/22/15
+ * Package: Views/Dashboard
+ * File: dashboard.php
+ * Author: Kyle Benk
+ *
+ *
+ * Copyright 2015
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * ================================================================= */
 
-	<div class="nnr-container">
+// Exit if accessed directly
 
-		<?php // Display any messaages
+if ( ! defined( 'ABSPATH' ) ) exit;
 
-		if (isset($_GET['message_text']) && $_GET['message_text'] != '') {
+require_once('header.php'); ?>
 
-			$status = isset($_GET['message_status']) ? $_GET['message_status'] : 'warning';
+<?php if ( isset($_GET['post']) ) { ?>
 
-			?>
-			<div class="alert alert-<?php echo $status; ?> alert-dismissible" role="alert">
-				<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				<?php echo stripcslashes(esc_attr($_GET['message_text'])); ?>
-			</div>
-			<?php
+	<h1><?php _e('Specific Post', 'msa'); ?>
+		<a href="<?php echo get_admin_url() . 'admin.php?page=msa-dashboard'; ?>" class="page-title-action"><?php _e('All Posts', 'msa'); ?></a>
+	</h1>
 
-		} ?>
+	<table class="wp-list-table widefat striped posts msa-audit-table">
 
-		<table class="<?php echo self::$prefix_dash; ?>table table table-responsive table-striped sortable">
+		<thead>
+			<th><?php _e("Attribute", 'msa'); ?></th>
+			<th><?php _e("Value", 'msa'); ?></th>
+		</thead>
 
-			<thead>
-				<th data-defaultsort="desc"><?php _e("ID", self::$text_domain); ?></th>
-				<th><?php _e("Title", self::$text_domain); ?></th>
-				<th><?php _e("Title Length", self::$text_domain); ?></th>
-				<th><?php _e("Slug", self::$text_domain); ?></th>
-				<th><?php _e("Published Date", self::$text_domain); ?></th>
-				<th><?php _e("Modified Date", self::$text_domain); ?></th>
-				<th><?php _e("Word Count", self::$text_domain); ?></th>
-				<th><?php _e("Comments", self::$text_domain); ?></th>
-				<th><?php _e("SEO", self::$text_domain); ?></th>
-				<th><?php _e("Focus Keyword", self::$text_domain); ?></th>
-				<th><?php _e("Meta Description", self::$text_domain); ?></th>
-				<th><?php _e("Meta Description Length", self::$text_domain); ?></th>
-				<th><?php _e("Links", self::$text_domain); ?></th>
-				<th><?php _e("Internal Links", self::$text_domain); ?></th>
-				<th><?php _e("External Links", self::$text_domain); ?></th>
+		<tbody>
 
-				<?php if ( isset($settings['use_shared_count']) && $settings['use_shared_count'] ) { ?>
-					<th><?php _e("Shares", self::$text_domain); ?></th>
-				<?php } ?>
+			<?php msa_show_audit_data(get_post($_GET['post']), $settings); ?>
 
-				<th><?php _e("Images", self::$text_domain); ?></th>
-				<th><?php _e("Headings", self::$text_domain); ?></th>
-				<th><?php _e("H1", self::$text_domain); ?></th>
-				<th><?php _e("H2", self::$text_domain); ?></th>
-				<th><?php _e("H3", self::$text_domain); ?></th>
-				<th><?php _e("H4", self::$text_domain); ?></th>
-				<th><?php _e("H5", self::$text_domain); ?></th>
-				<th><?php _e("H6", self::$text_domain); ?></th>
-			</thead>
+		</tbody>
 
-			<?php $posts = get_posts(array(
-				'public' 			=> true,
-				'posts_per_page' 	=> -1,
-			)); ?>
+	</table>
 
-			<tbody>
 
-				<?php foreach ( $posts as $post ) {
 
-					self::show_audit_data($post, $settings);
+<?php } else { ?>
 
-				} ?>
+	<h1><?php _e('All Posts', 'msa'); ?></h1>
 
-			</tbody>
+	<form method="get">
+		<input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>" />
+		<?php
+		$all_posts_table = new MSA_All_Posts_Table();
+		$all_posts_table->prepare_items();
+		$all_posts_table->search_box('Search Posts', 'msa');
+		$all_posts_table->display(); ?>
+	</form>
 
-		</table>
+<?php } ?>
 
-	</div>
-
-	<?php require_once('footer.php'); ?>
-
-</div>
+<?php require_once('footer.php'); ?>

@@ -4,8 +4,8 @@
  * My Site Audit https://mysiteaudit.com
  *
  * Created: 10/22/15
- * Package: Uninstall
- * File: uninstall.php
+ * Package: Controllers/Extensions
+ * File: extensions.php
  * Author: Kyle Benk
  *
  *
@@ -27,9 +27,4 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-// if uninstall not called from WordPress exit
-
-if ( !defined( 'WP_UNINSTALL_PLUGIN' ) )
-	exit ();
-
-// Delete all existence of this plugin
+include_once(MY_SITE_AUDIT_PLUGIN_DIR . 'views/extensions.php');

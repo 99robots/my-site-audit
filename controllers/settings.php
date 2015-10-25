@@ -4,8 +4,8 @@
  * My Site Audit https://mysiteaudit.com
  *
  * Created: 10/22/15
- * Package: Uninstall
- * File: uninstall.php
+ * Package: Controllers/Settings
+ * File: settings.php
  * Author: Kyle Benk
  *
  *
@@ -27,9 +27,18 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-// if uninstall not called from WordPress exit
+if ( false === ( $settings = get_option('msa_settings') ) ) {
+	$settings = array();
+}
 
-if ( !defined( 'WP_UNINSTALL_PLUGIN' ) )
-	exit ();
+// Save the settings
 
-// Delete all existence of this plugin
+if ( isset($_POST['submit']) && check_admin_referer('msa-settings') ) {
+
+	$settings['shared_count_api_key'] = isset($_POST['msa-shared-count-api-key']) ? sanitize_text_field($_POST['msa-shared-count-api-key']) : '';
+	$settings['use_shared_count'] = isset($_POST['msa-use-shared-count']) && $_POST['msa-use-shared-count'] ? true : false;
+
+	update_option('msa_settings', $settings);
+}
+
+include_once(MY_SITE_AUDIT_PLUGIN_DIR . 'views/settings.php');
