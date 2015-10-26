@@ -168,7 +168,7 @@ class MSA_All_Posts_Table extends WP_List_Table {
 			'title'          => __( 'Title', 'msa'),
 			'modified_date'  => __( 'Modified Date', 'msa'),
 			'word_count'     => __( 'Word Count', 'msa'),
-			'comment_count'  => __( 'Comment Count', 'msa'),
+			'comment_count'  => __( 'Comments', 'msa'),
 			'internal_links' => __( 'Internal Links', 'msa'),
 			'external_links' => __( 'External Links', 'msa'),
 			'images'         => __( 'Images', 'msa'),
@@ -299,22 +299,31 @@ class MSA_All_Posts_Table extends WP_List_Table {
 	 * @param string $which
 	 */
 	protected function display_tablenav( $which ) {
+
 		if ( 'top' == $which )
 			wp_nonce_field( 'bulk-' . $this->_args['plural'] );
+
+		// Show Score Filter
+
+		$score = '';
+
+		if ( isset($_GET['score']) ) {
+			$score = $_GET['score'];
+		}
 
 		?><div class="tablenav <?php echo esc_attr( $which ); ?>">
 
 			<div class="alignleft actions bulkactions">
-				<p>
-					<label><?php _e('Score:', 'msa'); ?></label>
+				<div>
+					<label class="msa-filter-label"><?php _e('Score:', 'msa'); ?></label>
 					<select name="score">
-						<option value="<?php echo msa_get_score_increment() * 1; ?>" <?php selected( msa_get_score_increment() * 1 , $_GET['score'], true); ?>><?php _e('Bad', 'msa'); ?></option>
-						<option value="<?php echo msa_get_score_increment() * 2; ?>" <?php selected( msa_get_score_increment() * 2, $_GET['score'], true); ?>><?php _e('Poor', 'msa'); ?></option>
-						<option value="<?php echo msa_get_score_increment() * 3; ?>" <?php selected( msa_get_score_increment() * 3 , $_GET['score'], true); ?>><?php _e('Ok', 'msa'); ?></option>
-						<option value="<?php echo msa_get_score_increment() * 4; ?>" <?php selected( msa_get_score_increment() * 4 , $_GET['score'], true); ?>><?php _e('Good', 'msa'); ?></option>
-						<option value="<?php echo msa_get_score_increment() * 5; ?>" <?php selected( msa_get_score_increment() * 5 , $_GET['score'], true); ?>><?php _e('Great', 'msa'); ?></option>
+						<option value="<?php echo msa_get_score_increment() * 1; ?>" <?php selected( msa_get_score_increment() * 1 , $score, true); ?>><?php _e('Bad', 'msa'); ?></option>
+						<option value="<?php echo msa_get_score_increment() * 2; ?>" <?php selected( msa_get_score_increment() * 2, $score, true); ?>><?php _e('Poor', 'msa'); ?></option>
+						<option value="<?php echo msa_get_score_increment() * 3; ?>" <?php selected( msa_get_score_increment() * 3 , $score, true); ?>><?php _e('Ok', 'msa'); ?></option>
+						<option value="<?php echo msa_get_score_increment() * 4; ?>" <?php selected( msa_get_score_increment() * 4 , $score, true); ?>><?php _e('Good', 'msa'); ?></option>
+						<option value="<?php echo msa_get_score_increment() * 5; ?>" <?php selected( msa_get_score_increment() * 5 , $score, true); ?>><?php _e('Great', 'msa'); ?></option>
 					</select>
-				</p>
+				</div>
 			</div>
 			<?php
 			$this->extra_tablenav( $which );

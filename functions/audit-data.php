@@ -32,10 +32,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  * @access public
  * @param mixed $post
- * @param mixed $args
+ * @param mixed $data
  * @return void
  */
-function msa_calculate_score($post, $args) {
+function msa_calculate_score($post, $data) {
 
 	$score_data = array();
 	$score = 0;
@@ -48,7 +48,7 @@ function msa_calculate_score($post, $args) {
 
 		if ( $condition['comparison'] == 0 && isset($condition['min']) ) {
 
-			$value = min( $args[$key] / $condition['min'], 1 );
+			$value = min( $data[$key] / $condition['min'], 1 );
 
 		}
 
@@ -56,7 +56,7 @@ function msa_calculate_score($post, $args) {
 
 		else if ( $condition['comparison'] == 1 && isset($condition['max']) ) {
 
-			$value = min( $condition['max'] / $args[$key], 1 );
+			$value = min( $condition['max'] / $data[$key], 1 );
 
 		}
 
@@ -67,7 +67,7 @@ function msa_calculate_score($post, $args) {
 			$range = $condition['max'] - $condition['min'];
 			$mean = ($condition['max'] + $condition['min']) / 2;
 
-			$value = ( 1 -  min( floor( abs( $args[$key] - $mean ) ) / floor( ( $range / 2 ) ) , 1 ) );
+			$value = ( 1 -  min( floor( abs( $data[$key] - $mean ) ) / floor( ( $range / 2 ) ) , 1 ) );
 
 		}
 
@@ -198,60 +198,7 @@ function msa_show_audit_data($post, $settings, $format = 'table' ) {
 		$settings = array();
 	}
 
-	$args = array();
-
-	$args['content']           = preg_replace("/&#?[a-z0-9]{2,8};/i","", $post->post_content);
-	$args['content']           = strip_tags($args['content']);
-	$args['content']           = preg_replace("~(?:\[/?)[^/\]]+/?\]~s", '', $args['content']);
-	$args['title']             = strlen($post->post_title);
-	$args['name']              = strlen($post->post_name);
-	$args['modified_date']     = time() - strtotime($post->post_modified);
-	$args['word_count']        = str_word_count($args['content']);
-	$args['comment_count']     = $post->comment_count;
-
-	$user_info = get_userdata($post->post_author);
-
-	preg_match_all('/<h([1-6])/', $post->post_content, $matches);
-	$args['headings'] = count($matches[0]);
-
-	preg_match_all('/<h1/', $post->post_content, $matches);
-	$args['h1'] = count($matches[0]);
-
-	preg_match_all('/<h2/', $post->post_content, $matches);
-	$args['h2'] = count($matches[0]);
-
-	preg_match_all('/<h3/', $post->post_content, $matches);
-	$args['h3'] = count($matches[0]);
-
-	preg_match_all('/<h4/', $post->post_content, $matches);
-	$args['h4'] = count($matches[0]);
-
-	preg_match_all('/<h5/', $post->post_content, $matches);
-	$args['h5'] = count($matches[0]);
-
-	preg_match_all('/<h6/', $post->post_content, $matches);
-	$args['h6'] = count($matches[0]);
-
-	preg_match_all("/<a\s[^>]*href=(\"??)([^\" >]*?)\\1[^>]*>(.*)<\/a>/siU", $post->post_content, $args['link_matches'], PREG_SET_ORDER);
-
-	$args['internal_links'] = 0;
-	$args['external_links'] = 0;
-
-	if ( isset($args['link_matches']) && is_array($args['link_matches']) ) {
-		foreach ( $args['link_matches'] as $link ) {
-			$url = parse_url($link[2]);
-			$site_url = parse_url(get_site_url());
-
-			if ( isset($site_url['host']) && isset($url['host']) && $site_url['host'] == $url['host'] ) {
-				$args['internal_links']++;
-			} else {
-				$args['external_links']++;
-			}
-		}
-	}
-
-	$args['links'] = $args['internal_links'] + $args['external_links'];
-	$args['images'] = substr_count($post->post_content, '<img');
+	$data = msa_get_post_audit_data($post);
 
 	// Yoast Score
 
@@ -259,37 +206,37 @@ function msa_show_audit_data($post, $settings, $format = 'table' ) {
 
 		include_once(WP_PLUGIN_DIR. '/wordpress-seo/inc/class-wpseo-utils.php');
 
-		$args['yoast-seo-meta-desc'] = get_post_meta($post->ID, '_yoast_wpseo_metadesc', true);
-		$args['yoast-seo-focuskw'] = get_post_meta($post->ID, '_yoast_wpseo_focuskw', true);
+		$data['yoast-seo-meta-desc'] = get_post_meta($post->ID, '_yoast_wpseo_metadesc', true);
+		$data['yoast-seo-focuskw'] = get_post_meta($post->ID, '_yoast_wpseo_focuskw', true);
 
-		$args['yoast-seo-score_label'] = 'na';
-		$args['yoast-seo-score'] = get_post_meta($post->ID, '_yoast_wpseo_linkdex', true);
+		$data['yoast-seo-score_label'] = 'na';
+		$data['yoast-seo-score'] = get_post_meta($post->ID, '_yoast_wpseo_linkdex', true);
 
-		if ( $args['yoast-seo-score'] !== '' ) {
-			$nr = WPSEO_Utils::calc( $args['yoast-seo-score'], '/', 10, true );
-			$args['yoast-seo-score-label'] 	= WPSEO_Utils::translate_score( $nr );
+		if ( $data['yoast-seo-score'] !== '' ) {
+			$nr = WPSEO_Utils::calc( $data['yoast-seo-score'], '/', 10, true );
+			$data['yoast-seo-score-label'] 	= WPSEO_Utils::translate_score( $nr );
 			unset( $nr );
 		}
 	}
 
-	$score = msa_calculate_score($post, $args);
-	$args['score'] = $score['score'];
+	$score = msa_calculate_score($post, $data);
+	$data['score'] = $score['score'];
 
 	if ( $format == 'table' ) {
 
 		if ( isset($_GET['post']) ) {
 
-			msa_show_audit_data_single($post, $args);
+			msa_show_audit_data_single($post, $data);
 
 		} else {
 
-			msa_show_audit_data_all($post, $args);
+			msa_show_audit_data_all($post, $data);
 
 		}
 
 	} else {
 
-		return msa_show_audit_data_single_meta($post, $args);
+		return msa_show_audit_data_single_meta($post, $data);
 
 	}
 
@@ -396,6 +343,47 @@ function msa_get_score_status($score) {
 }
 
 /**
+ * Get the letter grade for this score
+ *
+ * @access public
+ * @param mixed $score
+ * @return void
+ */
+function msa_get_letter_grade($score) {
+
+	if ( $score >= .96667 ) {
+		$grade = 'A+';
+	} else if ( $score >= .93334 ) {
+		$grade = 'A';
+	} else if ( $score >= .90 ) {
+		$grade = 'A-';
+	} else if ( $score >= .86667 ) {
+		$grade = 'B+';
+	} else if ( $score >= .83334 ) {
+		$grade = 'B';
+	} else if ( $score >= .80 ) {
+		$grade = 'B-';
+	} else if ( $score >= .76667 ) {
+		$grade = 'C+';
+	} else if ( $score >= .73334 ) {
+		$grade = 'C';
+	} else if ( $score >= .70 ) {
+		$grade = 'C-';
+	} else if ( $score >= .66667 ) {
+		$grade = 'D+';
+	} else if ( $score >= .63334 ) {
+		$grade = 'D';
+	} else if ( $score >= .60 ) {
+		$grade = 'D-';
+	} else {
+		$grade = 'F';
+	}
+
+	return $grade;
+
+}
+
+/**
  * Get the score increment
  *
  * @access public
@@ -407,36 +395,92 @@ function msa_get_score_increment() {
 }
 
 /**
+ * Show all the internal links
+ *
+ * @access public
+ * @param mixed $link_matches
+ * @return void
+ */
+function msa_show_internal_links( $link_matches ) {
+
+	$output = '<ul>';
+
+	if ( isset($link_matches) && is_array($link_matches) ) {
+		foreach ( $link_matches as $link ) {
+			$url = parse_url($link[2]);
+			$site_url = parse_url(get_site_url());
+
+			if ( isset($site_url['host']) && isset($url['host']) && $site_url['host'] == $url['host'] ) {
+				$output .= '<li style="list-style: disc;margin: 0;"><a href="' . $link[2] . '" target="_blank">' . $link[2] . '</a></li>';
+			}
+		}
+	}
+
+	$output .= '</ul>';
+
+	return $output;
+
+}
+
+/**
+ * Show all the external links
+ *
+ * @access public
+ * @param mixed $link_matches
+ * @return void
+ */
+function msa_show_external_links( $link_matches ) {
+
+	$output = '<ul>';
+
+	if ( isset($link_matches) && is_array($link_matches) ) {
+		foreach ( $link_matches as $link ) {
+			$url = parse_url($link[2]);
+			$site_url = parse_url(get_site_url());
+
+			if ( isset($site_url['host']) && isset($url['host']) && $site_url['host'] != $url['host'] ) {
+				$output .= '<li style="list-style: disc;margin: 0;"><a href="' . $link[2] . '" target="_blank">' . $link[2] . '</a></li>';
+			}
+		}
+	}
+
+	$output .= '</ul>';
+
+	return $output;
+
+}
+
+/**
  * Show data for all posts page
  *
  * @access public
  * @param mixed $post
- * @param mixed $args
+ * @param mixed $data
  * @return void
  */
-function msa_show_audit_data_all($post, $args) {
+function msa_show_audit_data_all($post, $data) {
 
-	$score = msa_calculate_score($post, $args);
+	$score = msa_calculate_score($post, $data);
 
 	$output = '<tr class="msa-post-status msa-post-status-' . msa_get_score_status($score['score']) .'">';
 
-		$output .= '<td>' . (100 * $args['score']) . '%</td>';
+		$output .= '<td>' . (100 * $data['score']) . '%</td>';
 
 		$output .= '<td><i class="fa fa-caret-' . ( $score['data']['title'] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data']['title']) . '"></i> <a href="' . get_admin_url() . 'admin.php?page=msa-dashboard&post=' . $post->ID . '">' . $post->post_title . '</a></td>';
 
 		$output .= '<td><i class="fa fa-caret-' . ( $score['data']['modified_date'] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data']['modified_date']) . '"></i> ' . date('M j, Y', strtotime($post->post_modified)) . '</td>';
 
-		$output .= '<td><i class="fa fa-caret-' . ( $score['data']['word_count'] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data']['word_count']) . '"></i> ' . str_word_count($args['content']) . '</td>';
+		$output .= '<td><i class="fa fa-caret-' . ( $score['data']['word_count'] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data']['word_count']) . '"></i> ' . str_word_count($data['content']) . '</td>';
 
-		$output .= '<td><i class="fa fa-caret-' . ( $score['data']['comment_count'] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data']['comment_count']) . '"></i> ' . $args['comment_count'] . '</td>';
+		$output .= '<td><i class="fa fa-caret-' . ( $score['data']['comment_count'] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data']['comment_count']) . '"></i> ' . $data['comment_count'] . '</td>';
 
-		$output .= '<td><i class="fa fa-caret-' . ( $score['data']['internal_links'] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data']['internal_links']) . '"></i> ' . $args['internal_links'] . '</td>';
+		$output .= '<td><i class="fa fa-caret-' . ( $score['data']['internal_links'] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data']['internal_links']) . '"></i> ' . $data['internal_links'] . '</td>';
 
-		$output .= '<td><i class="fa fa-caret-' . ( $score['data']['external_links'] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data']['external_links']) . '"></i> ' . $args['external_links'] . '</td>';
+		$output .= '<td><i class="fa fa-caret-' . ( $score['data']['external_links'] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data']['external_links']) . '"></i> ' . $data['external_links'] . '</td>';
 
-		$output .= '<td><i class="fa fa-caret-' . ( $score['data']['images'] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data']['images']) . '"></i> ' . $args['images'] . '</td>';
+		$output .= '<td><i class="fa fa-caret-' . ( $score['data']['images'] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data']['images']) . '"></i> ' . $data['images'] . '</td>';
 
-		$output .= '<td><i class="fa fa-caret-' . ( $score['data']['headings'] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data']['headings']) . '"></i> ' . $args['headings'] . '</td>';
+		$output .= '<td><i class="fa fa-caret-' . ( $score['data']['headings'] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data']['headings']) . '"></i> ' . $data['headings'] . '</td>';
 
 	$output .= '</tr>';
 
@@ -448,12 +492,12 @@ function msa_show_audit_data_all($post, $args) {
  *
  * @access public
  * @param mixed $post
- * @param mixed $args
+ * @param mixed $data
  * @return void
  */
-function msa_show_audit_data_single($post, $args) {
+function msa_show_audit_data_single($post, $data) {
 
-	$score = msa_calculate_score($post, $args);
+	$score = msa_calculate_score($post, $data);
 
 	$output = '<tr class="msa-post-status-bg msa-post-status-bg-' . msa_get_score_status($score['score']) . '">';
 		$output .= '<td>' . __('Score', 'msa') . '</td>';
@@ -461,8 +505,18 @@ function msa_show_audit_data_single($post, $args) {
 	$output .= '</tr>';
 
 	$output .= '<tr>';
+		$output .= '<td>' . __('Published Date', 'msa') . '</td>';
+		$output .= '<td>' . date('M j, Y', strtotime($post->post_date)) . '</td>';
+	$output .= '</tr>';
+
+	$output .= '<tr>';
 		$output .= '<td>' . __('ID', 'msa') . '</td>';
 		$output .= '<td>' . $post->ID . '</td>';
+	$output .= '</tr>';
+
+	$output .= '<tr>';
+		$output .= '<td>' . __('Slug', 'msa') . '</td>';
+		$output .= '<td><a href="' . get_permalink($post->ID) . '" target="_blank">/' . $post->post_name . '</a></td>';
 	$output .= '</tr>';
 
 	$output .= '<tr>';
@@ -475,16 +529,6 @@ function msa_show_audit_data_single($post, $args) {
 		$output .= '<td>' . strlen($post->post_title) . '</td>';
 	$output .= '</tr>';
 
-	$output .= '<tr>';
-		$output .= '<td>' . __('Slug', 'msa') . '</td>';
-		$output .= '<td><a href="' . get_permalink($post->ID) . '" target="_blank">/' . $post->post_name . '</a></td>';
-	$output .= '</tr>';
-
-	$output .= '<tr>';
-		$output .= '<td>' . __('Published Date', 'msa') . '</td>';
-		$output .= '<td>' . date('M j, Y', strtotime($post->post_date)) . '</td>';
-	$output .= '</tr>';
-
 	$output .= '<tr class="msa-post-status msa-post-status-' . msa_get_score_status($score['data']['modified_date']) .'">';
 		$output .= '<td>' . __('Modified Date', 'msa') . '</td>';
 		$output .= '<td>' . date('M j, Y', strtotime($post->post_modified)) . '</td>';
@@ -492,77 +536,57 @@ function msa_show_audit_data_single($post, $args) {
 
 	$output .= '<tr class="msa-post-status msa-post-status-' . msa_get_score_status($score['data']['word_count']) .'">';
 		$output .= '<td>' . __('Word Count', 'msa') . '</td>';
-		$output .= '<td>' . str_word_count($args['content']) . '</td>';
+		$output .= '<td>' . str_word_count($data['content']) . '</td>';
 	$output .= '</tr>';
 
 	$output .= '<tr class="msa-post-status msa-post-status-' . msa_get_score_status($score['data']['comment_count']) .'">';
 		$output .= '<td>' . __('Comment Count', 'msa') . '</td>';
-		$output .= '<td>' . $args['comment_count'] . '</td>';
+		$output .= '<td>' . $data['comment_count'] . '</td>';
 	$output .= '</tr>';
 
 	// Yoast
 
+/*
 	if ( file_exists(WP_PLUGIN_DIR . '/wordpress-seo/inc/class-wpseo-utils.php') && is_plugin_active('wordpress-seo/wp-seo.php') ) {
 
 		$output .= '<tr>';
 			$output .= '<td>' . __('SEO Score', 'msa') . '</td>';
-			$output .= '<td><div class="wpseo-score-icon ' . esc_attr( $args['yoast-seo-score-label'] ) . '"></div></td>';
+			$output .= '<td><div class="wpseo-score-icon ' . esc_attr( $data['yoast-seo-score-label'] ) . '"></div></td>';
 		$output .= '</tr>';
 
 		$output .= '<tr>';
 			$output .= '<td>' . __('Focus Keyword', 'msa') . '</td>';
-			$output .= '<td>' . $args['yoast-seo-focuskw'] . '</td>';
+			$output .= '<td>' . $data['yoast-seo-focuskw'] . '</td>';
 		$output .= '</tr>';
 
 		$output .= '<tr>';
 			$output .= '<td>' . __('Meta Description', 'msa') . '</td>';
-			$output .= '<td>' . $args['yoast-seo-meta-desc'] . '</td>';
+			$output .= '<td>' . $data['yoast-seo-meta-desc'] . '</td>';
 		$output .= '</tr>';
 
 		$output .= '<tr>';
 			$output .= '<td>' . __('Meta Description Length', 'msa') . '</td>';
-			$output .= '<td>' . strlen($args['yoast-seo-meta-desc']) . '</td>';
+			$output .= '<td>' . strlen($data['yoast-seo-meta-desc']) . '</td>';
 		$output .= '</tr>';
 
 	}
-
-	$output .= '<tr>';
-		$output .= '<td>' . __('Link Count', 'msa') . '</td>';
-		$output .= '<td>' . ( $args['internal_links'] + $args['external_links'] ) . '</td>';
-	$output .= '</tr>';
+*/
 
 	$output .= '<tr class="msa-post-status msa-post-status-' . msa_get_score_status($score['data']['internal_links']) .'">';
 		$output .= '<td>' . __('Internal Links', 'msa') . '</td>';
 		$output .= '<td>';
-			if ( isset($args['link_matches']) && is_array($args['link_matches']) ) {
-				foreach ( $args['link_matches'] as $link ) {
-					$url = parse_url($link[2]);
-					$site_url = parse_url(get_site_url());
-
-					if ( $site_url['host'] == $url['host'] ) {
-						$output .= '<li style="list-style: disc;margin: 0;"><a href="' . $link[2] . '" target="_blank">' . $link[2] . '</a></li>';
-					}
-				}
-			}
+			$output .= msa_show_internal_links($data['link_matches']);
 		$output .= '</td>';
 	$output .= '</tr>';
 
 	$output .= '<tr class="msa-post-status msa-post-status-' . msa_get_score_status($score['data']['external_links']) .'">';
 		$output .= '<td>' . __('External Links', 'msa') . '</td>';
 		$output .= '<td>';
-			if ( isset($args['link_matches']) && is_array($args['link_matches']) ) {
-				foreach ( $args['link_matches'] as $link ) {
-					$url = parse_url($link[2]);
-					$site_url = parse_url(get_site_url());
-
-					if ( $site_url['host'] != $url['host'] ) {
-						$output .= '<li style="list-style: disc;margin: 0;"><a href="' . $link[2] . '" target="_blank">' . $link[2] . '</a></li>';
-					}
-				}
-			}
+			$output .= msa_show_external_links($data['link_matches']);
 		 $output .= '</td>';
 	$output .= '</tr>';
 
+/*
 	// Share Count
 
 	if ( isset($settings['use_shared_count']) && $settings['use_shared_count'] ) {
@@ -571,45 +595,46 @@ function msa_show_audit_data_single($post, $args) {
 			$output .= '<td class="msa-share-count" data-post="' . $post->ID . '"><i class="fa fa-refresh fa-spin"></i></td>';
 		$output .= '</tr>';
 	}
+*/
 
 	$output .= '<tr class="msa-post-status msa-post-status-' . msa_get_score_status($score['data']['images']) .'">';
 		$output .= '<td>' . __('Image Count', 'msa') . '</td>';
-		$output .= '<td>' . $args['images'] . '</td>';
+		$output .= '<td>' . $data['images'] . '</td>';
 	$output .= '</tr>';
 
 	$output .= '<tr class="msa-post-status msa-post-status-' . msa_get_score_status($score['data']['headings']) .'">';
 		$output .= '<td>' . __('Heading Count', 'msa') . '</td>';
-		$output .= '<td>' . $args['headings'] . '</td>';
+		$output .= '<td>' . $data['headings'] . '</td>';
 	$output .= '</tr>';
 
 	$output .= '<tr>';
 		$output .= '<td>' . __('Heading 1 Count', 'msa') . '</td>';
-		$output .= '<td>' . $args['h1'] . '</td>';
+		$output .= '<td>' . $data['h1'] . '</td>';
 	$output .= '</tr>';
 
 	$output .= '<tr>';
 		$output .= '<td>' . __('Heading 2 Count', 'msa') . '</td>';
-		$output .= '<td>' . $args['h2'] . '</td>';
+		$output .= '<td>' . $data['h2'] . '</td>';
 	$output .= '</tr>';
 
 	$output .= '<tr>';
 		$output .= '<td>' . __('Heading 3 Count', 'msa') . '</td>';
-		$output .= '<td>' . $args['h3'] . '</td>';
+		$output .= '<td>' . $data['h3'] . '</td>';
 	$output .= '</tr>';
 
 	$output .= '<tr>';
 		$output .= '<td>' . __('Heading 4 Count', 'msa') . '</td>';
-		$output .= '<td>' . $args['h4'] . '</td>';
+		$output .= '<td>' . $data['h4'] . '</td>';
 	$output .= '</tr>';
 
 	$output .= '<tr>';
 		$output .= '<td>' . __('Heading 5 Count', 'msa') . '</td>';
-		$output .= '<td>' . $args['h5'] . '</td>';
+		$output .= '<td>' . $data['h5'] . '</td>';
 	$output .= '</tr>';
 
 	$output .= '<tr>';
 		$output .= '<td>' . __('Heading 6 Count', 'msa') . '</td>';
-		$output .= '<td>' . $args['h6'] . '</td>';
+		$output .= '<td>' . $data['h6'] . '</td>';
 	$output .= '</tr>';
 
 	echo $output;
@@ -621,40 +646,22 @@ function msa_show_audit_data_single($post, $args) {
  *
  * @access public
  * @param mixed $post
- * @param mixed $args
+ * @param mixed $data
  * @return void
  */
-function msa_show_audit_data_single_meta($post, $args) {
+function msa_show_audit_data_single_meta($post, $data) {
 
 	$output = '<tr>';
 		$output .= '<td>' . __('Internal Links', 'msa') . '</td>';
 		$output .= '<td><ul style="margin: 0;">';
-			if ( isset($args['link_matches']) && is_array($args['link_matches']) ) {
-				foreach ( $args['link_matches'] as $link ) {
-					$url = parse_url($link[2]);
-					$site_url = parse_url(get_site_url());
-
-					if ( $site_url['host'] == $url['host'] ) {
-						$output .= '<li style="list-style: disc;margin: 0;"><a href="' . $link[2] . '" target="_blank">' . $link[2] . '</a></li>';
-					}
-				}
-			}
+			$output .= msa_show_internal_links($data['link_matches']);
 		$output .= '</ul></td>';
 	$output .= '</tr>';
 
 	$output .= '<tr>';
 		$output .= '<td>' . __('External Links', 'msa') . '</td>';
 		$output .= '<td><ul style="margin: 0;">';
-			if ( isset($args['link_matches']) && is_array($args['link_matches']) ) {
-				foreach ( $args['link_matches'] as $link ) {
-					$url = parse_url($link[2]);
-					$site_url = parse_url(get_site_url());
-
-					if ( $site_url['host'] != $url['host'] ) {
-						$output .= '<li style="list-style: disc;margin: 0;"><a href="' . $link[2] . '" target="_blank">' . $link[2] . '</a></li>';
-					}
-				}
-			}
+			$output .= msa_show_external_links($data['link_matches']);
 		$output .= '</ul></td>';
 	$output .= '</tr>';
 
@@ -665,7 +672,7 @@ function msa_show_audit_data_single_meta($post, $args) {
 
 	$output .= '<tr>';
 		$output .= '<td>' . __('Headings', 'msa') . '</td>';
-		$output .= '<td>' . $args['headings'] . '</td>';
+		$output .= '<td>' . $data['headings'] . '</td>';
 	$output .= '</tr>';
 
 	return $output;

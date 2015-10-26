@@ -1,12 +1,11 @@
 <?php
-
 /* ===================================================================
  *
  * My Site Audit https://mysiteaudit.com
  *
- * Created: 10/22/15
- * Package: Views/Dashboard
- * File: dashboard.php
+ * Created: 10/26/15
+ * Package: Template/All Posts
+ * File: all-posts.php
  * Author: Kyle Benk
  *
  *
@@ -28,30 +27,15 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-require_once('header.php');
+?>
 
-/* ==================================================================
- *
- *	Single Post
- *
- ================================================================== */
+<h1><?php _e('All Posts', 'msa'); ?></h1>
 
-if ( isset($_GET['post']) ) {
-
-	include_once( MY_SITE_AUDIT_PLUGIN_DIR . 'templates/single-post.php' );
-
-}
-
-/* ==================================================================
- *
- *	All Posts
- *
- ================================================================== */
-
-else {
-
-	include_once( MY_SITE_AUDIT_PLUGIN_DIR . 'templates/all-posts.php' );
-
-}
-
-require_once('footer.php');
+<form method="get">
+	<input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>" />
+	<?php
+	$all_posts_table = new MSA_All_Posts_Table();
+	$all_posts_table->prepare_items();
+	$all_posts_table->search_box('Search Posts', 'msa');
+	$all_posts_table->display(); ?>
+</form>

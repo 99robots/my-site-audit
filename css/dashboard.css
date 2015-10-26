@@ -22,16 +22,181 @@
  *
  * ================================================================= */
 
-/* Helper Classes */
+/* =====================================================
+ *
+ * Helper Classes
+ *
+ ==================================================== */
 
-.msa-audit-table th,
-.msa-audit-table td {
-	font-family: Menlo, Monaco, Consolas, 'Courier New', monospace !important;
-	font-size: 11px !important;
-	font-weight: normal !important;
-	font-style: normal !important;
-	line-height: 16px !important;
+
+/* =====================================================
+ *
+ * All Posts
+ *
+ ==================================================== */
+
+.msa-filter-label {
+	float: left;
+	line-height: 30px;
+	padding-right: 10px;
 }
+
+.manage-column.column-title {
+	width: 20%;
+}
+
+.manage-column.column-score {
+	width: 80px;
+}
+
+/* =====================================================
+ *
+ * Single Post
+ *
+ ==================================================== */
+
+.msa-header {
+	display: inline-block;
+	width: 100%;
+	margin-bottom: 40px;
+}
+
+.msa-header-score-container {
+	padding: 20px;
+	position: relative;
+}
+
+.msa-header-score {
+	border: 3px solid #777;
+	padding: 50px 20px;
+	text-align: center;
+	text-transform: capitalize;
+	font-size: 96px;
+}
+
+.msa-header-score-description {
+	position: absolute;
+	top: 12px;
+	left: 30px;
+	background-color: #F1F1F1;
+	padding: 0px 6px;
+}
+
+.msa-header-column {
+	width: 33.3334%;
+}
+
+.msa-detail-container {
+	text-align: center;
+}
+
+.msa-action-container {
+	text-align: right;
+}
+
+.msa-column {
+	float: left;
+}
+
+.msa-left-column {
+	width: 66.6667%;
+}
+
+.msa-right-column {
+	width: 33.3334%;
+}
+
+.msa-left-column .msa-column-container {
+	padding-right: 10px;
+}
+
+.msa-right-column-container {
+	border: 2px solid #777;
+	background-color: #f1f1f1;
+	padding: 20px;
+}
+
+.msa-right-column-item {
+	margin-bottom: 20px;
+	display: inline-block;
+	width: 100%;
+}
+
+.msa-content-details-container {
+	position: relative;
+}
+
+.msa-content-details {
+	border: 3px solid #777;
+	padding: 20px;
+}
+
+.msa-content-details-grade {
+	text-align: left;
+	text-transform: capitalize;
+	font-size: 48px;
+	margin-bottom: 20px;
+}
+
+.msa-content-description {
+	position: absolute;
+	top: -8px;
+	left: 10px;
+	background-color: #f1f1f1;
+	padding: 0px 6px;
+}
+
+.msa-content-details button.msa-save-content-status {
+	margin-top: 20px;
+	display: inline-block;
+	width: 100%;
+}
+
+.msa-audit-table {
+	word-break: break-all;
+}
+
+.msa-google-preview-container {
+	width: 100%;
+	display: inline-block;
+}
+
+.msa-google-preview {
+	background-color: white;
+	padding: 5px;
+	font-family: arial, sans-serif;
+}
+
+.msa-google-preview-title {
+	display: block;
+	overflow: hidden;
+	color: #1e0fbe;
+	font-size: 18px;
+	line-height: 1.2;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	text-decoration: none;
+}
+
+.msa-google-preview-url {
+	color: #006621;
+	font-size: 14px;
+	line-height: 16px;
+}
+
+.msa-google-preview-description {
+	font-size: small;
+	line-height: 1.4;
+	word-wrap: break-word;
+	margin: 0;
+	color: #545454;
+}
+
+/* =====================================================
+ *
+ * Status Colors
+ *
+ ==================================================== */
 
 .msa-post-status > td:first-of-type {
 	border-left: 3px solid;
@@ -81,8 +246,6 @@
 	background-color: rgb(207,0,0);
 }
 
-
-
 .msa-post-status-text-great {
 	color: rgb(0,207,0);
 }
@@ -103,7 +266,11 @@
 	color: rgb(207,0,0);
 }
 
-/* Yoast SEO */
+/* =====================================================
+ *
+ * Yoast SEO
+ *
+ ==================================================== */
 
 .wpseo-score-icon {
 	display: inline-block;
