@@ -33,3 +33,16 @@ if ( !defined( 'WP_UNINSTALL_PLUGIN' ) )
 	exit ();
 
 // Delete all existence of this plugin
+
+require_once( plugin_dir_path( __FILE__ ) . 'model/audits.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'model/audit-posts.php' );
+
+// Delete the audits table
+
+$audit_model = new MSA_Audits_Model();
+$audit_model->delete_table();
+
+// Delete the audit posts table
+
+$audit_posts_model = new MSA_Audit_Posts_Model();
+$audit_posts_model->delete_table();

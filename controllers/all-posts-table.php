@@ -75,13 +75,12 @@ class MSA_All_Posts_Table extends WP_List_Table {
 
 		$this->_column_headers = array($columns, $hidden, $sortable);
 
-		$per_page     = 20;
-		$current_page = $this->get_pagenum();
+		// Get the audit data
 
-		$args = array(
-			'public' 			=> true,
-			'posts_per_page'	=> -1,
-		);
+		$audit_posts_model 	= new MSA_Audit_Posts_Model();
+		$per_page     		= 20;
+		$current_page 		= $this->get_pagenum();
+		$args = array();
 
 		/* =========================================================================
 		 *
@@ -93,20 +92,16 @@ class MSA_All_Posts_Table extends WP_List_Table {
 			$args['s'] = $_POST['s'];
 		}
 
-		if ( isset($_GET['s']) ) {
-			$args['s'] = $_GET['s'];
-		}
-
 		/* =========================================================================
 		 *
 		 * Get Posts
 		 *
 		 ========================================================================= */
 
-		$posts = get_posts($args);
+		$posts = $audit_posts_model->get_data($_GET['audit'], $args);
 
 		foreach ( $posts as $post ) {
-			$this->items[] = array('post' => $post, 'data' => msa_get_post_audit_data($post));
+			$this->items[] = array('post' => $post['post'], 'data' => msa_get_post_audit_data($post['post']));
 		}
 
 		/* =========================================================================
@@ -117,7 +112,7 @@ class MSA_All_Posts_Table extends WP_List_Table {
 
 		// Score
 
-		if ( isset($_GET['score']) ) {
+		if ( isset($_GET['score']) && $_GET['score'] != '0') {
 
 			$score_value = floatval($_GET['score']);
 			$score_range = msa_get_score_increment();
@@ -163,17 +158,13 @@ class MSA_All_Posts_Table extends WP_List_Table {
 	 */
 	function get_columns() {
 
-		$columns = array(
-			'score'          => __( 'Score', 'msa'),
-			'title'          => __( 'Title', 'msa'),
-			'modified_date'  => __( 'Modified Date', 'msa'),
-			'word_count'     => __( 'Word Count', 'msa'),
-			'comment_count'  => __( 'Comments', 'msa'),
-			'internal_links' => __( 'Internal Links', 'msa'),
-			'external_links' => __( 'External Links', 'msa'),
-			'images'         => __( 'Images', 'msa'),
-			'headings'       => __( 'Headings', 'msa'),
-		);
+		$conditions = msa_get_conditions();
+
+		$columns['score'] = __('Score', 'msa');
+
+		foreach ( $conditions as $slug => $condition ) {
+			$columns[$slug] = $condition['name'];
+		}
 
 		return $columns;
 	}
@@ -186,17 +177,13 @@ class MSA_All_Posts_Table extends WP_List_Table {
 	 */
 	function get_sortable_columns() {
 
-		$sortable_columns = array(
-			'score'          => array('score', true),
-			'title'          => array('title', false),
-			'modified_date'  => array('modified_date', false),
-			'word_count'     => array('word_count', false),
-			'comment_count'  => array('comment_count', false),
-			'internal_links' => array('internal_links', false),
-			'external_links' => array('external_links', false),
-			'images'         => array('images', false),
-			'headings'       => array('headings', false),
-		);
+		$conditions = msa_get_conditions();
+
+		$sortable_columns['score'] = array('score', false);
+
+		foreach ( $conditions as $slug => $condition ) {
+			$sortable_columns[$slug] = array($slug, true);
+		}
 
 		return $sortable_columns;
 	}
@@ -249,15 +236,11 @@ class MSA_All_Posts_Table extends WP_List_Table {
 			break;
 
 			case 'title':
-				$data = '<a href="' . get_admin_url() . 'admin.php?page=msa-dashboard&post=' . $item['post']->ID . '">' . $item['post']->post_title . '</a>';
+				$data = '<a href="' . get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $_GET['audit'] . '&post=' . $item['post']->ID . '">' . $item['post']->post_title . '</a>';
 			break;
 
 			case 'modified_date':
 				$data = date('M j, Y', strtotime($item['post']->post_modified));
-			break;
-
-			case 'word_count':
-				$data = str_word_count($item['data']['content']);
 			break;
 
 			case 'comment_count':
@@ -292,45 +275,50 @@ class MSA_All_Posts_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Generate the table navigation above or below the table
+	 * Extra controls to be displayed between bulk actions and pagination
 	 *
 	 * @since 3.1.0
 	 * @access protected
+	 *
 	 * @param string $which
 	 */
-	protected function display_tablenav( $which ) {
-
-		if ( 'top' == $which )
-			wp_nonce_field( 'bulk-' . $this->_args['plural'] );
+	protected function extra_tablenav( $which ) {
 
 		// Show Score Filter
 
-		$score = '';
+		$score = 0;
 
 		if ( isset($_GET['score']) ) {
-			$score = $_GET['score'];
+			$score = floatval($_GET['score']);
 		}
 
-		?><div class="tablenav <?php echo esc_attr( $which ); ?>">
+		if ( $which == 'top' ) {
 
-			<div class="alignleft actions bulkactions">
+			?><div class="alignleft actions bulkactions">
 				<div>
 					<label class="msa-filter-label"><?php _e('Score:', 'msa'); ?></label>
-					<select name="score">
+					<select class="msa-score-filter" name="score">
+						<option value="0" <?php selected(0, $score, true); ?>><?php _e('All', 'msa'); ?></option>
 						<option value="<?php echo msa_get_score_increment() * 1; ?>" <?php selected( msa_get_score_increment() * 1 , $score, true); ?>><?php _e('Bad', 'msa'); ?></option>
 						<option value="<?php echo msa_get_score_increment() * 2; ?>" <?php selected( msa_get_score_increment() * 2, $score, true); ?>><?php _e('Poor', 'msa'); ?></option>
 						<option value="<?php echo msa_get_score_increment() * 3; ?>" <?php selected( msa_get_score_increment() * 3 , $score, true); ?>><?php _e('Ok', 'msa'); ?></option>
 						<option value="<?php echo msa_get_score_increment() * 4; ?>" <?php selected( msa_get_score_increment() * 4 , $score, true); ?>><?php _e('Good', 'msa'); ?></option>
 						<option value="<?php echo msa_get_score_increment() * 5; ?>" <?php selected( msa_get_score_increment() * 5 , $score, true); ?>><?php _e('Great', 'msa'); ?></option>
 					</select>
+					<button class="msa-filter button"><?php _e('Filter', 'msa'); ?></button>
 				</div>
 			</div>
-			<?php
-			$this->extra_tablenav( $which );
-			$this->pagination( $which );
-			?>
-			<br class="clear" />
-		</div><?php
+			<script>
+				jQuery(document).ready(function($){
+					$('.msa-filter').click(function(e) {
+						e.preventDefault();
+					    window.location += "&score=" + $('.msa-score-filter').val();
+					});
+				});
+			</script><?php
+
+		}
+
 	}
 
 	/**

@@ -65,6 +65,10 @@ final class My_Site_Audit {
 			self::$instance->includes();
 
 			add_action( 'plugins_loaded', array( self::$instance, 'load_textdomain' ) );
+
+			// Create all the conditions
+
+			msa_create_initial_conditions();
 		}
 
 		// Return the Get_Notified object
@@ -178,24 +182,27 @@ final class My_Site_Audit {
 	 */
 	private function includes() {
 
+		// Includes
+
+		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'includes/sharedcount/sharedcount.php' );
+
 		// Model
 
-		// Views
+		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'model/audits.php' );
+		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'model/audit-posts.php' );
 
 		// Controllers
 
 		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'controllers/all-posts-table.php' );
+		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'controllers/all-audits-table.php' );
 
 		// Functions
 
 		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/activation.php' );
+		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/condition.php' );
 		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/admin-pages.php' );
 		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/post-meta-box.php' );
 		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/audit-data.php' );
-
-		// Includes
-
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'includes/sharedcount/sharedcount.php' );
 
 	}
 

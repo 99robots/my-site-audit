@@ -42,6 +42,16 @@ function msa_activation() {
 		update_option('msa-version', MY_SITE_AUDIT_VERSION);
 	}
 
+	// Create the audits table
+
+	$audit_model = new MSA_Audits_Model();
+	$audit_model->create_table();
+
+	// Create the audit posts table
+
+	$audit_posts_model = new MSA_Audit_Posts_Model();
+	$audit_posts_model->create_table();
+
 }
 
 register_activation_hook( MY_SITE_AUDIT_PLUGIN_FILE, 'msa_activation' );

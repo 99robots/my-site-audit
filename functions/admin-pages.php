@@ -44,20 +44,32 @@ function msa_menu() {
     	'manage_options',
     	'msa-dashboard',
     	'msa_dashboard',
-    	MY_SITE_AUDIT_PLUGIN_URL . 'img/logo.png" style="width:20px;padding-top: 6px;'
+    	MY_SITE_AUDIT_PLUGIN_URL . 'images/logo.png" style="width:20px;padding-top: 6px;'
     );
 
     // Dashboard
 
     $dashboard_page_load = add_submenu_page(
     	'msa-dashboard',
-    	__('Posts', 'msa'),
-    	__('Posts', 'msa'),
+    	__('Dashboard', 'msa'),
+    	__('Dashboard', 'msa'),
     	'manage_options',
     	'msa-dashboard',
     	'msa_dashboard'
     );
     add_action("admin_print_scripts-$dashboard_page_load", 'msa_dashboard_scripts');
+
+    // All Audits
+
+    $all_audits_page_load = add_submenu_page(
+    	'msa-dashboard',
+    	__('All Audits', 'msa'),
+    	__('All Audits', 'msa'),
+    	'manage_options',
+    	'msa-all-audits',
+    	'msa_all_audits'
+    );
+    add_action("admin_print_scripts-$all_audits_page_load", 'msa_all_audits_scripts');
 
     // Settings
 
@@ -96,8 +108,34 @@ function msa_dashboard_scripts() {
 
 	// Style
 
+	wp_enqueue_style('msa-common-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/css/common.css');
 	wp_enqueue_style('msa-dashboard-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/dashboard.css');
 	wp_enqueue_style('msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/css/font-awesome.min.css');
+
+}
+
+/**
+ * Hooks into the 'admin_print_scripts-$page' to inlcude the scripts for the all audits page
+ *
+ * @access public
+ * @static
+ * @return void
+ */
+function msa_all_audits_scripts() {
+
+	// Style
+
+	wp_enqueue_style('msa-all-audits-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/all-audits.css');
+	wp_enqueue_style('msa-common-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/css/common.css');
+	wp_enqueue_style('msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/css/font-awesome.min.css');
+	wp_enqueue_style('msa-jquery-ui-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/jquery-ui.min.css');
+	wp_enqueue_style('msa-jquery-ui-theme-css', 	MY_SITE_AUDIT_PLUGIN_URL . '/css/jquery-ui.theme.min.css');
+
+	// Scripts
+
+	wp_enqueue_script('jquery');
+	wp_enqueue_script('jquery-ui-core');
+	wp_enqueue_script('jquery-ui-datepicker');
 
 }
 
@@ -111,10 +149,12 @@ function msa_dashboard_scripts() {
 function msa_settings_scripts() {
 
 	// Style
+
 	wp_enqueue_style('msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/css/font-awesome.min.css');
 	wp_enqueue_style('msa-settings-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/settings.css');
 
 	// Script
+
 	wp_enqueue_script('msa-settings-js', 			MY_SITE_AUDIT_PLUGIN_URL . '/js/settings.js');
 
 }
@@ -144,6 +184,19 @@ function msa_extensions_scripts() {
 function msa_dashboard() {
 
 	require_once(MY_SITE_AUDIT_PLUGIN_DIR . 'controllers/dashboard.php');
+
+}
+
+/**
+ * This is the main function for the All Audits page
+ *
+ * @access public
+ * @static
+ * @return void
+ */
+function msa_all_audits() {
+
+	require_once(MY_SITE_AUDIT_PLUGIN_DIR . 'controllers/all-audits.php');
 
 }
 

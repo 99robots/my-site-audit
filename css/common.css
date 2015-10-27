@@ -1,0 +1,97 @@
+/* ===================================================================
+ *
+ * My Site Audit https://mysiteaudit.com
+ *
+ * Created: 10/26/15
+ * Package: Style/Common
+ * File: common.css
+ * Author: Kyle Benk
+ *
+ *
+ * Copyright 2015
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * ================================================================= */
+
+/* =====================================================
+ *
+ * Status Colors
+ *
+ ==================================================== */
+
+.msa-post-status > td:first-of-type {
+	border-left: 3px solid;
+}
+
+.msa-post-status-great > td:first-of-type {
+	border-color: rgb(0,207,0);
+}
+
+.msa-post-status-good > td:first-of-type {
+	border-color: rgb(143,207,0);
+}
+
+.msa-post-status-ok > td:first-of-type {
+	border-color: rgb(207,207,0);
+}
+
+.msa-post-status-poor > td:first-of-type {
+	border-color: rgb(207,143,0);
+}
+
+.msa-post-status-bad > td:first-of-type {
+	border-color: rgb(207,0,0);
+}
+
+.msa-post-status-bg > td {
+	color: white;
+}
+
+.msa-post-status-bg-great > td {
+	background-color: rgb(0,207,0);
+}
+
+.msa-post-status-bg-good > td {
+	background-color: rgb(143,207,0);
+}
+
+.msa-post-status-bg-ok > td {
+	background-color: rgb(207,207,0);
+}
+
+.msa-post-status-bg-poor > td {
+	background-color: rgb(207,143,0);
+}
+
+.msa-post-status-bg-bad > td {
+	background-color: rgb(207,0,0);
+}
+
+.msa-post-status-text-great {
+	color: rgb(0,207,0);
+}
+
+.msa-post-status-text-good {
+	color: rgb(143,207,0);
+}
+
+.msa-post-status-text-ok {
+	color: rgb(207,207,0);
+}
+
+.msa-post-status-text-poor {
+	color: rgb(207,143,0);
+}
+
+.msa-post-status-text-bad {
+	color: rgb(207,0,0);
+}

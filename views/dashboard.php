@@ -28,30 +28,8 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-require_once('header.php');
+require_once('header.php'); ?>
 
-/* ==================================================================
- *
- *	Single Post
- *
- ================================================================== */
+<h1><?php _e('Dashboard', 'msa'); ?></h1>
 
-if ( isset($_GET['post']) ) {
-
-	include_once( MY_SITE_AUDIT_PLUGIN_DIR . 'templates/single-post.php' );
-
-}
-
-/* ==================================================================
- *
- *	All Posts
- *
- ================================================================== */
-
-else {
-
-	include_once( MY_SITE_AUDIT_PLUGIN_DIR . 'templates/all-posts.php' );
-
-}
-
-require_once('footer.php');
+<?php require_once('footer.php');
