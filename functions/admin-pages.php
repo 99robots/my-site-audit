@@ -70,6 +70,7 @@ function msa_menu() {
     	'msa_all_audits'
     );
     add_action("admin_print_scripts-$all_audits_page_load", 'msa_all_audits_scripts');
+    add_action("load-$all_audits_page_load", 'msa_all_audits_load');
 
     // Settings
 
@@ -197,6 +198,53 @@ function msa_dashboard() {
 function msa_all_audits() {
 
 	require_once(MY_SITE_AUDIT_PLUGIN_DIR . 'controllers/all-audits.php');
+
+}
+
+/**
+ * Show the screen options on the Single Audit page
+ *
+ * @access public
+ * @return void
+ */
+function msa_all_audits_load() {
+
+	// Single Post
+
+	if ( isset($_GET['audit']) && isset($_GET['post']) ) {
+
+	}
+
+	// Single Audit
+
+	else if ( isset($_GET['audit']) ) {
+
+		// Screen Options
+
+		add_screen_option( 'per_page' );
+
+		$screen = get_current_screen();
+
+		add_filter( 'manage_my-site-audit_page_msa-all-audits_columns', 'msa_all_audits_add_column' );
+
+	}
+
+	// All Audits
+
+	else {
+
+	}
+}
+
+function msa_all_audits_add_column( $columns ) {
+
+	$conditions = msa_get_conditions();
+
+	foreach ( $conditions as $key => $condition ) {
+		$columns[$key] = $condition['name'];
+	}
+
+	return $columns;
 
 }
 

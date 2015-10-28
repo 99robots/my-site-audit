@@ -43,6 +43,20 @@ function msa_create_initial_conditions() {
 		'comparison'	=> 1,
 		'value'			=> 0,
 		'max'           => 60,
+		'filter'		=> array(
+			'label'		=> __('Title Length', 'msa'),
+			'name'		=> 'title',
+			'options'	=> array(
+				array(
+					'name' 	=> __('More Than 60 Characters', 'msa'),
+					'value'	=> 'more-60',
+				),
+				array(
+					'name' 	=> __('Less Than Characters', 'msa'),
+					'value'	=> 'less-60',
+				),
+			)
+		)
 	));
 
 	// Modified Date
@@ -53,6 +67,20 @@ function msa_create_initial_conditions() {
 		'comparison'	=> 1,
 		'value'			=> 1,
 		'max'           => DAY_IN_SECONDS * 90,
+		'filter'		=> array(
+			'label'		=> __('Modified Date', 'msa'),
+			'name'		=> 'modified_date',
+			'options'	=> array(
+				array(
+					'name' 	=> __('More Than 90 Days Ago', 'msa'),
+					'value'	=> 'more-' . DAY_IN_SECONDS * 90,
+				),
+				array(
+					'name' 	=> __('Less Than 90 Days Ago', 'msa'),
+					'value'	=> 'less-' . DAY_IN_SECONDS * 90,
+				),
+			)
+		)
 	));
 
 	// Word Count
@@ -63,6 +91,20 @@ function msa_create_initial_conditions() {
 		'comparison'	=> 0,
 		'value'			=> 1,
 		'min'           => 750,
+		'filter'		=> array(
+			'label'		=> __('Word Count', 'msa'),
+			'name'		=> 'word_count',
+			'options'	=> array(
+				array(
+					'name' 	=> __('More Than 750 Words', 'msa'),
+					'value'	=> 'more-750',
+				),
+				array(
+					'name' 	=> __('Less Than 750 Words', 'msa'),
+					'value'	=> 'less-750',
+				),
+			)
+		)
 	));
 
 	// Comment Count
@@ -73,6 +115,20 @@ function msa_create_initial_conditions() {
 		'comparison'	=> 0,
 		'value'			=> 1,
 		'min'           => 5,
+		'filter'		=> array(
+			'label'		=> __('Comment Count', 'msa'),
+			'name'		=> 'comment_count',
+			'options'	=> array(
+				array(
+					'name' 	=> __('More Than 5 Comments', 'msa'),
+					'value'	=> 'more-5',
+				),
+				array(
+					'name' 	=> __('Less Than 5 Comments', 'msa'),
+					'value'	=> 'less-5',
+				),
+			)
+		)
 	));
 
 	// Internal Links
@@ -84,6 +140,20 @@ function msa_create_initial_conditions() {
 		'value'			=> 1,
 		'min'           => 2,
 		'max'           => 6,
+		'filter'		=> array(
+			'label'		=> __('Internal Links', 'msa'),
+			'name'		=> 'internal_links',
+			'options'	=> array(
+				array(
+					'name' 	=> __('More Than 4 Internal Links', 'msa'),
+					'value'	=> 'more-4',
+				),
+				array(
+					'name' 	=> __('Less Than 4 Internal Links', 'msa'),
+					'value'	=> 'less-4',
+				),
+			)
+		)
 	));
 
 	// External Links
@@ -95,6 +165,20 @@ function msa_create_initial_conditions() {
 		'value'			=> 1,
 		'min'           => 1,
 		'max'           => 14,
+		'filter'		=> array(
+			'label'		=> __('External Links', 'msa'),
+			'name'		=> 'external_links',
+			'options'	=> array(
+				array(
+					'name' 	=> __('More Than 7 External Links', 'msa'),
+					'value'	=> 'more-7',
+				),
+				array(
+					'name' 	=> __('Less Than 7 External Links', 'msa'),
+					'value'	=> 'less-7',
+				),
+			)
+		)
 	));
 
 	// Images
@@ -105,6 +189,20 @@ function msa_create_initial_conditions() {
 		'comparison'	=> 0,
 		'value'			=> 0,
 		'min'           => 2,
+		'filter'		=> array(
+			'label'		=> __('Images', 'msa'),
+			'name'		=> 'images',
+			'options'	=> array(
+				array(
+					'name' 	=> __('More Than 2 Images', 'msa'),
+					'value'	=> 'more-2',
+				),
+				array(
+					'name' 	=> __('Less Than 2 Images', 'msa'),
+					'value'	=> 'less-2',
+				),
+			)
+		)
 	));
 
 	// Headings
@@ -115,6 +213,20 @@ function msa_create_initial_conditions() {
 		'comparison'	=> 0,
 		'value'			=> 0,
 		'min'           => 5,
+		'filter'		=> array(
+			'label'		=> __('Headings', 'msa'),
+			'name'		=> 'headings',
+			'options'	=> array(
+				array(
+					'name' 	=> __('More Than 5 Headings', 'msa'),
+					'value'	=> 'more-5',
+				),
+				array(
+					'name' 	=> __('Less Than 5 Headings', 'msa'),
+					'value'	=> 'less-5',
+				),
+			)
+		)
 	));
 
 }

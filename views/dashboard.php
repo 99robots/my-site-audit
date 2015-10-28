@@ -28,8 +28,62 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-require_once('header.php'); ?>
+require_once('header.php');
+
+$panels = msa_get_dashboard_panels();?>
 
 <h1><?php _e('Dashboard', 'msa'); ?></h1>
+
+<div id="dashboard-widgets" class="metabox-holder">
+
+	<div id="postbox-container-1" class="postbox-container">
+
+		<div class="meta-box-sortables ui-sortable">
+
+			<?php foreach ( $panels as $panel ) {
+
+				if ( $panel['postbox'] != 1 ) {
+					continue;
+				} ?>
+
+				<div class="postbox">
+					<div class="handlediv" title="Click to toggle"><br></div>
+					<h3 class="hndle ui-sortable-handle"><span><?php echo $panel['title']; ?></span></h3>
+					<div class="inside">
+						<?php echo $panel['content']; ?>
+					</div>
+				</div>
+
+			<?php } ?>
+
+		</div>
+
+	</div>
+
+	<div id="postbox-container-2" class="postbox-container">
+
+		<div class="meta-box-sortables ui-sortable">
+
+			<?php foreach ( $panels as $panel ) {
+
+				if ( $panel['postbox'] != 2 ) {
+					continue;
+				} ?>
+
+				<div class="postbox">
+					<div class="handlediv" title="Click to toggle"><br></div>
+					<h3 class="hndle ui-sortable-handle"><span><?php echo $panel['title']; ?></span></h3>
+					<div class="inside">
+						<?php echo $panel['content']; ?>
+					</div>
+				</div>
+
+			<?php } ?>
+
+		</div>
+
+	</div>
+
+</div>
 
 <?php require_once('footer.php');

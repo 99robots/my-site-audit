@@ -209,6 +209,24 @@ class MSA_Audits_Model {
 	}
 
 	/**
+	 * Get the latest audit
+	 *
+	 * @access public
+	 * @return void
+	 */
+	function get_latest() {
+
+		global $wpdb;
+
+		$data = $wpdb->get_results("SELECT * FROM  `" . $this->get_table_name() . "`  ORDER BY `id` DESC LIMIT 1", 'ARRAY_A');
+
+		$parsed_data = $this->parse_data($data);
+
+		return $parsed_data[0];
+
+	}
+
+	/**
 	 * Delete some data
 	 *
 	 * @access public

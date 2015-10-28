@@ -101,7 +101,7 @@ class MSA_All_Posts_Table extends WP_List_Table {
 		$posts = $audit_posts_model->get_data($_GET['audit'], $args);
 
 		foreach ( $posts as $post ) {
-			$this->items[] = array('post' => $post['post'], 'data' => msa_get_post_audit_data($post['post']));
+			$this->items[] = array('post' => $post['post'], 'data' => $post['data']);
 		}
 
 		/* =========================================================================
@@ -112,22 +112,64 @@ class MSA_All_Posts_Table extends WP_List_Table {
 
 		// Score
 
-		if ( isset($_GET['score']) && $_GET['score'] != '0') {
+		if ( isset($_GET['score-low']) && $_GET['score-low'] != '' && isset($_GET['score-high']) && $_GET['score-high'] != '' ) {
 
-			$score_value = floatval($_GET['score']);
-			$score_range = msa_get_score_increment();
-
-			if ( $score_value < msa_get_score_increment() * 2 ) {
-				$score_value = 0;
-				$score_range = msa_get_score_increment() * 2;
-			}
+			$score_low = floatval($_GET['score-low']);
+			$score_high = floatval($_GET['score-high']);
 
 			foreach ( $this->items as $key => $item ) {
 
-				$score = msa_calculate_score($item['post'], $item['data']);
-
-				if ( $score['score'] < $score_value || $score['score'] > ( $score_value + $score_range ) ) {
+				if ( $item['data']['score'] < $_GET['score-low'] || $item['data']['score'] > $_GET['score-high'] ) {
 					unset($this->items[$key]);
+				}
+			}
+		}
+
+		// Conditions
+
+		$conditions = msa_get_conditions();
+
+		foreach ( $conditions as $condition ) {
+
+			$name = $condition['filter']['name'];
+
+			if ( isset($condition['filter']) && isset($_GET[$name]) && $_GET[$name] != '' ) {
+
+				$atts = explode('-', $_GET[$name]);
+				$compare = $atts[0];
+				$value = $atts[1];
+
+				foreach ( $this->items as $key => $item ) {
+
+					// Greater Than
+
+					if ( $compare == 'more' ) {
+
+						if ( $item['data'][$name] < $value ) {
+							unset($this->items[$key]);
+						}
+
+					}
+
+					// Less Than
+
+					else if ( $compare == 'less' ) {
+
+						if ( $item['data'][$name] > $value ) {
+							unset($this->items[$key]);
+						}
+
+					}
+
+					// Equal To
+
+					else if ( $compare === 'equal' ) {
+
+						if ( $item['data'][$name] != $value ) {
+							unset($this->items[$key]);
+						}
+
+					}
 				}
 			}
 		}
@@ -284,35 +326,49 @@ class MSA_All_Posts_Table extends WP_List_Table {
 	 */
 	protected function extra_tablenav( $which ) {
 
-		// Show Score Filter
+		// Get all the registerd conditions
 
-		$score = 0;
-
-		if ( isset($_GET['score']) ) {
-			$score = floatval($_GET['score']);
-		}
+		$conditions = msa_get_conditions();
 
 		if ( $which == 'top' ) {
 
 			?><div class="alignleft actions bulkactions">
-				<div>
-					<label class="msa-filter-label"><?php _e('Score:', 'msa'); ?></label>
-					<select class="msa-score-filter" name="score">
-						<option value="0" <?php selected(0, $score, true); ?>><?php _e('All', 'msa'); ?></option>
-						<option value="<?php echo msa_get_score_increment() * 1; ?>" <?php selected( msa_get_score_increment() * 1 , $score, true); ?>><?php _e('Bad', 'msa'); ?></option>
-						<option value="<?php echo msa_get_score_increment() * 2; ?>" <?php selected( msa_get_score_increment() * 2, $score, true); ?>><?php _e('Poor', 'msa'); ?></option>
-						<option value="<?php echo msa_get_score_increment() * 3; ?>" <?php selected( msa_get_score_increment() * 3 , $score, true); ?>><?php _e('Ok', 'msa'); ?></option>
-						<option value="<?php echo msa_get_score_increment() * 4; ?>" <?php selected( msa_get_score_increment() * 4 , $score, true); ?>><?php _e('Good', 'msa'); ?></option>
-						<option value="<?php echo msa_get_score_increment() * 5; ?>" <?php selected( msa_get_score_increment() * 5 , $score, true); ?>><?php _e('Great', 'msa'); ?></option>
-					</select>
-					<button class="msa-filter button"><?php _e('Filter', 'msa'); ?></button>
-				</div>
+
+				<?php foreach ( $conditions as $condition ) {
+
+					if ( isset($condition['filter']) ) { ?>
+
+						<div style="display: inline-block;">
+							<label class="msa-filter-label"><?php echo $condition['filter']['label']; ?></label>
+							<select class="msa-filter" name="<?php echo $condition['filter']['name']; ?>">
+								<option value="" <?php selected("", $_GET[$condition['filter']['name']], true); ?>><?php _e('All', 'msa'); ?></option>
+								<?php foreach ( $condition['filter']['options'] as $option ) { ?>
+									<option value="<?php echo $option['value']; ?>" <?php selected($option['value'], $_GET[$condition['filter']['name']], true); ?>><?php echo $option['name']; ?></option>
+								<?php } ?>
+							</select>
+						</div>
+
+					<?php }
+
+				}
+
+			?><button class="msa-filter-button button"><?php _e('Filter', 'msa'); ?></button>
 			</div>
 			<script>
 				jQuery(document).ready(function($){
-					$('.msa-filter').click(function(e) {
+					$('.msa-filter-button').click(function(e) {
 						e.preventDefault();
-					    window.location += "&score=" + $('.msa-score-filter').val();
+
+						var parameters = '';
+
+						$('.msa-filter').each(function(index, value) {
+
+							if ( $(value).length != 0 ) {
+								parameters += "&" + $(value).attr('name') + "=" + $(value).val();
+							}
+						});
+
+					    window.location += parameters;
 					});
 				});
 			</script><?php

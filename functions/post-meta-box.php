@@ -41,7 +41,7 @@ function msa_add_meta_box() {
 		'msa_meta_box_callback'
 	);
 }
-add_action('add_meta_boxes', 'msa_add_meta_box');
+//add_action('add_meta_boxes', 'msa_add_meta_box');
 
 /**
  * Prints the box content.

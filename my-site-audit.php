@@ -65,10 +65,8 @@ final class My_Site_Audit {
 			self::$instance->includes();
 
 			add_action( 'plugins_loaded', array( self::$instance, 'load_textdomain' ) );
+			add_action( 'init', array( self::$instance, 'init' ) );
 
-			// Create all the conditions
-
-			msa_create_initial_conditions();
 		}
 
 		// Return the Get_Notified object
@@ -164,12 +162,6 @@ final class My_Site_Audit {
 			define( 'CAL_GREGORIAN', 1 );
 		}
 
-		// Score Increment
-
-		if ( ! defined( 'MY_SITE_AUDIT_SCORE_INCREMENT' ) ) {
-			define( 'MY_SITE_AUDIT_SCORE_INCREMENT', 0.1667 );
-		}
-
 		date_default_timezone_set(timezone_name_from_abbr(null, (int) get_option('gmt_offset') * 3600 , true));
 	}
 
@@ -199,10 +191,29 @@ final class My_Site_Audit {
 		// Functions
 
 		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/activation.php' );
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/condition.php' );
 		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/admin-pages.php' );
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/post-meta-box.php' );
+		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/condition.php' );
+		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/score-status.php' );
+		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/dashboard-panels.php' );
+
 		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/audit-data.php' );
+		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/post-meta-box.php' );
+
+	}
+
+	/**
+	 * Setup the plugin
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function init() {
+
+		// Registers
+
+		msa_create_initial_conditions();
+		msa_create_initial_score_statuses();
+		msa_create_initial_dashboard_panels();
 
 	}
 

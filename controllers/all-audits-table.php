@@ -118,6 +118,8 @@ class MSA_All_Audits_Table extends WP_List_Table {
 		) );
 
 		$this->items = array_slice($this->items,(($current_page-1)*$per_page),$per_page);
+
+		$this->items = array_reverse($this->items);
 	}
 
 	/**

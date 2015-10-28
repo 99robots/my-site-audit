@@ -56,7 +56,7 @@ function msa_calculate_score($post, $data) {
 
 		else if ( $condition['comparison'] == 1 && isset($condition['max']) ) {
 
-			$value = min( $condition['max'] / $data[$key], 1 );
+			$value = 1 - min( $data[$key] / $condition['max'], 1 );
 
 		}
 
@@ -111,7 +111,7 @@ function msa_get_post_audit_data($post) {
 
 	$data['title']             = strlen($post->post_title);
 	$data['name']              = strlen($post->post_name);
-	$data['modified_date']     = time() - strtotime($post->post_modified);
+	$data['modified_date']     = max(time() - strtotime($post->post_modified), 0);
 	$data['word_count']        = str_word_count($content);
 	$data['comment_count']     = $post->comment_count;
 	$data['images'] = substr_count($post->post_content, '<img');
@@ -121,6 +121,7 @@ function msa_get_post_audit_data($post) {
 	preg_match_all('/<h([1-6])/', $post->post_content, $matches);
 	$data['headings'] = count($matches[0]);
 
+/*
 	preg_match_all('/<h1/', $post->post_content, $matches);
 	$data['h1'] = count($matches[0]);
 
@@ -138,6 +139,7 @@ function msa_get_post_audit_data($post) {
 
 	preg_match_all('/<h6/', $post->post_content, $matches);
 	$data['h6'] = count($matches[0]);
+*/
 
 	// Links
 
@@ -192,83 +194,6 @@ function msa_get_post_audit_data($post) {
 }
 
 /**
- * Get the status of a score
- *
- * @access public
- * @param mixed $score
- * @return void
- */
-function msa_get_score_status($score) {
-
-	if ( $score >= msa_get_score_increment() * 5 ) {
-		$status = 'great';
-	} else if ( $score >= msa_get_score_increment() * 4 ) {
-		$status = 'good';
-	} else if ( $score >= msa_get_score_increment() * 3 ) {
-		$status = 'ok';
-	} else if ( $score >= msa_get_score_increment() * 2 ) {
-		$status = 'poor';
-	} else {
-		$status = 'bad';
-	}
-
-	return $status;
-
-}
-
-/**
- * Get the letter grade for this score
- *
- * @access public
- * @param mixed $score
- * @return void
- */
-function msa_get_letter_grade($score) {
-
-	if ( $score >= .96667 ) {
-		$grade = 'A+';
-	} else if ( $score >= .93334 ) {
-		$grade = 'A';
-	} else if ( $score >= .90 ) {
-		$grade = 'A-';
-	} else if ( $score >= .86667 ) {
-		$grade = 'B+';
-	} else if ( $score >= .83334 ) {
-		$grade = 'B';
-	} else if ( $score >= .80 ) {
-		$grade = 'B-';
-	} else if ( $score >= .76667 ) {
-		$grade = 'C+';
-	} else if ( $score >= .73334 ) {
-		$grade = 'C';
-	} else if ( $score >= .70 ) {
-		$grade = 'C-';
-	} else if ( $score >= .66667 ) {
-		$grade = 'D+';
-	} else if ( $score >= .63334 ) {
-		$grade = 'D';
-	} else if ( $score >= .60 ) {
-		$grade = 'D-';
-	} else {
-		$grade = 'F';
-	}
-
-	return $grade;
-
-}
-
-/**
- * Get the score increment
- *
- * @access public
- * @return void
- */
-function msa_get_score_increment() {
-
-	return MY_SITE_AUDIT_SCORE_INCREMENT;
-}
-
-/**
  * Show all the internal links
  *
  * @access public
@@ -277,7 +202,7 @@ function msa_get_score_increment() {
  */
 function msa_show_internal_links( $link_matches ) {
 
-	$output = '<ul style="margin:0;">';
+	$output = '<ol style="margin:0;">';
 
 	if ( isset($link_matches) && is_array($link_matches) ) {
 
@@ -288,20 +213,20 @@ function msa_show_internal_links( $link_matches ) {
 			$site_url = parse_url(get_site_url());
 
 			if ( isset($site_url['host']) && isset($url['host']) && $site_url['host'] == $url['host'] ) {
-				$output .= '<li style="list-style: disc;margin: 0;"><a href="' . $link[2] . '" target="_blank">' . $link[2] . '</a></li>';
+				$output .= '<li style="margin: 0;"><a href="' . $link[2] . '" target="_blank">' . $link[2] . '</a></li>';
 				$matches++;
 			}
 		}
 
 		if ( $matches == 0 ) {
-			$output .= '<li style="list-style: disc;margin: 0;">' . __('No Links', 'msa') . '</li>';
+			$output .= '<li style="margin: 0;">' . __('No Links', 'msa') . '</li>';
 		}
 
 	} else {
-		$output .= '<li style="list-style: disc;margin: 0;">' . __('No Links', 'msa') . '</li>';
+		$output .= '<li style="margin: 0;">' . __('No Links', 'msa') . '</li>';
 	}
 
-	$output .= '</ul>';
+	$output .= '</ol>';
 
 	return $output;
 
@@ -316,7 +241,7 @@ function msa_show_internal_links( $link_matches ) {
  */
 function msa_show_external_links( $link_matches ) {
 
-	$output = '<ul style="margin:0;">';
+	$output = '<ol style="margin:0;">';
 
 	if ( isset($link_matches) && is_array($link_matches) ) {
 
@@ -327,22 +252,89 @@ function msa_show_external_links( $link_matches ) {
 			$site_url = parse_url(get_site_url());
 
 			if ( isset($site_url['host']) && isset($url['host']) && $site_url['host'] != $url['host'] ) {
-				$output .= '<li style="list-style: disc;margin: 0;"><a href="' . $link[2] . '" target="_blank">' . $link[2] . '</a></li>';
+				$output .= '<li style="margin: 0;"><a href="' . $link[2] . '" target="_blank">' . $link[2] . '</a></li>';
 				$matches++;
 			}
 		}
 
 		if ( $matches == 0 ) {
-			$output .= '<li style="list-style: disc;margin: 0;">' . __('No Links', 'msa') . '</li>';
+			$output .= '<li style="margin: 0;">' . __('No Links', 'msa') . '</li>';
 		}
 
 	} else {
-		$output .= '<li style="list-style: disc;margin: 0;">' . __('No Links', 'msa') . '</li>';
+		$output .= '<li style="margin: 0;">' . __('No Links', 'msa') . '</li>';
 	}
 
-	$output .= '</ul>';
+	$output .= '</ol>';
 
 	return $output;
+
+}
+
+/**
+ * Show the images for a post
+ *
+ * @access public
+ * @param mixed $content
+ * @return void
+ */
+function msa_show_images($content) {
+
+
+
+	preg_match_all('|<img(?:.*)/>|Ui', $content, $matches, PREG_SET_ORDER);
+
+	$images = 0;
+
+	$output = __('Count: ' . count($matches), 'msa');
+	$output .= '<div class="msa-images">';
+
+	foreach ( $matches as $match ) {
+
+		$link = array();
+		preg_match( '/src="([^"]*)"/i', $match[0], $link ) ;
+		$link = $link[1];
+
+		$output .= '<a href="' . $link . '" target="_blank">' . $match[0] . '</a>';
+		$images++;
+	}
+
+	if ( $images == 0 ) {
+		$output .= __('No Images', 'msa');
+	}
+
+	$output .= '</div>';
+
+    return $output;
+
+}
+
+/**
+ * Show the headings for a post
+ *
+ * @access public
+ * @param mixed $content
+ * @return void
+ */
+function msa_show_headings($content) {
+
+	preg_match_all('|<\s*h[1-6](?:.*)>(.*)</\s*h[1-6]>|Ui', $content, $matches, PREG_SET_ORDER);
+
+	$headings = 0;
+
+	$output = __('Count: ' . count($matches), 'msa');
+
+	foreach ( $matches as $match ) {
+
+		$output .= strip_tags($match[0], '<h1><h2><h3><h4><h5><h6>');
+		$headings++;
+	}
+
+	if ( $headings == 0 ) {
+		$output = __('No Headings', 'msa');
+	}
+
+    return $output;
 
 }
 

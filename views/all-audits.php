@@ -38,7 +38,10 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 	$audit_post = $audit_posts_model->get_data_from_id($_GET['audit'], $_GET['post']);
 	$post = (object) $audit_post['post'];
 	$data = $audit_post['data'];
-	$score = msa_calculate_score($post, $audit_post['data']); ?>
+
+	$score = msa_calculate_score($post, $audit_post['data']);
+	$images = msa_show_images($post->post_content);
+	$headings = msa_show_headings($post->post_content); ?>
 
 	<h1><?php _e('Single Post', 'msa'); ?>
 		<a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $_GET['audit']; ?>" class="page-title-action"><?php _e('All Posts', 'msa'); ?></a>
@@ -57,7 +60,7 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 
 		<div class="msa-column msa-header-column msa-detail-container">
 			<h1><?php _e('Content Analysis: Post Detail', 'msa'); ?></h1>
-			<p><?php _e('Analysis Date' . date('m/d/Y', strtotime($audit['date'])), 'msa'); ?></p>
+			<p><?php _e('Analysis Date: ' . date('m/d/Y', strtotime($audit['date'])), 'msa'); ?></p>
 			<hr />
 			<h1><?php echo $post->post_title; ?></h1>
 			<a href="<?php echo get_permalink($post->ID); ?>" target="_blank"><?php echo get_permalink($post->ID); ?></a>
@@ -177,15 +180,16 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 	-->
 
 					<tr class="msa-post-status msa-post-status-<?php echo msa_get_score_status($score['data']['images']); ?>">
-						<td><?php _e('Image Count', 'msa'); ?></td>
-						<td><?php echo $data['images']; ?></td>
+						<td><?php _e('Images', 'msa'); ?></td>
+						<td><?php echo $images; ?></td>
 					</tr>
 
 					<tr class="msa-post-status msa-post-status-<?php echo msa_get_score_status($score['data']['headings']); ?>">
-						<td><?php _e('Heading Count', 'msa'); ?></td>
-						<td><?php echo $data['headings']; ?></td>
+						<td><?php _e('Headings', 'msa'); ?></td>
+						<td><?php echo $headings; ?></td>
 					</tr>
 
+<!--
 					<tr>
 						<td><?php _e('Heading 1 Count', 'msa'); ?></td>
 						<td><?php echo $data['h1']; ?></td>
@@ -215,6 +219,7 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 						<td><?php _e('Heading 6 Count', 'msa'); ?></td>
 						<td><?php echo $data['h6']; ?></td>
 					</tr>
+-->
 
 				</tbody>
 
@@ -269,8 +274,17 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 
 <?php } else if ( isset($_GET['audit']) ) {
 
+	// Get the Audit
+
 	$audit_model = new MSA_Audits_Model();
-	$audit = $audit_model->get_data_from_id($_GET['audit']); ?>
+	$audit = $audit_model->get_data_from_id($_GET['audit']);
+
+	// Get the posts for an audit
+
+	$audit_posts_model = new MSA_Audit_Posts_Model();
+	$posts = $audit_posts_model->get_data($_GET['audit']);
+
+	?>
 
 	<h1><?php _e('Single Audit', 'msa'); ?>
 		<a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits'; ?>" class="page-title-action"><?php _e('All Audits', 'msa'); ?></a>
@@ -289,13 +303,54 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 
 		<div class="msa-column msa-header-column msa-detail-container">
 			<h1><?php _e('Content Analysis: ' . $audit['name'], 'msa'); ?></h1>
-			<p><?php _e('Analysis Date' . date('m/d/Y', strtotime($audit['date'])), 'msa'); ?></p>
+			<p><?php _e('Analysis Date: ' . date('m/d/Y', strtotime($audit['date'])), 'msa'); ?></p>
 		</div>
 
 		<div class="msa-column msa-header-column msa-action-container">
 		</div>
 
 	</div>
+
+	<script>
+	jQuery(document).ready(function($){
+
+		// Hide and show the columns
+
+		$('.hide-column-tog').change(function(){
+
+			if ( $(this).prop('checked') ) {
+				$('#' + $(this).val()).show();
+			} else {
+				$('#' + $(this).val()).hide();
+			}
+		});
+
+	});
+	</script>
+
+	<ul class="subsubsub">
+
+		<li class="all">
+			<a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $_GET['audit']; ?>" class="current"><?php _e('All', 'msa'); ?> <span class="count">(<?php echo $audit['num_posts']; ?>)</span></a> |
+		</li>
+
+		<?php $i = 0; foreach ( msa_get_score_statuses() as $key => $score_status ) {
+
+			$separator = ' |';
+
+			if ( $i == count(msa_get_score_statuses()) - 1 ) {
+				$separator = '';
+			}
+
+			$i++; ?>
+
+			<li class="<?php echo $key; ?>">
+				<a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $_GET['audit']; ?>&score-low=<?php echo $score_status['low']; ?>&score-high=<?php echo $score_status['high']; ?>"><?php echo $score_status['name']; ?> <span class="count">(<?php echo msa_get_post_count_by_status($posts, $key); ?>)</span></a><?php echo $separator; ?>
+			</li>
+
+		<?php } ?>
+
+	</ul>
 
 	<form method="post" class="msa-all-posts-form">
 		<input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>" />
@@ -306,6 +361,40 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 		$all_posts_table->search_box('Search Posts', 'msa');
 		$all_posts_table->display(); ?>
 	</form>
+
+	<h3><?php _e('Conditions', 'msa'); ?></h3>
+
+	<div class="msa-audit-conditions">
+
+		<table class="wp-list-table widefat striped fixed">
+
+			<thead>
+				<tr>
+					<th scope="col"><?php _e('Name', 'msa'); ?></th>
+					<th scope="col"><?php _e('Weight', 'msa'); ?></th>
+					<th scope="col"><?php _e('Comparison', 'msa'); ?></th>
+					<th scope="col"><?php _e('Value', 'msa'); ?></th>
+					<th scope="col"><?php _e('Minimum', 'msa'); ?></th>
+					<th scope="col"><?php _e('Maximum', 'msa'); ?></th>
+				</tr>
+			</thead>
+
+			<tbody>
+				<?php foreach( json_decode($audit['args']['conditions'], true) as $condition ) { ?>
+					<tr>
+						<td><?php echo $condition['name']; ?></td>
+						<td><?php echo $condition['weight']; ?></td>
+						<td><?php echo $condition['comparison']; ?></td>
+						<td><?php echo $condition['value']; ?></td>
+						<td><?php echo $condition['min']; ?></td>
+						<td><?php echo $condition['max']; ?></td>
+					</tr>
+				<?php } ?>
+			</tbody>
+		</table>
+
+
+	</div>
 
 <?php } else { ?>
 
@@ -333,7 +422,7 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 					<tr>
 						<th scope="row"><label for="msa-audit-after-date"><?php _e("After Date", 'msa'); ?></label></th>
 						<td>
-							<input id="msa-audit-after-date" name="after-date" class="msa-datepicker" value="<?php echo date("m/d/Y", strtotime("first day of previous month")); ?>" />
+							<input id="msa-audit-after-date" name="after-date" class="msa-datepicker" value="<?php echo date("m/d/Y", strtotime("-1 years")); ?>" />
 							<p class="description"><?php _e('Perform the audit on posts published after this date.', 'msa'); ?></p>
 						</td>
 					</tr>
@@ -343,7 +432,7 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 					<tr>
 						<th scope="row"><label for="msa-audit-before-date"><?php _e("Before Date", 'msa'); ?></label></th>
 						<td>
-							<input id="msa-audit-before-date" name="before-date" class="msa-datepicker" value="<?php echo date("m/d/Y", strtotime("last day of previous month")); ?>"/>
+							<input id="msa-audit-before-date" name="before-date" class="msa-datepicker" value="<?php echo date("m/d/Y", strtotime("today")); ?>"/>
 							<p class="description"><?php _e('Perform the audit on posts published before this date.', 'msa'); ?></p>
 						</td>
 					</tr>

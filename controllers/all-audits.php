@@ -45,6 +45,7 @@ if ( isset($_POST['submit']) && check_admin_referer('msa-add-audit') ) {
 	$audit['date'] = date('Y-m-d H:i:s');
 	$audit['user'] = get_current_user_id();
 	$audit['args']['post_types'] = $_POST['post-types'];
+	$audit['args']['conditions'] = json_encode(msa_get_conditions());
 
 	// Get all the posts that we are going to perform an audit on
 

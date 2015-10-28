@@ -195,3 +195,9 @@
 	margin: 0;
 	color: #545454;
 }
+
+.msa-images img {
+	width: 150px;
+	padding: 4px;
+	height: auto;
+}
