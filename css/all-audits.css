@@ -32,6 +32,37 @@
 	display: none;
 }
 
+.msa-audit-conditions-modal {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0,0,0,0.5);
+	z-index: 9999999;
+	overflow: scroll;
+}
+
+.msa-audit-conditions-modal-container {
+	padding: 20px;
+	background-color: white;
+	width: 900px;
+	max-width: 80%;
+	margin: 0 auto;
+	margin-top: 10vh;
+	display: block;
+}
+
+.msa-audit-conditions-modal-heading {
+	margin-top: 0px;
+}
+
+@media screen and (max-width: 768px) {
+	.wp-list-table tr:not(.inline-edit-row):not(.no-items) td:not(.check-column) {
+		display: table-cell;
+	}
+}
 
 /* =====================================================
  *

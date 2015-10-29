@@ -27,7 +27,9 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-require_once('header.php'); ?>
+require_once('header.php');
+
+$settings_tabs = msa_get_settings_tabs(); ?>
 
 <h1><?php _e("Settings", 'msa'); ?></h1>
 
@@ -37,15 +39,13 @@ require_once('header.php'); ?>
 
 		<ul class="msa-vertical-tabs-list">
 
-			<li class="msa-vertical-tabs-item msa-vertical-tabs-current">
-				<a href="#settings"><?php _e("Settings", 'msa'); ?></a>
+			<?php foreach ( $settings_tabs as $key => $settings_tab ) { ?>
+
+			<li class="msa-vertical-tabs-item <?php echo (isset($settings_tab['current']) && $settings_tab['current'] ? 'msa-vertical-tabs-current' : ''); ?>">
+				<a href="#<?php echo $key; ?>"><?php echo $settings_tab['tab']; ?></a>
 			</li>
-			<li class="msa-vertical-tabs-item">
-				<a href="#conditions"><?php _e("Conditions", 'msa'); ?></a>
-			</li>
-			<li class="msa-vertical-tabs-item">
-				<a href="#user-roles"><?php _e("User Roles", 'msa'); ?></a>
-			</li>
+
+			<?php } ?>
 
 		</ul>
 
@@ -53,14 +53,21 @@ require_once('header.php'); ?>
 
 	<div class="msa-vertical-tabs-content">
 
+		<?php foreach ( $settings_tabs as $key => $settings_tab ) { ?>
+
+			<div id="<?php echo $key; ?>" class="msa-vertical-tabs-content-item <?php echo (isset($settings_tab['current']) && $settings_tab['current'] ? 'msa-vertical-tabs-content-current' : ''); ?>">
+				<?php echo $settings_tab['content']; ?>
+			</div>
+
+		<?php } ?>
+
+<!--
 		<div id="settings" class="msa-vertical-tabs-content-item msa-vertical-tabs-content-current">
 
 			<h3><?php _e("Settings", 'msa'); ?></h3>
 
 			<table class="form-table">
 				<tbody>
-
-					<!-- Shared Count API Key -->
 
 					<tr>
 						<th scope="row"><label for="msa-shared-count-api-key"><?php _e("Shared Count API Key", 'msa'); ?></label></th>
@@ -70,16 +77,12 @@ require_once('header.php'); ?>
 						</td>
 					</tr>
 
-					<!-- Test Shared Count -->
-
 					<tr>
 						<th scope="row"><label for="msa-shared-count-test"></label></th>
 						<td>
 							<button class="button msa-shared-count-test"><?php _e("Test", 'msa'); ?></button>
 						</td>
 					</tr>
-
-					<!-- Use Shared Count -->
 
 					<tr>
 						<th scope="row"><label for="msa-use-shared-count"><?php _e("Use Shared Count", 'msa'); ?></label></th>
@@ -94,14 +97,7 @@ require_once('header.php'); ?>
 			</table>
 
 		</div>
-
-		<div id="conditions" class="msa-vertical-tabs-content-item">
-			<h3><?php _e("Conditions", 'msa'); ?></h3>
-		</div>
-
-		<div id="user-roles" class="msa-vertical-tabs-content-item">
-			<h3><?php _e("User Roles", 'msa'); ?></h3>
-		</div>
+-->
 
 		<?php submit_button(); ?>
 

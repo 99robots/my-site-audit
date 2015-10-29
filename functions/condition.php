@@ -35,6 +35,22 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 function msa_create_initial_conditions() {
 
+	/*
+	 * Comparsion:
+	 *
+	 * 0 = greater than some number
+	 * 1 = less than some number
+	 * 2 = in between some numbers
+	 *
+	 */
+	/*
+	 * Value:
+	 *
+	 * 0 = boolean result (i.e pass or fail)
+	 * 1 = ratio (i.e. .123)
+	 *
+	 */
+
 	// Title
 
 	msa_register_condition('title', array(
@@ -43,6 +59,13 @@ function msa_create_initial_conditions() {
 		'comparison'	=> 1,
 		'value'			=> 0,
 		'max'           => 60,
+		'settings'		=> array(
+			'id'				=> 'msa-condition-title',
+			'class'				=> 'msa-condition-title',
+			'name'				=> 'msa-condition-title',
+			'key'				=> 'title',
+			'description-max'	=> __('The maximum number of characters a title is allowed to be.', 'msa'),
+		),
 		'filter'		=> array(
 			'label'		=> __('Title Length', 'msa'),
 			'name'		=> 'title',
@@ -67,6 +90,13 @@ function msa_create_initial_conditions() {
 		'comparison'	=> 1,
 		'value'			=> 1,
 		'max'           => DAY_IN_SECONDS * 90,
+		'settings'		=> array(
+			'id'				=> 'msa-condition-modified-date',
+			'class'				=> 'msa-condition-modified-date',
+			'name'				=> 'msa-condition-modified-date',
+			'key'				=> 'modified_date',
+			'description-max'	=> __('The maximum number of seconds your posts can go without being modified.', 'msa'),
+		),
 		'filter'		=> array(
 			'label'		=> __('Modified Date', 'msa'),
 			'name'		=> 'modified_date',
@@ -91,6 +121,13 @@ function msa_create_initial_conditions() {
 		'comparison'	=> 0,
 		'value'			=> 1,
 		'min'           => 750,
+		'settings'		=> array(
+			'id'				=> 'msa-condition-word-count',
+			'class'				=> 'msa-condition-word-count',
+			'name'				=> 'msa-condition-word-count',
+			'key'				=> 'word_count',
+			'description-min'	=> __('The minimum number of words each post should have.', 'msa'),
+		),
 		'filter'		=> array(
 			'label'		=> __('Word Count', 'msa'),
 			'name'		=> 'word_count',
@@ -115,6 +152,13 @@ function msa_create_initial_conditions() {
 		'comparison'	=> 0,
 		'value'			=> 1,
 		'min'           => 5,
+		'settings'		=> array(
+			'id'				=> 'msa-condition-comment-count',
+			'class'				=> 'msa-condition-comment-count',
+			'name'				=> 'msa-condition-comment-count',
+			'key'				=> 'word_count',
+			'description-min'	=> __('The minimum number of comments each post should have.', 'msa'),
+		),
 		'filter'		=> array(
 			'label'		=> __('Comment Count', 'msa'),
 			'name'		=> 'comment_count',
@@ -140,6 +184,14 @@ function msa_create_initial_conditions() {
 		'value'			=> 1,
 		'min'           => 2,
 		'max'           => 6,
+		'settings'		=> array(
+			'id'				=> 'msa-condition-internal-links',
+			'class'				=> 'msa-condition-internal-links',
+			'name'				=> 'msa-condition-internal-links',
+			'key'				=> 'internal_links',
+			'description-min'	=> __('The minimum number of Internal Links each post should have.', 'msa'),
+			'description-max'	=> __('The maximum number of Internal Links each post should have.', 'msa'),
+		),
 		'filter'		=> array(
 			'label'		=> __('Internal Links', 'msa'),
 			'name'		=> 'internal_links',
@@ -165,6 +217,14 @@ function msa_create_initial_conditions() {
 		'value'			=> 1,
 		'min'           => 1,
 		'max'           => 14,
+		'settings'		=> array(
+			'id'				=> 'msa-condition-external-links',
+			'class'				=> 'msa-condition-external-links',
+			'name'				=> 'msa-condition-external-links',
+			'key'				=> 'external_links',
+			'description-min'	=> __('The minimum number of External Links each post should have.', 'msa'),
+			'description-max'	=> __('The maximum number of External Links each post should have.', 'msa'),
+		),
 		'filter'		=> array(
 			'label'		=> __('External Links', 'msa'),
 			'name'		=> 'external_links',
@@ -187,8 +247,15 @@ function msa_create_initial_conditions() {
 		'name' 			=> __('Images', 'msa'),
 		'weight'        => 3,
 		'comparison'	=> 0,
-		'value'			=> 0,
+		'value'			=> 1,
 		'min'           => 2,
+		'settings'		=> array(
+			'id'				=> 'msa-condition-images',
+			'class'				=> 'msa-condition-images',
+			'name'				=> 'msa-condition-images',
+			'key'				=> 'images',
+			'description-min'	=> __('The minimum number of images each post should have.', 'msa'),
+		),
 		'filter'		=> array(
 			'label'		=> __('Images', 'msa'),
 			'name'		=> 'images',
@@ -211,8 +278,15 @@ function msa_create_initial_conditions() {
 		'name' 			=> __('Headings', 'msa'),
 		'weight'        => 6,
 		'comparison'	=> 0,
-		'value'			=> 0,
+		'value'			=> 1,
 		'min'           => 5,
+		'settings'		=> array(
+			'id'				=> 'msa-condition-headings',
+			'class'				=> 'msa-condition-headings',
+			'name'				=> 'msa-condition-headings',
+			'key'				=> 'images',
+			'description-min'	=> __('The minimum number of headings each post should have.', 'msa'),
+		),
 		'filter'		=> array(
 			'label'		=> __('Headings', 'msa'),
 			'name'		=> 'headings',

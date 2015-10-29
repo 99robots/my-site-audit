@@ -27,8 +27,33 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-require_once('header.php'); ?>
+require_once('header.php');
+
+$extensions = msa_get_extensions(); ?>
 
 <h1><?php _e("Extensions", 'msa'); ?></h1>
+
+<div id="dashboard-widgets" class="metabox-holder">
+
+	<?php foreach ( $extensions as $extension ) { ?>
+
+	<div class="postbox-container">
+
+		<div class="meta-box-sortables ui-sortable">
+
+			<div class="postbox">
+				<h3 class="hndle ui-sortable-handle"><span><?php echo $extension['title']; ?></span></h3>
+				<div class="inside">
+					<?php echo $extension['content']; ?>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+
+	<?php } ?>
+
+</div>
 
 <?php require_once('footer.php'); ?>

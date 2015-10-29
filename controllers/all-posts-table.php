@@ -33,6 +33,8 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 
 if ( !class_exists('MSA_All_Posts_Table') ) :
 
+add_filter('msa_single_audit_posts', array('MSA_All_Posts_Table', 'posts_from_filters'), 10, 2);
+
 class MSA_All_Posts_Table extends WP_List_Table {
 
 	/**
@@ -101,7 +103,7 @@ class MSA_All_Posts_Table extends WP_List_Table {
 		$posts = $audit_posts_model->get_data($_GET['audit'], $args);
 
 		foreach ( $posts as $post ) {
-			$this->items[] = array('post' => $post['post'], 'data' => $post['data']);
+			$this->items[] = array('score' => $post['score'], 'post' => $post['post'], 'data' => $post['data']);
 		}
 
 		/* =========================================================================
@@ -110,69 +112,7 @@ class MSA_All_Posts_Table extends WP_List_Table {
 		 *
 		 ========================================================================= */
 
-		// Score
-
-		if ( isset($_GET['score-low']) && $_GET['score-low'] != '' && isset($_GET['score-high']) && $_GET['score-high'] != '' ) {
-
-			$score_low = floatval($_GET['score-low']);
-			$score_high = floatval($_GET['score-high']);
-
-			foreach ( $this->items as $key => $item ) {
-
-				if ( $item['data']['score'] < $_GET['score-low'] || $item['data']['score'] > $_GET['score-high'] ) {
-					unset($this->items[$key]);
-				}
-			}
-		}
-
-		// Conditions
-
-		$conditions = msa_get_conditions();
-
-		foreach ( $conditions as $condition ) {
-
-			$name = $condition['filter']['name'];
-
-			if ( isset($condition['filter']) && isset($_GET[$name]) && $_GET[$name] != '' ) {
-
-				$atts = explode('-', $_GET[$name]);
-				$compare = $atts[0];
-				$value = $atts[1];
-
-				foreach ( $this->items as $key => $item ) {
-
-					// Greater Than
-
-					if ( $compare == 'more' ) {
-
-						if ( $item['data'][$name] < $value ) {
-							unset($this->items[$key]);
-						}
-
-					}
-
-					// Less Than
-
-					else if ( $compare == 'less' ) {
-
-						if ( $item['data'][$name] > $value ) {
-							unset($this->items[$key]);
-						}
-
-					}
-
-					// Equal To
-
-					else if ( $compare === 'equal' ) {
-
-						if ( $item['data'][$name] != $value ) {
-							unset($this->items[$key]);
-						}
-
-					}
-				}
-			}
-		}
+		$this->items = msa_filter_posts($this->items);
 
 		/* =========================================================================
 		 *
@@ -200,12 +140,22 @@ class MSA_All_Posts_Table extends WP_List_Table {
 	 */
 	function get_columns() {
 
-		$conditions = msa_get_conditions();
-
 		$columns['score'] = __('Score', 'msa');
+
+		// Conditions
+
+		$conditions = msa_get_conditions();
 
 		foreach ( $conditions as $slug => $condition ) {
 			$columns[$slug] = $condition['name'];
+		}
+
+		// Attributes
+
+		$attributes = msa_get_attributes();
+
+		foreach ( $attributes as $slug => $attribute ) {
+			$columns[$slug] = $attribute['name'];
 		}
 
 		return $columns;
@@ -219,11 +169,21 @@ class MSA_All_Posts_Table extends WP_List_Table {
 	 */
 	function get_sortable_columns() {
 
-		$conditions = msa_get_conditions();
-
 		$sortable_columns['score'] = array('score', false);
 
+		// Conditions
+
+		$conditions = msa_get_conditions();
+
 		foreach ( $conditions as $slug => $condition ) {
+			$sortable_columns[$slug] = array($slug, true);
+		}
+
+		// Attributes
+
+		$attributes = msa_get_attributes();
+
+		foreach ( $attributes as $slug => $attribute ) {
 			$sortable_columns[$slug] = array($slug, true);
 		}
 
@@ -246,8 +206,23 @@ class MSA_All_Posts_Table extends WP_List_Table {
 		// If no order, default to asc
 		$order = ( ! empty($_GET['order'] ) ) ? $_GET['order'] : 'asc';
 
+		if ( isset($a['data'][$orderby]) ) {
+			$a_data = $a['data'][$orderby];
+		} else {
+			$a_data = '';
+		}
+
+		if ( isset($b['data'][$orderby]) ) {
+			$b_data = $b['data'][$orderby];
+		} else {
+			$b_data = '';
+		}
+
+		$a_sort = apply_filters('msa_audit_posts_table_sort_data', $a_data, $a, $orderby);
+		$b_sort = apply_filters('msa_audit_posts_table_sort_data', $b_data, $b, $orderby);
+
 		// Determine sort order
-		$result = ($a['data'][$orderby] < $b['data'][$orderby]) ? -1 : 1;
+		$result = ( $a_sort < $b_sort ) ? -1 : 1;
 
 		// Send final sort direction to usort
 		return ( $order === 'asc' ) ? $result : -$result;
@@ -264,16 +239,20 @@ class MSA_All_Posts_Table extends WP_List_Table {
 	public function column_default( $item, $column_name ) {
 
 		$score = msa_calculate_score($item['post'], $item['data']);
-		$score['data']['score'] = $score['score'];
+		$caret = '';
 
-		// Default
+		// Conditions
 
-		$caret = '<i class="fa fa-caret-' . ( $score['data'][$column_name] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data'][$column_name]) . '"></i> ';
+		$conditions = msa_get_conditions();
+
+		if ( isset($conditions[$column_name]) ) {
+			$caret = '<i class="fa fa-caret-' . ( $score['data'][$column_name] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data'][$column_name]) . '"></i> ';
+		}
 
 		switch( $column_name ) {
 
 			case 'score':
-				$data = round(100 * $item['data']['score']) . '%';
+				$data = round(100 * $item['score']) . '%';
 				$caret = '';
 			break;
 
@@ -290,12 +269,18 @@ class MSA_All_Posts_Table extends WP_List_Table {
 			break;
 
 			default:
-				$data = $item['data'][$column_name];
+
+				if ( isset($conditions[$column_name]) ) {
+					$data = $item['data'][$column_name];
+				} else {
+					$data = '';
+				}
+
 			break;
 
 		}
 
-		return $caret . $data;
+		return apply_filters('msa_all_posts_table_column_data', $caret . $data, $item, $column_name);
 
 	}
 
@@ -330,20 +315,60 @@ class MSA_All_Posts_Table extends WP_List_Table {
 
 		$conditions = msa_get_conditions();
 
+		// Get all the registerd attributes
+
+		$attributes = msa_get_attributes();
+
 		if ( $which == 'top' ) {
 
 			?><div class="alignleft actions bulkactions">
 
-				<?php foreach ( $conditions as $condition ) {
+				<?php
 
-					if ( isset($condition['filter']) ) { ?>
+				// Conditions
+
+				foreach ( $conditions as $condition ) {
+
+					if ( isset($condition['filter']) ) {
+
+						if ( isset($_GET[$condition['filter']['name']]) ) {
+							$value = $_GET[$condition['filter']['name']];
+						} else {
+							$value = '';
+						} ?>
 
 						<div style="display: inline-block;">
 							<label class="msa-filter-label"><?php echo $condition['filter']['label']; ?></label>
 							<select class="msa-filter" name="<?php echo $condition['filter']['name']; ?>">
-								<option value="" <?php selected("", $_GET[$condition['filter']['name']], true); ?>><?php _e('All', 'msa'); ?></option>
+								<option value="" <?php selected("", $value, true); ?>><?php _e('All', 'msa'); ?></option>
 								<?php foreach ( $condition['filter']['options'] as $option ) { ?>
-									<option value="<?php echo $option['value']; ?>" <?php selected($option['value'], $_GET[$condition['filter']['name']], true); ?>><?php echo $option['name']; ?></option>
+									<option value="<?php echo $option['value']; ?>" <?php selected($option['value'], $value, true); ?>><?php echo $option['name']; ?></option>
+								<?php } ?>
+							</select>
+						</div>
+
+					<?php }
+
+				}
+
+				// Attributes
+
+				foreach ( $attributes as $attribute ) {
+
+					if ( isset($attribute['filter']) ) {
+
+						if ( isset($_GET[$attribute['filter']['name']]) ) {
+							$value = $_GET[$attribute['filter']['name']];
+						} else {
+							$value = '';
+						} ?>
+
+						<div style="display: inline-block;">
+							<label class="msa-filter-label"><?php echo $attribute['filter']['label']; ?></label>
+							<select class="msa-filter" name="<?php echo $attribute['filter']['name']; ?>">
+								<option value="" <?php selected("", $value, true); ?>><?php _e('All', 'msa'); ?></option>
+								<?php foreach ( $attribute['filter']['options'] as $option ) { ?>
+									<option value="<?php echo $option['value']; ?>" <?php selected($option['value'], $value, true); ?>><?php echo $option['name']; ?></option>
 								<?php } ?>
 							</select>
 						</div>
@@ -353,9 +378,13 @@ class MSA_All_Posts_Table extends WP_List_Table {
 				}
 
 			?><button class="msa-filter-button button"><?php _e('Filter', 'msa'); ?></button>
+			<button class="msa-clear-filters-button button"><?php _e('Clear Filters', 'msa'); ?></button>
 			</div>
 			<script>
 				jQuery(document).ready(function($){
+
+					// Add Filters
+
 					$('.msa-filter-button').click(function(e) {
 						e.preventDefault();
 
@@ -369,6 +398,13 @@ class MSA_All_Posts_Table extends WP_List_Table {
 						});
 
 					    window.location += parameters;
+					});
+
+					// Clear Filters
+
+					$('.msa-clear-filters-button').click(function(e){
+						e.preventDefault();
+						window.location = "<?php echo get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $_GET['audit']; ?>";
 					});
 				});
 			</script><?php

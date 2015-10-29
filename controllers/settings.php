@@ -35,10 +35,20 @@ if ( false === ( $settings = get_option('msa_settings') ) ) {
 
 if ( isset($_POST['submit']) && check_admin_referer('msa-settings') ) {
 
+	// Pass all the post variables to the save action
+
+	do_action('msa_save_settings', $_POST);
+
+	?><script>
+		window.location = "<?php echo get_admin_url() . 'admin.php?page=msa-settings'; ?>";
+	</script><?php
+
+/*
 	$settings['shared_count_api_key'] = isset($_POST['msa-shared-count-api-key']) ? sanitize_text_field($_POST['msa-shared-count-api-key']) : '';
 	$settings['use_shared_count'] = isset($_POST['msa-use-shared-count']) && $_POST['msa-use-shared-count'] ? true : false;
 
 	update_option('msa_settings', $settings);
+*/
 }
 
 include_once(MY_SITE_AUDIT_PLUGIN_DIR . 'views/settings.php');

@@ -40,13 +40,21 @@ function msa_dashboard_panel_last_audit_content() {
 	$audit_model = new MSA_Audits_Model();
 	$audit = $audit_model->get_latest();
 
-	$user = get_userdata($audit['user']);
+	if ( isset($audit) ) {
 
-	$output = '<p>' . __('Name: ', 'msa') . ' <span>' . $audit['name'] . '<span></p>';
-	$output .= '<p>' . __('Date: ', 'msa') . ' <span>' . date('M d Y, h:i:s', strtotime($audit['date'])) . '<span></p>';
-	$output .= '<p>' . __('Number of Posts: ', 'msa') . ' <span>' . $audit['num_posts'] . '<span></p>';
-	$output .= '<p>' . __('Score: ', 'msa') . ' <span>' . round(100 * $audit['score']) . '%' . '<span></p>';
-	$output .= '<p>' . __('User: ', 'msa') . ' <span>' . $user->display_name . '<span></p>';
+		$user = get_userdata($audit['user']);
+
+		$output = '<p>' . __('Name: ', 'msa') . ' <span>' . $audit['name'] . '<span></p>';
+		$output .= '<p>' . __('Date: ', 'msa') . ' <span>' . date('M d Y, h:i:s', strtotime($audit['date'])) . '<span></p>';
+		$output .= '<p>' . __('Number of Posts: ', 'msa') . ' <span>' . $audit['num_posts'] . '<span></p>';
+		$output .= '<p>' . __('Score: ', 'msa') . ' <span>' . round(100 * $audit['score']) . '%' . '<span></p>';
+		$output .= '<p>' . __('User: ', 'msa') . ' <span>' . $user->display_name . '<span></p>';
+
+	} else {
+
+		$output = '<p>' . __('You do not have any audits yet.', 'msa') . ' <a href="' . get_admin_url() . 'admin.php?page=msa-all-audits">' . __('Create one now!', 'msa') . '</a></p>';
+
+	}
 
 	return $output;
 
@@ -66,7 +74,7 @@ function msa_create_initial_dashboard_panels() {
 
 	msa_register_dashboard_panel('last_audit', array(
 		'postbox'	=> 1,
-		'title'		=> __('Last Audit'),
+		'title'		=> __('Last Audit', 'msa'),
 		'content'	=> apply_filters('msa_dashboard_panel_last_audit', ''),
 	));
 
@@ -74,7 +82,7 @@ function msa_create_initial_dashboard_panels() {
 
 	msa_register_dashboard_panel('example_1', array(
 		'postbox'	=> 1,
-		'title'		=> __('Example Post Box'),
+		'title'		=> __('Example Post Box', 'msa'),
 		'content'	=> apply_filters('msa_dashboard_panel_example_1', ''),
 	));
 
@@ -82,7 +90,7 @@ function msa_create_initial_dashboard_panels() {
 
 	msa_register_dashboard_panel('example_2', array(
 		'postbox'	=> 2,
-		'title'		=> __('Example Post Box'),
+		'title'		=> __('Example Post Box', 'msa'),
 		'content'	=> apply_filters('msa_dashboard_panel_example_2', ''),
 	));
 
@@ -90,7 +98,7 @@ function msa_create_initial_dashboard_panels() {
 
 	msa_register_dashboard_panel('example_3', array(
 		'postbox'	=> 2,
-		'title'		=> __('Example Post Box'),
+		'title'		=> __('Example Post Box', 'msa'),
 		'content'	=> apply_filters('msa_dashboard_panel_example_3', ''),
 	));
 
@@ -137,7 +145,7 @@ function msa_register_dashboard_panel($panel, $args = array()) {
 
 	$args = array_merge($default, $args);
 
-	// Add the condition to the global conditions array
+	// Add the panel to the global dashboard panels array
 
 	$msa_dashboard_panels[ $panel ] = apply_filters('msa_register_dashboard_panel_args', $args);
 

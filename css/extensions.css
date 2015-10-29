@@ -1,11 +1,10 @@
-<?php
 /* ===================================================================
  *
  * My Site Audit https://mysiteaudit.com
  *
- * Created: 10/22/15
- * Package: Uninstall
- * File: uninstall.php
+ * Created: 10/29/15
+ * Package: Style/Extensions
+ * File: extensions.php
  * Author: Kyle Benk
  *
  *
@@ -23,28 +22,28 @@
  *
  * ================================================================= */
 
-// Exit if accessed directly
+#wpbody-content #dashboard-widgets,
+#wpbody-content #dashboard-widgets * {
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+#wpbody-content #dashboard-widgets {
+	display: inline-block;
+	width: 100%;
+	padding-top: 40px;
+}
 
-// if uninstall not called from WordPress exit
+#wpbody-content #dashboard-widgets .postbox-container {
+	width: 20%;
+}
 
-if ( !defined( 'WP_UNINSTALL_PLUGIN' ) )
-	exit ();
+#wpbody-content #dashboard-widgets .meta-box-sortables {
+	margin: 0;
+	padding: 10px;
+}
 
-// Delete all existence of this plugin
-
-require_once( plugin_dir_path( __FILE__ ) . 'model/audits.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'model/audit-posts.php' );
-
-// Delete the audits table
-
-$audit_model = new MSA_Audits_Model();
-$audit_model->delete_table();
-
-// Delete the audit posts table
-
-$audit_posts_model = new MSA_Audit_Posts_Model();
-$audit_posts_model->delete_table();
-
-do_action('msa_uninstall');
+#wpbody-content #dashboard-widgets .postbox {
+	min-width: intrinsic;
+}

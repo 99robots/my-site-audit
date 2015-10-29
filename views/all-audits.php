@@ -284,6 +284,8 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 	$audit_posts_model = new MSA_Audit_Posts_Model();
 	$posts = $audit_posts_model->get_data($_GET['audit']);
 
+	//$posts = msa_filter_posts($posts);
+
 	?>
 
 	<h1><?php _e('Single Audit', 'msa'); ?>
@@ -331,7 +333,7 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 	<ul class="subsubsub">
 
 		<li class="all">
-			<a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $_GET['audit']; ?>" class="current"><?php _e('All', 'msa'); ?> <span class="count">(<?php echo $audit['num_posts']; ?>)</span></a> |
+			<a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $_GET['audit']; ?>" class="current"><?php _e('All', 'msa'); ?> <span class="count">(<?php echo count($posts); ?>)</span></a> |
 		</li>
 
 		<?php $i = 0; foreach ( msa_get_score_statuses() as $key => $score_status ) {
@@ -361,40 +363,6 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 		$all_posts_table->search_box('Search Posts', 'msa');
 		$all_posts_table->display(); ?>
 	</form>
-
-	<h3><?php _e('Conditions', 'msa'); ?></h3>
-
-	<div class="msa-audit-conditions">
-
-		<table class="wp-list-table widefat striped fixed">
-
-			<thead>
-				<tr>
-					<th scope="col"><?php _e('Name', 'msa'); ?></th>
-					<th scope="col"><?php _e('Weight', 'msa'); ?></th>
-					<th scope="col"><?php _e('Comparison', 'msa'); ?></th>
-					<th scope="col"><?php _e('Value', 'msa'); ?></th>
-					<th scope="col"><?php _e('Minimum', 'msa'); ?></th>
-					<th scope="col"><?php _e('Maximum', 'msa'); ?></th>
-				</tr>
-			</thead>
-
-			<tbody>
-				<?php foreach( json_decode($audit['args']['conditions'], true) as $condition ) { ?>
-					<tr>
-						<td><?php echo $condition['name']; ?></td>
-						<td><?php echo $condition['weight']; ?></td>
-						<td><?php echo $condition['comparison']; ?></td>
-						<td><?php echo $condition['value']; ?></td>
-						<td><?php echo $condition['min']; ?></td>
-						<td><?php echo $condition['max']; ?></td>
-					</tr>
-				<?php } ?>
-			</tbody>
-		</table>
-
-
-	</div>
 
 <?php } else { ?>
 

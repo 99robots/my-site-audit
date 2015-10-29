@@ -193,8 +193,11 @@ final class My_Site_Audit {
 		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/activation.php' );
 		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/admin-pages.php' );
 		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/condition.php' );
+		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/attribute.php' );
 		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/score-status.php' );
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/dashboard-panels.php' );
+		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/dashboard-panel.php' );
+		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/settings-tab.php' );
+		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/extension.php' );
 
 		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/audit-data.php' );
 		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/post-meta-box.php' );
@@ -212,8 +215,11 @@ final class My_Site_Audit {
 		// Registers
 
 		msa_create_initial_conditions();
+		msa_create_initial_attributes();
 		msa_create_initial_score_statuses();
 		msa_create_initial_dashboard_panels();
+		msa_create_initial_settings_tabs();
+		msa_create_initial_extensions();
 
 	}
 

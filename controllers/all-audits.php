@@ -76,6 +76,9 @@ if ( isset($_POST['submit']) && check_admin_referer('msa-add-audit') ) {
 		foreach ( $posts as $post ) {
 
 			$data = msa_get_post_audit_data($post);
+			$score = msa_calculate_score($post, $data);
+			$audit_score += $score['score'];
+			$data['score'] = $score['score'];
 
 			// Add a new record in the audit posts table
 
@@ -84,9 +87,6 @@ if ( isset($_POST['submit']) && check_admin_referer('msa-add-audit') ) {
 				'post'		=> $post,
 				'data'		=> $data,
 			));
-
-			$score = msa_calculate_score($post, $data);
-			$audit_score += $score['score'];
 		}
 
 		$audit_score = round($audit_score / count($posts), 10);

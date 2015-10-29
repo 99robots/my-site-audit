@@ -1,11 +1,10 @@
-<?php
 /* ===================================================================
  *
  * My Site Audit https://mysiteaudit.com
  *
- * Created: 10/22/15
- * Package: Uninstall
- * File: uninstall.php
+ * Created: 10/29/15
+ * Package: Javascript/All Audits
+ * File: all-audits.js
  * Author: Kyle Benk
  *
  *
@@ -23,28 +22,33 @@
  *
  * ================================================================= */
 
-// Exit if accessed directly
+jQuery(document).ready(function($){
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+	// Show the modal
 
-// if uninstall not called from WordPress exit
+	$('.msa-audit-conditions-button').click(function(e){
+		e.preventDefault();
 
-if ( !defined( 'WP_UNINSTALL_PLUGIN' ) )
-	exit ();
+		$('.msa-audit-conditions-modal').hide();
+		$('.msa-audit-conditions-modal[data-id="' + $(this).data('id') + '"]').show();
+	});
 
-// Delete all existence of this plugin
+	// Move modal to end of body
 
-require_once( plugin_dir_path( __FILE__ ) . 'model/audits.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'model/audit-posts.php' );
+	$('.msa-audit-conditions-modal').each(function(index, value){
 
-// Delete the audits table
+		$($(this)).appendTo('body');
 
-$audit_model = new MSA_Audits_Model();
-$audit_model->delete_table();
+	});
 
-// Delete the audit posts table
+	// Close Modal
 
-$audit_posts_model = new MSA_Audit_Posts_Model();
-$audit_posts_model->delete_table();
+	$('.msa-audit-conditions-modal').click(function(e){
 
-do_action('msa_uninstall');
+		if ( $(e.target).is($(this)) ) {
+			$(this).hide();
+		}
+
+	});
+
+});

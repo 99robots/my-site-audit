@@ -339,6 +339,106 @@ function msa_show_headings($content) {
 }
 
 /**
+ * Filter the posts for the all posts table
+ *
+ * @access public
+ * @param mixed $posts
+ * @return void
+ */
+function msa_filter_posts($posts) {
+
+	// Score
+
+	if ( isset($_GET['score-low']) && $_GET['score-low'] != '' && isset($_GET['score-high']) && $_GET['score-high'] != '' ) {
+
+		$score_low = floatval($_GET['score-low']);
+		$score_high = floatval($_GET['score-high']);
+
+		foreach ( $posts as $key => $item ) {
+
+			if ( $item['data']['score'] < $_GET['score-low'] || $item['data']['score'] > $_GET['score-high'] ) {
+				unset($posts[$key]);
+			}
+		}
+	}
+
+	// Conditions
+
+	$conditions = msa_get_conditions();
+
+	foreach ( $conditions as $condition ) {
+
+		if ( isset($condition['filter']) && isset($_GET[$condition['filter']['name']]) && $_GET[$condition['filter']['name']] != '' ) {
+
+			$name = $condition['filter']['name'];
+
+			$atts = explode('-', $_GET[$name]);
+			$compare = $atts[0];
+			$value = $atts[1];
+
+			foreach ( $posts as $key => $item ) {
+
+				// Greater Than
+
+				if ( $compare == 'more' ) {
+
+					if ( $item['data'][$name] < $value ) {
+						unset($posts[$key]);
+					}
+
+				}
+
+				// Less Than
+
+				else if ( $compare == 'less' ) {
+
+					if ( $item['data'][$name] > $value ) {
+						unset($posts[$key]);
+					}
+
+				}
+
+				// Equal To
+
+				else if ( $compare === 'equal' ) {
+
+					if ( $item['data'][$name] != $value ) {
+						unset($posts[$key]);
+					}
+
+				}
+
+				// NOT Equal To
+
+				else if ( $compare === 'notequal' ) {
+
+					if ( $item['data'][$name] == $value ) {
+						unset($posts[$key]);
+					}
+
+				}
+			}
+		}
+	}
+
+	// Attributes
+
+	$attributes = msa_get_attributes();
+
+	foreach ( $attributes as $attribute ) {
+
+		if ( isset($attribute['filter']) && isset($_GET[$attribute['filter']['name']]) && $_GET[$attribute['filter']['name']] != '' ) {
+
+			$name = $attribute['filter']['name'];
+
+			$posts = apply_filters('msa_filter_by_attribute', $posts, $name, $_GET[$name]);
+		}
+	}
+
+	return $posts;
+}
+
+/**
  * Show the post data withint the meta box
  *
  * @access public

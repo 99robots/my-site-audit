@@ -111,7 +111,8 @@ function msa_dashboard_scripts() {
 
 	wp_enqueue_style('msa-common-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/css/common.css');
 	wp_enqueue_style('msa-dashboard-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/dashboard.css');
-	wp_enqueue_style('msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/css/font-awesome.min.css');
+
+	wp_enqueue_style('msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css');
 
 }
 
@@ -128,11 +129,14 @@ function msa_all_audits_scripts() {
 
 	wp_enqueue_style('msa-all-audits-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/all-audits.css');
 	wp_enqueue_style('msa-common-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/css/common.css');
-	wp_enqueue_style('msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/css/font-awesome.min.css');
-	wp_enqueue_style('msa-jquery-ui-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/jquery-ui.min.css');
-	wp_enqueue_style('msa-jquery-ui-theme-css', 	MY_SITE_AUDIT_PLUGIN_URL . '/css/jquery-ui.theme.min.css');
+
+	wp_enqueue_style('msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css');
+	wp_enqueue_style('msa-jquery-ui-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/includes/jquery-datepicker/jquery-ui.min.css');
+	wp_enqueue_style('msa-jquery-ui-theme-css', 	MY_SITE_AUDIT_PLUGIN_URL . '/includes/jquery-datepicker/jquery-ui.theme.min.css');
 
 	// Scripts
+
+	wp_enqueue_script('msa-all-audits-js', 			MY_SITE_AUDIT_PLUGIN_URL . '/js/all-audits.js');
 
 	wp_enqueue_script('jquery');
 	wp_enqueue_script('jquery-ui-core');
@@ -151,8 +155,9 @@ function msa_settings_scripts() {
 
 	// Style
 
-	wp_enqueue_style('msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/css/font-awesome.min.css');
 	wp_enqueue_style('msa-settings-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/settings.css');
+
+	wp_enqueue_style('msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css');
 
 	// Script
 
@@ -171,7 +176,9 @@ function msa_extensions_scripts() {
 
 	// Style
 
-	wp_enqueue_style('msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/css/font-awesome.min.css');
+	wp_enqueue_style('msa-extensions-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/extensions.css');
+
+	wp_enqueue_style('msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css');
 
 }
 

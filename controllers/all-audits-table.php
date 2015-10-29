@@ -227,9 +227,57 @@ class MSA_All_Audits_Table extends WP_List_Table {
 	 */
 	public function column_name($item) {
 
-		$actions = array(
-            'delete'    => '<a href="' . wp_nonce_url(get_admin_url() . 'admin.php?page=msa-all-audits&action=delete&audit=' . $item['id'], 'msa-delete-audit') . '">' . __('Delete', 'msa') . '</a>',
-        );
+		$audit_model = new MSA_Audits_Model();
+		$audit = $audit_model->get_data_from_id($item['id']);
+
+		$condition = $audit['args']['conditions'];
+
+		$actions = array();
+
+		$actions['delete'] = '<a href="' . wp_nonce_url(get_admin_url() . 'admin.php?page=msa-all-audits&action=delete&audit=' . $item['id'], 'msa-delete-audit') . '">' . __('Delete', 'msa') . '</a>';
+
+		$condition_modal = '<a href="#" class="msa-audit-conditions-button" data-id="' . $item['id'] . '">' . __('Conditions', 'msa') . '</a>
+		<div class="msa-audit-conditions-modal" data-id="' . $item['id'] . '">
+			<div class="msa-audit-conditions-modal-container">
+
+				<h3 class="msa-audit-conditions-modal-heading">' . __('Conditions', 'msa') . '</h3>
+
+				<div class="msa-audit-conditions">
+					<table class="wp-list-table widefat striped fixed">
+
+						<thead>
+							<tr>
+								<th scope="col">' . __('Name', 'msa') . '</th>
+								<th scope="col">' . __('Weight', 'msa') . '</th>
+								<th scope="col">' . __('Comparison', 'msa') . '</th>
+								<th scope="col">' . __('Value', 'msa') . '</th>
+								<th scope="col">' . __('Minimum', 'msa') . '</th>
+								<th scope="col">' . __('Maximum', 'msa') . '</th>
+							</tr>
+						</thead>
+
+						<tbody>';
+
+							foreach( json_decode($audit['args']['conditions'], true) as $condition ) {
+
+								$condition_modal .= '<tr>
+									<td>' . $condition['name'] . '</td>
+									<td>' . $condition['weight'] . '</td>
+									<td>' . $condition['comparison'] . '</td>
+									<td>' . $condition['value'] . '</td>
+									<td>' . $condition['min'] . '</td>
+									<td>' . $condition['max'] . '</td>
+								</tr>';
+
+							}
+
+						$condition_modal .= '</tbody>
+					</table>
+				</div>
+			</div>
+		</div>';
+
+		$actions['edit'] = $condition_modal;
 
 		return sprintf('%1$s %2$s', '<a href="' . get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $item['id'] . '">' . $item['name'] . '</a>', $this->row_actions($actions) );
 

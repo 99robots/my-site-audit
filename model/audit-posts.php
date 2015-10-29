@@ -65,12 +65,28 @@ class MSA_Audit_Posts_Model {
 				`id` bigint(20) NOT NULL AUTO_INCREMENT,
 				`audit_id` bigint(20) NOT NULL DEFAULT 1,
 				`post_id` bigint(20) NOT NULL DEFAULT 1,
-				`post_title` longtext,
-				`post_name` longtext,
-				`post_content` longtext,
+				`score` decimal(10,10) NOT NULL DEFAULT '.0',
+				`post_author` bigint(20) NOT NULL DEFAULT 0,
 				`post_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+				`post_date_gmt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+				`post_content` longtext NOT NULL,
+				`post_title` text NOT NULL,
+				`post_excerpt` text NOT NULL,
+				`post_status` varchar(20) NOT NULL DEFAULT 'publish',
+				`comment_status` varchar(20) NOT NULL DEFAULT 'open',
+				`ping_status` varchar(20) NOT NULL DEFAULT 'open',
+				`post_password` varchar(20) NOT NULL,
+				`post_name` varchar(200) NOT NULL,
+				`to_ping` text NOT NULL,
+				`pinged` text NOT NULL,
 				`post_modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-				`post_type` varchar(20),
+				`post_modified_gmt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+				`post_content_filtered` longtext NOT NULL,
+				`post_parent` bigint(20) NOT NULL DEFAULT 0,
+				`guid` varchar(255) NOT NULL,
+				`menu_order` int(11) NOT NULL DEFAULT 0,
+				`post_type` varchar(20) NOT NULL DEFAULT 'post',
+				`post_mime_type` varchar(100) NOT NULL DEFAULT '',
 				`comment_count` bigint(20),
 				`data` longtext,
 				PRIMARY KEY (`id`)
@@ -93,23 +109,55 @@ class MSA_Audit_Posts_Model {
 		$result = $wpdb->query( $wpdb->prepare("INSERT INTO `" . $this->get_table_name() . "` (
 				`audit_id`,
 				`post_id`,
-				`post_title`,
-				`post_name`,
-				`post_content`,
+				`score`,
+				`post_author`,
 				`post_date`,
+				`post_date_gmt`,
+				`post_content`,
+				`post_title`,
+				`post_excerpt`,
+				`post_status`,
+				`comment_status`,
+				`ping_status`,
+				`post_password`,
+				`post_name`,
+				`to_ping`,
+				`pinged`,
 				`post_modified`,
+				`post_modified_gmt`,
+				`post_content_filtered`,
+				`post_parent`,
+				`guid`,
+				`menu_order`,
 				`post_type`,
+				`post_mime_type`,
 				`comment_count`,
 				`data`
-			) VALUES (%d, %d, %s, %s, %s, %s, %s, %s, %d, %s)",
+			) VALUES (%d, %d, %f, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %s, %d, %s, %s, %d, %s)",
 				$data['audit_id'],
 				$data['post']->ID,
-				$data['post']->post_title,
-				$data['post']->post_name,
-				$data['post']->post_content,
+				$data['data']['score'],
+				$data['post']->post_author,
 				date($this->data_format, strtotime($data['post']->post_date)),
+				date($this->data_format, strtotime($data['post']->post_date_gmt)),
+				$data['post']->post_content,
+				$data['post']->post_title,
+				$data['post']->post_excerpt,
+				$data['post']->post_status,
+				$data['post']->comment_status,
+				$data['post']->ping_status,
+				$data['post']->post_password,
+				$data['post']->post_name,
+				$data['post']->to_ping,
+				$data['post']->pinged,
 				date($this->data_format, strtotime($data['post']->post_modified)),
+				date($this->data_format, strtotime($data['post']->post_modified_gmt)),
+				$data['post']->post_content_filtered,
+				$data['post']->post_parent,
+				$data['post']->guid,
+				$data['post']->menu_order,
 				$data['post']->post_type,
+				$data['post']->post_mime_type,
 				$data['post']->comment_count,
 				json_encode($data['data'])
 		) );
@@ -138,25 +186,57 @@ class MSA_Audit_Posts_Model {
 
 		$result = $wpdb->query( $wpdb->prepare(
 			"UPDATE `" . $this->get_table_name() . "` SET
-				`audit_id` = %s,
-				`post_id` = %s,
-				`post_title` = %d,
-				`post_name` = %d,
-				`post_content` = %d,
-				`post_date` = %d,
+				`audit_id` = %d,
+				`post_id` = %d,
+				`score` = %f,
+				`post_author` = %d,
+				`post_date` = %s,
+				`post_date_gmt` = %s,
+				`post_content` = %s,
+				`post_title` = %s,
+				`post_excerpt` = %s,
+				`post_status` = %s,
+				`comment_status` = %s,
+				`ping_status` = %s,
+				`post_password` = %s,
+				`post_name` = %s,
+				`to_ping` = %s,
+				`pinged` = %s,
 				`post_modified` = %s,
+				`post_modified_gmt` = %s,
+				`post_content_filtered` = %s,
+				`post_parent` = %d,
+				`guid` = %s,
+				`menu_order` = %d,
 				`post_type` = %s,
+				`post_mime_type` = %s,
 				`comment_count` = %d,
 				`data` = %s
 			WHERE id = %d",
 				$data['audit_id'],
 				$data['post']->ID,
-				$data['post']->post_title,
-				$data['post']->post_name,
-				$data['post']->post_content,
+				$data['score'],
+				$data['post']->post_author,
 				date($this->data_format, strtotime($data['post']->post_date)),
+				date($this->data_format, strtotime($data['post']->post_date_gmt)),
+				$data['post']->post_content,
+				$data['post']->post_title,
+				$data['post']->post_excerpt,
+				$data['post']->post_status,
+				$data['post']->comment_status,
+				$data['post']->ping_status,
+				$data['post']->post_password,
+				$data['post']->post_name,
+				$data['post']->to_ping,
+				$data['post']->pinged,
 				date($this->data_format, strtotime($data['post']->post_modified)),
+				date($this->data_format, strtotime($data['post']->post_modified_gmt)),
+				$data['post']->post_content_filtered,
+				$data['post']->post_parent,
+				$data['post']->guid,
+				$data['post']->menu_order,
 				$data['post']->post_type,
+				$data['post']->post_mime_type,
 				$data['post']->comment_count,
 				json_encode($data['data']),
 				$id
@@ -210,6 +290,24 @@ class MSA_Audit_Posts_Model {
 		$parsed_data = $this->parse_data($data);
 
 		return $parsed_data[0];
+	}
+
+	/**
+	 * Get an array of author ids from the audit
+	 *
+	 * @access public
+	 * @param mixed $audit_id
+	 * @param array $args (default: array())
+	 * @return void
+	 */
+	function get_authors_in_audit($audit_id, $args = array()) {
+
+		global $wpdb;
+
+		$data = $wpdb->get_results( $wpdb->prepare("SELECT DISTINCT `post_author` FROM `" . $this->get_table_name() . "` WHERE `audit_id` = %d", $audit_id), 'ARRAY_A');
+
+		return $data;
+
 	}
 
 	/**
@@ -279,15 +377,31 @@ class MSA_Audit_Posts_Model {
 
 			$entry["id"]           	= $row["id"];
 			$entry["audit_id"]      = $row["audit_id"];
+			$entry["score"]      	= $row["score"];
 
-			$post["ID"]        		= $row["post_id"];
-			$post["post_title"]     = $row["post_title"];
-			$post["post_name"]     	= $row["post_name"];
-			$post["post_content"]   = $row["post_content"];
-			$post["post_date"]      = $row["post_date"];
-			$post["post_modified"]  = $row["post_modified"];
-			$post["post_type"]      = $row["post_type"];
-			$post["comment_count"]  = $row["comment_count"];
+			$post["ID"]                      = $row["post_id"];
+			$post["post_author"]             = $row["post_author"];
+			$post["post_date"]               = $row["post_date"];
+			$post["post_date_gmt"]           = $row["post_date_gmt"];
+			$post["post_content"]            = $row["post_content"];
+			$post["post_title"]              = $row["post_title"];
+			$post["post_excerpt"]            = $row["post_excerpt"];
+			$post["post_status"]             = $row["post_status"];
+			$post["comment_status"]          = $row["comment_status"];
+			$post["ping_status"]             = $row["ping_status"];
+			$post["post_password"]           = $row["post_password"];
+			$post["post_name"]               = $row["post_name"];
+			$post["to_ping"]                 = $row["to_ping"];
+			$post["pinged"]                  = $row["pinged"];
+			$post["post_modified"]           = $row["post_modified"];
+			$post["post_modified_gmt"]       = $row["post_modified_gmt"];
+			$post["post_content_filtered"]   = $row["post_content_filtered"];
+			$post["post_parent"]             = $row["post_parent"];
+			$post["guid"]                    = $row["guid"];
+			$post["menu_order"]              = $row["menu_order"];
+			$post["post_type"]               = $row["post_type"];
+			$post["post_mime_type"]          = $row["post_mime_type"];
+			$post["comment_count"]           = $row["comment_count"];
 
 			$entry['post'] 			= new WP_Post((object) $post);
 

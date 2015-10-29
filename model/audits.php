@@ -222,7 +222,11 @@ class MSA_Audits_Model {
 
 		$parsed_data = $this->parse_data($data);
 
-		return $parsed_data[0];
+		if ( isset($parsed_data[0]) ) {
+			return $parsed_data[0];
+		}
+
+		return null;
 
 	}
 
