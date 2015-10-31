@@ -82,7 +82,10 @@ class MSA_All_Posts_Table extends WP_List_Table {
 		$audit_posts_model 	= new MSA_Audit_Posts_Model();
 		$per_page     		= 20;
 		$current_page 		= $this->get_pagenum();
-		$args = array();
+		$args = array(
+			'per_page'		=> $per_page,
+			'current_page'	=> $current_page,
+		);
 
 		/* =========================================================================
 		 *

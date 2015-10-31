@@ -219,11 +219,11 @@ function msa_show_internal_links( $link_matches ) {
 		}
 
 		if ( $matches == 0 ) {
-			$output .= '<li style="margin: 0;">' . __('No Links', 'msa') . '</li>';
+			return __('No Links', 'msa');
 		}
 
 	} else {
-		$output .= '<li style="margin: 0;">' . __('No Links', 'msa') . '</li>';
+		return __('No Links', 'msa');
 	}
 
 	$output .= '</ol>';
@@ -258,11 +258,11 @@ function msa_show_external_links( $link_matches ) {
 		}
 
 		if ( $matches == 0 ) {
-			$output .= '<li style="margin: 0;">' . __('No Links', 'msa') . '</li>';
+			return __('No Links', 'msa');
 		}
 
 	} else {
-		$output .= '<li style="margin: 0;">' . __('No Links', 'msa') . '</li>';
+		return __('No Links', 'msa');
 	}
 
 	$output .= '</ol>';
@@ -299,11 +299,11 @@ function msa_show_images($content) {
 		$images++;
 	}
 
-	if ( $images == 0 ) {
-		$output .= __('No Images', 'msa');
-	}
-
 	$output .= '</div>';
+
+	if ( $images == 0 ) {
+		$output = __('No Images', 'msa');
+	}
 
     return $output;
 

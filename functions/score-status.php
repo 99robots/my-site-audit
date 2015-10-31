@@ -166,6 +166,8 @@ function msa_create_initial_score_statuses() {
 		'high'			=> 1,
 	));
 
+
+	do_action('msa_register_score_status');
 }
 
 /**

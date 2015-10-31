@@ -137,6 +137,10 @@ function msa_all_audits_scripts() {
 	// Scripts
 
 	wp_enqueue_script('msa-all-audits-js', 			MY_SITE_AUDIT_PLUGIN_URL . '/js/all-audits.js');
+	wp_localize_script('msa-all-audits-js', 'msa_all_audits_data', array(
+		'site_url'			=> get_site_url(),
+		'success_message'	=> __('Your Audit has been created!  Refresh your page to see it.', 'msa'),
+	));
 
 	wp_enqueue_script('jquery');
 	wp_enqueue_script('jquery-ui-core');

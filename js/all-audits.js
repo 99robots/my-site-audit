@@ -24,6 +24,107 @@
 
 jQuery(document).ready(function($){
 
+	// Get all the posts for the audit
+
+	$(".msa-create-audit-form").submit(function(e){
+
+		if ( $(this).find('.msa-creating-audit').length != 0 ) {
+			return;
+		}
+
+		e.preventDefault();
+
+		// Add a loading icon and a progress bar
+
+		$('<span class="msa-creating-audit"><img src="' + msa_all_audits_data.site_url + '/wp-admin/images/spinner-2x.gif"/></span>').insertAfter('#submit');
+
+		$(this).append('<div class="msa-progress-bar-container"><div class="msa-progress-bar" data-current="1" data-max="0"></div></div>');
+
+		$.post(ajaxurl, {
+				'action': 'msa_get_post_ids_for_audit',
+				'data': $(".msa-create-audit-form").serialize(),
+			}, function(response) {
+
+			response = $.parseJSON(response);
+			var posts = response.post_ids;
+
+			$('.msa-progress-bar').attr('data-max', posts.length);
+
+			$(".msa-create-audit-form").append('<span style="display-none;" class="msa-audit-score" data-audit-id="' + response.audit_id + '" data-num-posts="' + posts.length + '" data-score="0"></span>');
+
+			for ( var i = 0; i < posts.length; i++) {
+
+				$.post(ajaxurl, {
+						'action': 'msa_add_post_to_audit',
+						'audit_id': response.audit_id,
+						'post_id': posts[i],
+					}, function(response) {
+
+						msa_update_progress_bar();
+
+						var score = $('.msa-audit-score').attr('data-score');
+						$('.msa-audit-score').attr('data-score', parseFloat(score) + parseFloat(response));
+						msa_update_audit_score($('.msa-audit-score').attr('data-audit-id'), $('.msa-audit-score').attr('data-num-posts'), $('.msa-audit-score').attr('data-score'));
+				});
+			}
+		});
+	});
+
+	/**
+	 * Update the audit score
+	 *
+	 * @access public
+	 * @param mixed audit_id
+	 * @param mixed num_posts
+	 * @param mixed score
+	 * @return void
+	 */
+	function msa_update_audit_score(audit_id, num_posts, score) {
+
+		// Update the audit score
+
+		$.post(ajaxurl, {
+				'action': 'msa_update_audit_score',
+				'audit_id': audit_id, // response.audit_id,
+				'score': score, // parseFloat($('.msa-audit-score').attr('data-score')),
+				'num_posts': num_posts, // posts.length,
+			}, function(response) {
+				//console.log('Score has been updated: ' + response);
+		});
+
+	}
+
+	/**
+	 * Update the progress bar on screen
+	 *
+	 * @access public
+	 * @return void
+	 */
+	function msa_update_progress_bar() {
+
+		$('.msa-progress-bar').attr('data-current', parseInt($('.msa-progress-bar').attr('data-current')) + 1);
+
+		var width = parseInt($('.msa-progress-bar').attr('data-current')) / parseInt($('.msa-progress-bar').attr('data-max'));
+
+		// Process is complete
+
+		if ( width >= 1 ) {
+			width = 1;
+
+			$('.msa-creating-audit').remove();
+			$('.msa-progress-bar-container').remove();
+
+			// Add message saying that the process has been completed
+
+			var audit_id = $('.msa-audit-score').attr('data-audit-id');
+
+			$(".msa-create-audit-form").append('<div class="updated"><p>' + msa_all_audits_data.success_message + '</p></div>');
+		}
+
+		$('.msa-progress-bar').css('width', 100 * width + '%' );
+
+	}
+
 	// Show the modal
 
 	$('.msa-audit-conditions-button').click(function(e){

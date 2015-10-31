@@ -120,6 +120,24 @@ class MSA_All_Audits_Table extends WP_List_Table {
 		$this->items = array_slice($this->items,(($current_page-1)*$per_page),$per_page);
 
 		$this->items = array_reverse($this->items);
+
+		// Add a new row to show that to get more audits they need to purchase an add-on
+
+		if ( count($this->items) > 0 ) {
+
+			$this->items[] = array(
+				'extension'			=> true,
+				'extension-link' 	=> 'https://mysiteaudit.com',
+				'score'				=> 1,
+				'name'				=> __('Want to Save more Audits? Get the Extension!', 'msa'),
+				'date'				=> date('Y-m-d H:i:s'),
+				'num_posts'			=> '',
+				'user'				=> 0,
+			);
+
+			$this->items = apply_filters('msa_all_audits_table_items', $this->items);
+
+		}
 	}
 
 	/**
@@ -191,6 +209,10 @@ class MSA_All_Audits_Table extends WP_List_Table {
 	 */
 	public function column_default( $item, $column_name ) {
 
+		if ( isset($item['extension']) && $item['extension'] ) {
+			return '';
+		}
+
 		$output = '';
 
 		switch( $column_name ) {
@@ -227,59 +249,79 @@ class MSA_All_Audits_Table extends WP_List_Table {
 	 */
 	public function column_name($item) {
 
-		$audit_model = new MSA_Audits_Model();
-		$audit = $audit_model->get_data_from_id($item['id']);
+		if ( !isset($item['extension']) ) {
 
-		$condition = $audit['args']['conditions'];
+			$audit_model = new MSA_Audits_Model();
+			$audit = $audit_model->get_data_from_id($item['id']);
 
-		$actions = array();
+			$condition = $audit['args']['conditions'];
 
-		$actions['delete'] = '<a href="' . wp_nonce_url(get_admin_url() . 'admin.php?page=msa-all-audits&action=delete&audit=' . $item['id'], 'msa-delete-audit') . '">' . __('Delete', 'msa') . '</a>';
+			$actions = array();
 
-		$condition_modal = '<a href="#" class="msa-audit-conditions-button" data-id="' . $item['id'] . '">' . __('Conditions', 'msa') . '</a>
-		<div class="msa-audit-conditions-modal" data-id="' . $item['id'] . '">
-			<div class="msa-audit-conditions-modal-container">
+			$actions['delete'] = '<a href="' . wp_nonce_url(get_admin_url() . 'admin.php?page=msa-all-audits&action=delete&audit=' . $item['id'], 'msa-delete-audit') . '">' . __('Delete', 'msa') . '</a>';
 
-				<h3 class="msa-audit-conditions-modal-heading">' . __('Conditions', 'msa') . '</h3>
+			$condition_modal = '<a href="#" class="msa-audit-conditions-button" data-id="' . $item['id'] . '">' . __('Conditions', 'msa') . '</a>
+			<div class="msa-audit-conditions-modal" data-id="' . $item['id'] . '">
+				<div class="msa-audit-conditions-modal-container">
 
-				<div class="msa-audit-conditions">
-					<table class="wp-list-table widefat striped fixed">
+					<h3 class="msa-audit-conditions-modal-heading">' . __('Conditions', 'msa') . '</h3>
 
-						<thead>
-							<tr>
-								<th scope="col">' . __('Name', 'msa') . '</th>
-								<th scope="col">' . __('Weight', 'msa') . '</th>
-								<th scope="col">' . __('Comparison', 'msa') . '</th>
-								<th scope="col">' . __('Value', 'msa') . '</th>
-								<th scope="col">' . __('Minimum', 'msa') . '</th>
-								<th scope="col">' . __('Maximum', 'msa') . '</th>
-							</tr>
-						</thead>
+					<div class="msa-audit-conditions">
+						<table class="wp-list-table widefat striped fixed">
 
-						<tbody>';
+							<thead>
+								<tr>
+									<th scope="col">' . __('Name', 'msa') . '</th>
+									<th scope="col">' . __('Weight', 'msa') . '</th>
+									<th scope="col">' . __('Comparison', 'msa') . '</th>
+									<th scope="col">' . __('Value', 'msa') . '</th>
+									<th scope="col">' . __('Minimum', 'msa') . '</th>
+									<th scope="col">' . __('Maximum', 'msa') . '</th>
+								</tr>
+							</thead>
 
-							foreach( json_decode($audit['args']['conditions'], true) as $condition ) {
+							<tbody>';
 
-								$condition_modal .= '<tr>
-									<td>' . $condition['name'] . '</td>
-									<td>' . $condition['weight'] . '</td>
-									<td>' . $condition['comparison'] . '</td>
-									<td>' . $condition['value'] . '</td>
-									<td>' . $condition['min'] . '</td>
-									<td>' . $condition['max'] . '</td>
-								</tr>';
+								foreach( json_decode($audit['args']['conditions'], true) as $condition ) {
 
-							}
+									$comparison = __('Greater Than', 'msa');
 
-						$condition_modal .= '</tbody>
-					</table>
+									if ( $condition['comparison'] == 1 ) {
+										$comparison = __('Less Than', 'msa');
+									} else if ( $condition['comparison'] == 2 ) {
+										$comparison = __('In Between', 'msa');
+									}
+
+									$value = __('Pass or Fail', 'msa');
+
+									if ( $condition['value'] == 1 ) {
+										$value = __('Precentage', 'msa');
+									}
+
+									$condition_modal .= '<tr>
+										<td>' . $condition['name'] . '</td>
+										<td>' . $condition['weight'] . '</td>
+										<td>' . $comparison . '</td>
+										<td>' . $value . '</td>
+										<td>' . (isset($condition['min_display_val']) ? $condition['min_display_val'] : '') . '</td>
+										<td>' . (isset($condition['max_display_val']) ? $condition['max_display_val'] : '') . '</td>
+									</tr>';
+
+								}
+
+							$condition_modal .= '</tbody>
+						</table>
+					</div>
 				</div>
-			</div>
-		</div>';
+			</div>';
 
-		$actions['edit'] = $condition_modal;
+			$actions['edit'] = $condition_modal;
 
-		return sprintf('%1$s %2$s', '<a href="' . get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $item['id'] . '">' . $item['name'] . '</a>', $this->row_actions($actions) );
+			return sprintf('%1$s %2$s', '<a href="' . get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $item['id'] . '">' . $item['name'] . '</a>', $this->row_actions($actions) );
+
+		}
+
+		return '<a href="' . $item['extension-link'] . '" target="_blank">' . $item['name'] . '</a>';
 
 	}
 
@@ -293,9 +335,19 @@ class MSA_All_Audits_Table extends WP_List_Table {
 	 */
 	public function single_row( $item ) {
 
-		echo '<tr class="msa-post-status msa-post-status-' . msa_get_score_status($item['score']) .'">';
-		$this->single_row_columns( $item );
-		echo '</tr>';
+		// Check if this row is for an extension
+
+		if ( isset($item['extension']) && $item['extension'] ) {
+
+			echo '<tr class="msa-extension-row">';
+			$this->single_row_columns( $item );
+			echo '</tr>';
+
+		} else {
+			echo '<tr class="msa-post-status msa-post-status-' . msa_get_score_status($item['score']) .'">';
+			$this->single_row_columns( $item );
+			echo '</tr>';
+		}
 	}
 
 	/**

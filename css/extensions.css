@@ -47,3 +47,21 @@
 #wpbody-content #dashboard-widgets .postbox {
 	min-width: intrinsic;
 }
+
+@media only screen and (max-width: 1024px) {
+	#wpbody-content #dashboard-widgets .postbox-container {
+		width: 33.3333%;
+	}
+}
+
+@media only screen and (max-width: 768px) {
+	#wpbody-content #dashboard-widgets .postbox-container {
+		width: 50%;
+	}
+}
+
+@media only screen and (max-width: 414px) {
+	#wpbody-content #dashboard-widgets .postbox-container {
+		width: 100%;
+	}
+}

@@ -151,6 +151,8 @@ function msa_create_initial_attributes() {
 			'options'	=> apply_filters('msa_filter_attribute_author', ''),
 		)
 	));
+
+	do_action('msa_register_attributes');
 }
 
 

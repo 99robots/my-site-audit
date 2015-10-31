@@ -52,6 +52,14 @@ function msa_activation() {
 	$audit_posts_model = new MSA_Audit_Posts_Model();
 	$audit_posts_model->create_table();
 
+	// Add the transient to redirect
+
+	set_transient( '_msa_activation_redirect', true, 30 );
+
+	// Add Upgraded From Option
+
+	update_option( 'msa_version_upgraded_from', MY_SITE_AUDIT_VERSION );
+
 }
 
 register_activation_hook( MY_SITE_AUDIT_PLUGIN_FILE, 'msa_activation' );

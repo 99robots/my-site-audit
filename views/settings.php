@@ -56,7 +56,7 @@ $settings_tabs = msa_get_settings_tabs(); ?>
 		<?php foreach ( $settings_tabs as $key => $settings_tab ) { ?>
 
 			<div id="<?php echo $key; ?>" class="msa-vertical-tabs-content-item <?php echo (isset($settings_tab['current']) && $settings_tab['current'] ? 'msa-vertical-tabs-content-current' : ''); ?>">
-				<?php echo $settings_tab['content']; ?>
+				<?php echo apply_filters('msa_settings_tab_content_' . $key, $settings_tab['content']); ?>
 			</div>
 
 		<?php } ?>

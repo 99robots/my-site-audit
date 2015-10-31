@@ -40,17 +40,16 @@ $panels = msa_get_dashboard_panels();?>
 
 		<div class="meta-box-sortables ui-sortable">
 
-			<?php foreach ( $panels as $panel ) {
+			<?php foreach ( $panels as $key => $panel ) {
 
 				if ( $panel['postbox'] != 1 ) {
 					continue;
 				} ?>
 
 				<div class="postbox">
-					<div class="handlediv" title="Click to toggle"><br></div>
 					<h3 class="hndle ui-sortable-handle"><span><?php echo $panel['title']; ?></span></h3>
 					<div class="inside">
-						<?php echo $panel['content']; ?>
+						<?php echo apply_filters('msa_dashboard_panel_content_' . $key,  $panel['content']); ?>
 					</div>
 				</div>
 
@@ -64,17 +63,16 @@ $panels = msa_get_dashboard_panels();?>
 
 		<div class="meta-box-sortables ui-sortable">
 
-			<?php foreach ( $panels as $panel ) {
+			<?php foreach ( $panels as $key => $panel ) {
 
 				if ( $panel['postbox'] != 2 ) {
 					continue;
 				} ?>
 
 				<div class="postbox">
-					<div class="handlediv" title="Click to toggle"><br></div>
 					<h3 class="hndle ui-sortable-handle"><span><?php echo $panel['title']; ?></span></h3>
 					<div class="inside">
-						<?php echo $panel['content']; ?>
+						<?php echo apply_filters('msa_dashboard_panel_content_' . $key,  $panel['content']); ?>
 					</div>
 				</div>
 

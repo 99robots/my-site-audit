@@ -31,77 +31,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 if ( isset($_POST['submit']) && check_admin_referer('msa-add-audit') ) {
 
-	// Create our Audit and Audit Post Model objects
+	/**
+	 *
+	 * This is the main action for creating an audit
+	 *
+	 */
+	do_action('msa_create_audit', $_POST);
 
-	$audit_model = new MSA_Audits_Model();
-	$audit_posts_model = new MSA_Audit_Posts_Model();
-
-	// Get all the data from the user
-
-	$audit = array();
-
-	$audit['name'] = $_POST['name'];
-	$audit['score'] = 0;
-	$audit['date'] = date('Y-m-d H:i:s');
-	$audit['user'] = get_current_user_id();
-	$audit['args']['post_types'] = $_POST['post-types'];
-	$audit['args']['conditions'] = json_encode(msa_get_conditions());
-
-	// Get all the posts that we are going to perform an audit on
-
-	$args = array(
-		'public' 			=> true,
-		'date_query' 		=> array(
-			array(
-				'after'     => $_POST['after-date'],
-				'before'    => $_POST['before-date'],
-				'inclusive' => true,
-			),
-		),
-		'post_type'			=> $_POST['post-types'],
-		'posts_per_page'	=> $_POST['max-posts'],
-	);
-
-	$posts = get_posts($args);
-
-	$audit['num_posts'] = count($posts);
-
-	// Only perform the audit if there are posts to perform the audit on
-
-	if ( count($posts) > 0 ) {
-
-		$audit_id = $audit_model->add_data($audit);
-		$audit_score = 0;
-
-		foreach ( $posts as $post ) {
-
-			$data = msa_get_post_audit_data($post);
-			$score = msa_calculate_score($post, $data);
-			$audit_score += $score['score'];
-			$data['score'] = $score['score'];
-
-			// Add a new record in the audit posts table
-
-			$audit_posts_model->add_data(array(
-				'audit_id' 	=> $audit_id,
-				'post'		=> $post,
-				'data'		=> $data,
-			));
-		}
-
-		$audit_score = round($audit_score / count($posts), 10);
-		$audit['score'] = round($audit_score, 10);
-		$audit_model->update_data($audit_id, $audit);
-
-		?><script>
-			window.location = "<?php echo get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit_id; ?>";
-		</script><?php
-
-	} else {
-		?><script>
-			window.location = "<?php echo get_admin_url() . 'admin.php?page=msa-all-audits'; ?>";
-		</script><?php
-	}
 }
 
 // Delete an audit
@@ -111,9 +47,7 @@ if ( isset($_GET['action']) && $_GET['action'] == 'delete' && check_admin_refere
 	$audit_model = new MSA_Audits_Model();
 	$audit_model->delete_data($_GET['audit']);
 
-	?><script>
-		window.location = "<?php echo get_admin_url() . 'admin.php?page=msa-all-audits'; ?>";
-	</script><?php
+	msa_force_redirect( get_admin_url() . 'admin.php?page=msa-all-audits' );
 
 }
 

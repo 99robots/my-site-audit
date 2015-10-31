@@ -35,7 +35,7 @@ $extensions = msa_get_extensions(); ?>
 
 <div id="dashboard-widgets" class="metabox-holder">
 
-	<?php foreach ( $extensions as $extension ) { ?>
+	<?php foreach ( $extensions as $key => $extension ) { ?>
 
 	<div class="postbox-container">
 
@@ -44,7 +44,7 @@ $extensions = msa_get_extensions(); ?>
 			<div class="postbox">
 				<h3 class="hndle ui-sortable-handle"><span><?php echo $extension['title']; ?></span></h3>
 				<div class="inside">
-					<?php echo $extension['content']; ?>
+					<?php echo apply_filters('msa_extension_content_' . $key, $extension['content']); ?>
 				</div>
 			</div>
 

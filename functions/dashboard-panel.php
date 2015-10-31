@@ -42,13 +42,25 @@ function msa_dashboard_panel_last_audit_content() {
 
 	if ( isset($audit) ) {
 
-		$user = get_userdata($audit['user']);
+		$output = '<table class="wp-list-table widefat striped">
+			<thead>
+				<tr>
+					<th>' . __('Attribute', 'msa') . '</th>
+					<th>' . __('Value', 'msa') . '</th>
+				</tr>
+			</thead>
+			<tbody>';
 
-		$output = '<p>' . __('Name: ', 'msa') . ' <span>' . $audit['name'] . '<span></p>';
-		$output .= '<p>' . __('Date: ', 'msa') . ' <span>' . date('M d Y, h:i:s', strtotime($audit['date'])) . '<span></p>';
-		$output .= '<p>' . __('Number of Posts: ', 'msa') . ' <span>' . $audit['num_posts'] . '<span></p>';
-		$output .= '<p>' . __('Score: ', 'msa') . ' <span>' . round(100 * $audit['score']) . '%' . '<span></p>';
-		$output .= '<p>' . __('User: ', 'msa') . ' <span>' . $user->display_name . '<span></p>';
+			$user = get_userdata($audit['user']);
+
+			$output .= '<tr class="msa-post-status-bg msa-post-status-bg-' . msa_get_score_status($audit['score']) . '"><td>' . __('Score', 'msa') . '</td> <td>' . round(100 * $audit['score']) . '%' . '</td></tr>';
+			$output .= '<tr><td>' . __('Name', 'msa') . '</td> <td>' . $audit['name'] . '</td></tr>';
+			$output .= '<tr><td>' . __('Date', 'msa') . '</td> <td>' . date('M d Y, h:i:s', strtotime($audit['date'])) . '</td></tr>';
+			$output .= '<tr><td>' . __('Number of Posts', 'msa') . '</td> <td>' . $audit['num_posts'] . '</td></tr>';
+			$output .= '<tr><td>' . __('Created By', 'msa') . '</td> <td>' . $user->display_name . '</td></tr>';
+
+		$output .= '</tbody>
+		</table>';
 
 	} else {
 
@@ -60,7 +72,7 @@ function msa_dashboard_panel_last_audit_content() {
 
 }
 
-add_filter('msa_dashboard_panel_last_audit', 'msa_dashboard_panel_last_audit_content');
+add_filter('msa_dashboard_panel_content_last_audit', 'msa_dashboard_panel_last_audit_content');
 
 /**
  * Create initial dashboard panels
@@ -75,7 +87,7 @@ function msa_create_initial_dashboard_panels() {
 	msa_register_dashboard_panel('last_audit', array(
 		'postbox'	=> 1,
 		'title'		=> __('Last Audit', 'msa'),
-		'content'	=> apply_filters('msa_dashboard_panel_last_audit', ''),
+		'content'	=> '',
 	));
 
 	// Example Post Box
@@ -83,7 +95,7 @@ function msa_create_initial_dashboard_panels() {
 	msa_register_dashboard_panel('example_1', array(
 		'postbox'	=> 1,
 		'title'		=> __('Example Post Box', 'msa'),
-		'content'	=> apply_filters('msa_dashboard_panel_example_1', ''),
+		'content'	=> '',
 	));
 
 	// Example Post Box
@@ -91,7 +103,7 @@ function msa_create_initial_dashboard_panels() {
 	msa_register_dashboard_panel('example_2', array(
 		'postbox'	=> 2,
 		'title'		=> __('Example Post Box', 'msa'),
-		'content'	=> apply_filters('msa_dashboard_panel_example_2', ''),
+		'content'	=> '',
 	));
 
 	// Example Post Box
@@ -99,9 +111,10 @@ function msa_create_initial_dashboard_panels() {
 	msa_register_dashboard_panel('example_3', array(
 		'postbox'	=> 2,
 		'title'		=> __('Example Post Box', 'msa'),
-		'content'	=> apply_filters('msa_dashboard_panel_example_3', ''),
+		'content'	=> '',
 	));
 
+	do_action('msa_register_dashboard_panels');
 }
 
 /**

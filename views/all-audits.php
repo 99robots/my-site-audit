@@ -253,18 +253,12 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 						<a class="msa-google-preview-title" href="#"><?php echo $post->post_title; ?></a>
 						<span class="msa-google-preview-url"><?php echo get_permalink($post->ID); ?></span>
 						<p class="msa-google-preview-description">
-							<span class="msa-google-preview-content"><?php echo substr( strip_shortcodes(strip_tags($post->post_content)), 0, 156); ?></span>
+							<span class="msa-google-preview-content"><?php echo strip_shortcodes(strip_tags( msa_get_post_excerpt($post))); ?></span>
 						</p>
 					</div>
 				</div>
 
-				<div class="msa-right-column-item">
-					<h3><?php _e('Add-on: Tasks', 'msa'); ?></h3>
-				</div>
-
-				<div class="msa-right-column-item">
-					<h3><?php _e('Add-on: Content Attributes', 'msa'); ?></h3>
-				</div>
+				<?php echo do_action('msa_audit_single_post_sidebar_content'); ?>
 
 			</div>
 
@@ -371,7 +365,7 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 	</h1>
 
 	<div class="msa-create-audit-wrap">
-		<form method="post">
+		<form method="post" class="msa-create-audit-form">
 
 			<table class="form-table">
 				<tbody>
@@ -425,8 +419,8 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 						<th scope="row"><label for="msa-audit-max-posts"><?php _e("Maximum Posts", 'msa'); ?></label></th>
 						<td>
 							<select id="msa-audit-max-posts" name="max-posts">
-								<?php for ($i = 10; $i <= 250; $i+= 10) { ?>
-									<option value="<?php echo $i; ?>" <?php selected($i, 50, true); ?>><?php _e($i, 'msa'); ?></option>
+								<?php for ($i = 500; $i <= 5000; $i+= 100) { ?>
+									<option value="<?php echo $i; ?>" <?php selected($i, 500, true); ?>><?php _e($i, 'msa'); ?></option>
 								<?php } ?>
 							</select>
 							<p class="description"><?php _e('The maximum number of posts that will be audited.', 'msa'); ?></p>

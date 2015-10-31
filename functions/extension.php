@@ -28,6 +28,92 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
+ * Save all the extension license keys
+ *
+ * @access public
+ * @param mixed $data
+ * @return void
+ */
+function msa_settings_tab_extensions_save($data) {
+
+	// Check if we have data already saved
+
+	if ( false === ( $extension_license_keys = get_option('msa_extension_license_keys') ) ) {
+		$extension_license_keys = array();
+	}
+
+	// Save the data
+
+	$extensions = msa_get_extensions();
+
+	foreach ( $extensions as $key => $extension ) {
+
+		if ( isset($extension['settings']) ) {
+
+			// License Key
+
+			$extension_license_keys[$key]['license_key'] = isset($data['msa-extension-' . $key . '-license-key']) ? sanitize_text_field($data['msa-extension-' . $key . '-license-key']) : '';
+
+		}
+
+	}
+
+	update_option('msa_extension_license_keys', $extension_license_keys);
+
+}
+add_action('msa_save_settings', 'msa_settings_tab_extensions_save', 10, 1);
+
+/**
+ * The content of the Extensions Page
+ *
+ * @access public
+ * @param mixed $content
+ * @return void
+ */
+function msa_settings_tab_extensions_content($content) {
+
+	// Check if we have data already saved
+
+	if ( false === ( $settings = get_option('msa_extension_license_keys') ) ) {
+		$settings = array();
+	}
+
+	$output = '';
+
+	$extensions = msa_get_extensions();
+
+	foreach ( $extensions as $key => $extension ) {
+
+		if ( isset($extension['settings']) ) {
+
+			$setting = $extension['settings'];
+			$license_key = isset($settings[$key]['license_key']) ? $settings[$key]['license_key'] : $extension['license_key'];
+
+			$output .= '<h3 class="msa-settings-heading">' . $extension['title'] . '</h3>';
+			$output .= '<table class="form-table">
+				<tbody>
+
+					<tr>
+						<th scope="row"><label for="' . $setting['id'] . '">' . __('License Key', 'msa') . '</label></th>
+						<td>
+							<input type="text" class="regular-text ' . $setting['class'] . '-license-key" id="' . $setting['id'] . '-license-key" name="msa-extension-' . $key . '-license-key" value="' . $license_key . '">
+							<p class="description">' . __('The license key for the extension that will allow you to update and get support for this extension.') . '</p>
+						</td>
+					</tr>
+
+				</tbody>
+			</table>';
+
+		}
+
+	}
+
+	return $output;
+
+}
+add_filter('msa_settings_tab_content_extensions', 'msa_settings_tab_extensions_content', 10, 1);
+
+/**
  * Create the initial settings extensions
  *
  * @access public
@@ -39,51 +125,80 @@ function msa_create_initial_extensions() {
 
 	msa_register_extensions('conditions_control', array(
 		'title'		=> __('Conditions Control', 'msa'),
-		'content'	=> apply_filters('msa_extension_conditions_control', ''),
+		'content'	=> '',
+		'settings'	=> array(
+			'id'	=> 'msa-conditions-control',
+			'class'	=> 'msa-conditions-control',
+		),
 	));
 
 	// Extension 1
 
 	msa_register_extensions('extension_1', array(
 		'title'		=> __('Extension 1', 'msa'),
-		'content'	=> apply_filters('msa_extension_extension_1', ''),
+		'content'	=> '',
+		'settings'	=> array(
+			'id'	=> 'msa-extension-1',
+			'class'	=> 'msa-extension-1',
+		),
 	));
 
 	// Extension 2
 
 	msa_register_extensions('extension_2', array(
 		'title'		=> __('Extension 2', 'msa'),
-		'content'	=> apply_filters('msa_extension_extension_2', ''),
+		'content'	=> '',
+		'settings'	=> array(
+			'id'	=> 'msa-extension-2',
+			'class'	=> 'msa-extension-2',
+		),
 	));
 
 	// Extension 3
 
 	msa_register_extensions('extension_3', array(
 		'title'		=> __('Extension 3', 'msa'),
-		'content'	=> apply_filters('msa_extension_extension_3', ''),
+		'content'	=> '',
+		'settings'	=> array(
+			'id'	=> 'msa-extension-3',
+			'class'	=> 'msa-extension-3',
+		),
 	));
 
 	// Extension 4
 
 	msa_register_extensions('extension_4', array(
 		'title'		=> __('Extension 4', 'msa'),
-		'content'	=> apply_filters('msa_extension_extension_4', ''),
+		'content'	=> '',
+		'settings'	=> array(
+			'id'	=> 'msa-extension-4',
+			'class'	=> 'msa-extension-4',
+		),
 	));
 
 	// Extension 5
 
 	msa_register_extensions('extension_5', array(
 		'title'		=> __('Extension 5', 'msa'),
-		'content'	=> apply_filters('msa_extension_extension_5', ''),
+		'content'	=> '',
+		'settings'	=> array(
+			'id'	=> 'msa-extension-5',
+			'class'	=> 'msa-extension-5',
+		),
 	));
 
 	// Extension 6
 
 	msa_register_extensions('extension_6', array(
 		'title'		=> __('Extension 6', 'msa'),
-		'content'	=> apply_filters('msa_extension_extension_6', ''),
+		'content'	=> '',
+		'settings'	=> array(
+			'id'	=> 'msa-extension-6',
+			'class'	=> 'msa-extension-6',
+		),
 	));
 
+	do_action('msa_register_extensions');
 }
 
 /**

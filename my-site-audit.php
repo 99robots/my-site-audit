@@ -174,33 +174,43 @@ final class My_Site_Audit {
 	 */
 	private function includes() {
 
-		// Includes
+		// Load all the admin files
 
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'includes/sharedcount/sharedcount.php' );
+		if ( is_admin() ) {
 
-		// Model
+			// Includes
 
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'model/audits.php' );
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'model/audit-posts.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'includes/sharedcount/sharedcount.php' );
 
-		// Controllers
+			// Model
 
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'controllers/all-posts-table.php' );
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'controllers/all-audits-table.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'model/audits.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'model/audit-posts.php' );
 
-		// Functions
+			// Functions
 
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/activation.php' );
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/admin-pages.php' );
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/condition.php' );
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/attribute.php' );
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/score-status.php' );
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/dashboard-panel.php' );
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/settings-tab.php' );
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/extension.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/activation.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/admin-pages.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/condition.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/attribute.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/score-status.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/dashboard-panel.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/settings-tab.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/extension.php' );
 
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/audit-data.php' );
-		require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/post-meta-box.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/audit-data.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/common.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/create-audit.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/post-meta-box.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/plugin.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/welcome.php' );
+
+			// Classes
+
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'classes/class.all-posts-table.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'classes/class.all-audits-table.php' );
+
+		}
 
 	}
 
@@ -214,12 +224,29 @@ final class My_Site_Audit {
 
 		// Registers
 
-		msa_create_initial_conditions();
-		msa_create_initial_attributes();
-		msa_create_initial_score_statuses();
-		msa_create_initial_dashboard_panels();
-		msa_create_initial_settings_tabs();
-		msa_create_initial_extensions();
+		if ( function_exists('msa_create_initial_conditions') ) {
+			msa_create_initial_conditions();
+		}
+
+		if ( function_exists('msa_create_initial_attributes') ) {
+			msa_create_initial_attributes();
+		}
+
+		if ( function_exists('msa_create_initial_score_statuses') ) {
+			msa_create_initial_score_statuses();
+		}
+
+		if ( function_exists('msa_create_initial_dashboard_panels') ) {
+			msa_create_initial_dashboard_panels();
+		}
+
+		if ( function_exists('msa_create_initial_settings_tabs') ) {
+			msa_create_initial_settings_tabs();
+		}
+
+		if ( function_exists('msa_create_initial_extensions') ) {
+			msa_create_initial_extensions();
+		}
 
 	}
 

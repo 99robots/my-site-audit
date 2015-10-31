@@ -32,6 +32,12 @@
 	min-height: 50%;
 }
 
+.msa-settings-heading {
+	border-bottom: 1px solid #ddd;
+	margin-right: 20px;
+	padding-bottom: 20px;
+}
+
 /* =====================================================
  *
  * Vertical Tabs
@@ -41,7 +47,7 @@
 .msa-vertical-tabs-menu {
 	position: absolute;
 	float: left;
-	z-index: 9990;
+	z-index: 9;
 	width: 160px;
 	display: inline-block;
 	height: 500px;
@@ -51,7 +57,7 @@
 	margin-left: 160px;
 	padding-left: 20px;
 	height: 100%;
-	border: 1px solid #777;
+	border: 1px solid #ccc;
 	position: relative;
 	right: 1px;
 	background-color: white;
@@ -59,7 +65,7 @@
 
 .msa-vertical-tabs-item {
 	margin: 0;
-	border: 1px solid #777;
+	border: 1px solid #ccc;
 	margin: 1px 0px;
 }
 
