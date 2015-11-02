@@ -248,6 +248,10 @@ class MSA_All_Posts_Table extends WP_List_Table {
 
 		$conditions = msa_get_conditions();
 
+		// Attributes
+
+		$attributes = msa_get_attributes();
+
 		if ( isset($conditions[$column_name]) ) {
 			$caret = '<i class="fa fa-caret-' . ( $score['data'][$column_name] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data'][$column_name]) . '"></i> ';
 		}
@@ -273,7 +277,7 @@ class MSA_All_Posts_Table extends WP_List_Table {
 
 			default:
 
-				if ( isset($conditions[$column_name]) ) {
+				if ( isset($item['data'][$column_name]) && ( isset($conditions[$column_name]) || isset($attributes[$column_name]) ) ) {
 					$data = $item['data'][$column_name];
 				} else {
 					$data = '';
@@ -356,7 +360,7 @@ class MSA_All_Posts_Table extends WP_List_Table {
 
 				// Attributes
 
-				foreach ( $attributes as $attribute ) {
+				foreach ( $attributes as $key => $attribute ) {
 
 					if ( isset($attribute['filter']) ) {
 
@@ -364,7 +368,9 @@ class MSA_All_Posts_Table extends WP_List_Table {
 							$value = $_GET[$attribute['filter']['name']];
 						} else {
 							$value = '';
-						} ?>
+						}
+
+						$attribute['filter']['options'] = apply_filters('msa_filter_attribute_' . $key, $attribute['filter']['options'])?>
 
 						<div style="display: inline-block;">
 							<label class="msa-filter-label"><?php echo $attribute['filter']['label']; ?></label>

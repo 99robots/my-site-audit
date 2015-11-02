@@ -476,6 +476,53 @@ function msa_create_initial_conditions() {
 		)
 	));
 
+	// Broken Links
+
+	msa_register_condition('broken_links', array(
+		'name' 			=> __('Broken Links', 'msa'),
+		'weight'        	=> 6,
+		'comparison'		=> 1,
+		'value'				=> 0,
+		'max'           	=> 1,
+		'filter'		=> array(
+			'label'		=> __('Broken Links', 'msa'),
+			'name'		=> 'broken_links',
+			'options'	=> array(
+				array(
+					'name' 	=> __('Has Broken Links', 'msa'),
+					'value'	=> 'notequal-0',
+				),
+				array(
+					'name' 	=> __('Does Not Have Broken Links', 'msa'),
+					'value'	=> 'equal-0',
+				),
+			),
+		)
+	));
+
+	// Missing Alt Tag
+
+	msa_register_condition('missing_alt_tag', array(
+		'name' 			=> __('Missing Alt Tag', 'msa'),
+		'weight'        	=> 6,
+		'comparison'		=> 1,
+		'value'				=> 0,
+		'max'           	=> 1,
+		'filter'		=> array(
+			'label'		=> __('Missing Alt Tag', 'msa'),
+			'name'		=> 'missing_alt_tag',
+			'options'	=> array(
+				array(
+					'name' 	=> __('Has a Missing Alt Tag', 'msa'),
+					'value'	=> 'notequal-0',
+				),
+				array(
+					'name' 	=> __('Does Not Have a Missing Alt Tag', 'msa'),
+					'value'	=> 'equal-0',
+				),
+			),
+		)
+	));
 
 	do_action('msa_register_conditions');
 }

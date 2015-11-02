@@ -40,6 +40,8 @@ jQuery(document).ready(function($){
 
 		$(this).append('<div class="msa-progress-bar-container"><div class="msa-progress-bar" data-current="1" data-max="0"></div></div>');
 
+		// Audit a post
+
 		$.post(ajaxurl, {
 				'action': 'msa_get_post_ids_for_audit',
 				'data': $(".msa-create-audit-form").serialize(),
@@ -49,7 +51,6 @@ jQuery(document).ready(function($){
 			var posts = response.post_ids;
 
 			$('.msa-progress-bar').attr('data-max', posts.length);
-
 			$(".msa-create-audit-form").append('<span style="display-none;" class="msa-audit-score" data-audit-id="' + response.audit_id + '" data-num-posts="' + posts.length + '" data-score="0"></span>');
 
 			for ( var i = 0; i < posts.length; i++) {
@@ -117,8 +118,7 @@ jQuery(document).ready(function($){
 			// Add message saying that the process has been completed
 
 			var audit_id = $('.msa-audit-score').attr('data-audit-id');
-
-			$(".msa-create-audit-form").append('<div class="updated"><p>' + msa_all_audits_data.success_message + '</p></div>');
+			$(".msa-create-audit-form").append('<div class="updated"><p>' + msa_all_audits_data.success_message + '<a href="' + msa_all_audits_data.admin_url + 'admin.php?page=msa-all-audits&audit=' + audit_id + '">here.</a></p></div>');
 		}
 
 		$('.msa-progress-bar').css('width', 100 * width + '%' );

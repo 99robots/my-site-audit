@@ -59,7 +59,7 @@
 }
 
 .widefat .msa-extension-row * {
-	background-color: #c9e6a5;
+/* 	background-color: #c9e6a5; */
 }
 
 .msa-creating-audit {
@@ -320,4 +320,16 @@
 	width: 150px;
 	padding: 4px;
 	height: auto;
+}
+
+.msa-broken-link a {
+	color: #a00;
+}
+
+.msa-broken-link a:hover {
+	color: red;
+}
+
+.msa-no-alt-tag img {
+	border: 3px solid red;
 }

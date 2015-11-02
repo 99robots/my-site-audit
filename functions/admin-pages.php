@@ -139,7 +139,8 @@ function msa_all_audits_scripts() {
 	wp_enqueue_script('msa-all-audits-js', 			MY_SITE_AUDIT_PLUGIN_URL . '/js/all-audits.js');
 	wp_localize_script('msa-all-audits-js', 'msa_all_audits_data', array(
 		'site_url'			=> get_site_url(),
-		'success_message'	=> __('Your Audit has been created!  Refresh your page to see it.', 'msa'),
+		'admin_url'			=> get_admin_url(),
+		'success_message'	=> __('Your Audit has been created! See it ', 'msa'),
 	));
 
 	wp_enqueue_script('jquery');
@@ -253,6 +254,14 @@ function msa_all_audits_add_column( $columns ) {
 
 	foreach ( $conditions as $key => $condition ) {
 		$columns[$key] = $condition['name'];
+	}
+
+	// Attributes
+
+	$attributes = msa_get_attributes();
+
+	foreach ( $attributes as $slug => $attribute ) {
+		$columns[$slug] = $attribute['name'];
 	}
 
 	return $columns;

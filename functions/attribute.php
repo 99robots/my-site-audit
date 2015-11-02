@@ -57,7 +57,7 @@ add_filter('msa_audit_posts_table_sort_data', 'msa_audit_posts_table_sort_data_a
  * @param mixed $name
  * @return void
  */
-function msa_attribute_table_column($content, $item, $name) {
+function msa_attribute_table_column_post_author($content, $item, $name) {
 
 	if ( $name == 'post_author' ) {
 
@@ -69,7 +69,7 @@ function msa_attribute_table_column($content, $item, $name) {
 	return $content;
 
 }
-add_filter('msa_all_posts_table_column_data', 'msa_attribute_table_column', 10, 3);
+add_filter('msa_all_posts_table_column_data', 'msa_attribute_table_column_post_author', 10, 3);
 
 /**
  * Author Attribute options for the filters
@@ -103,7 +103,7 @@ function msa_filter_attribute_author_options($content) {
 	return $content;
 
 }
-add_filter('msa_filter_attribute_author', 'msa_filter_attribute_author_options', 10, 1);
+add_filter('msa_filter_attribute_post_author', 'msa_filter_attribute_author_options', 10, 1);
 
 /**
  * Filter all the posts shown by the author
@@ -148,7 +148,7 @@ function msa_create_initial_attributes() {
 		'filter'		=> array(
 			'label'		=> __('Authors', 'msa'),
 			'name'		=> 'author',
-			'options'	=> apply_filters('msa_filter_attribute_author', ''),
+			'options'	=> '',
 		)
 	));
 

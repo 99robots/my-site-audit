@@ -114,7 +114,7 @@ function msa_get_post_audit_data($post) {
 	$data['modified_date']     = max(time() - strtotime($post->post_modified), 0);
 	$data['word_count']        = str_word_count($content);
 	$data['comment_count']     = $post->comment_count;
-	$data['images'] = substr_count($post->post_content, '<img');
+	$data['images'] 		   = substr_count($post->post_content, '<img');
 
 	// Headings
 
@@ -147,9 +147,12 @@ function msa_get_post_audit_data($post) {
 
 	$data['internal_links'] = 0;
 	$data['external_links'] = 0;
+	$data['broken_links'] = 0;
 
 	if ( isset($data['link_matches']) && is_array($data['link_matches']) ) {
-		foreach ( $data['link_matches'] as $link ) {
+
+		foreach ( $data['link_matches'] as $key => $link ) {
+
 			$url = parse_url($link[2]);
 			$site_url = parse_url(get_site_url());
 
@@ -158,10 +161,43 @@ function msa_get_post_audit_data($post) {
 			} else {
 				$data['external_links']++;
 			}
+
+			$handle = curl_init($link[2]);
+			curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+			$response = curl_exec($handle);
+			$httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+			curl_close($handle);
+
+			if ( $httpCode == 404 || $httpCode == 0 ) {
+				$data['link_matches'][$key]['broken'] = true;
+				$data['broken_links']++;
+			} else {
+				$data['link_matches'][$key]['broken'] = false;
+			}
+
+
 		}
 	}
 
 	$data['links'] = $data['internal_links'] + $data['external_links'];
+
+	// Check for images with missing alt tags
+
+	$data['missing_alt_tag'] = 0;
+
+	preg_match_all('|<img(?:.*)/>|Ui', $post->post_content, $img_matches, PREG_SET_ORDER);
+
+	foreach ( $img_matches as $match ) {
+
+		// Check for an alt tag
+
+		preg_match( '/alt="([^"]*)"/i', $match[0], $alt );
+		$alt = $alt[1];
+
+		if ( empty($alt) || $alt == '' ) {
+			$data['missing_alt_tag']++;
+		}
+	}
 
 	// Score
 
@@ -202,21 +238,41 @@ function msa_get_post_audit_data($post) {
  */
 function msa_show_internal_links( $link_matches ) {
 
-	$output = '<ol style="margin:0;">';
-
 	if ( isset($link_matches) && is_array($link_matches) ) {
 
-		$matches = 0;
+		$output = '<p>' . __('Valid Links') . '<ol style="margin:0;">';
+
+		// Valid links
 
 		foreach ( $link_matches as $link ) {
 			$url = parse_url($link[2]);
 			$site_url = parse_url(get_site_url());
 
-			if ( isset($site_url['host']) && isset($url['host']) && $site_url['host'] == $url['host'] ) {
+			if ( isset($site_url['host']) && isset($url['host']) && $site_url['host'] == $url['host'] && ( !isset($link['broken']) || ( isset($link['broken']) && !$link['broken'] ) ) ) {
 				$output .= '<li style="margin: 0;"><a href="' . $link[2] . '" target="_blank">' . $link[2] . '</a></li>';
 				$matches++;
 			}
 		}
+
+		$output .= '</ol></p>';
+
+		// Broken Links
+
+		$output .= '<p>' . __('Broken Links') . '<ol style="margin:0;">';
+
+		// Valid links
+
+		foreach ( $link_matches as $link ) {
+			$url = parse_url($link[2]);
+			$site_url = parse_url(get_site_url());
+
+			if ( isset($site_url['host']) && isset($url['host']) && $site_url['host'] == $url['host'] && isset($link['broken']) && $link['broken'] ) {
+				$output .= '<li style="margin: 0;" class="msa-broken-link"><a href="' . $link[2] . '" target="_blank">' . $link[2] . '</a></li>';
+				$matches++;
+			}
+		}
+
+		$output .= '</ol></p>';
 
 		if ( $matches == 0 ) {
 			return __('No Links', 'msa');
@@ -225,8 +281,6 @@ function msa_show_internal_links( $link_matches ) {
 	} else {
 		return __('No Links', 'msa');
 	}
-
-	$output .= '</ol>';
 
 	return $output;
 
@@ -241,21 +295,43 @@ function msa_show_internal_links( $link_matches ) {
  */
 function msa_show_external_links( $link_matches ) {
 
-	$output = '<ol style="margin:0;">';
-
 	if ( isset($link_matches) && is_array($link_matches) ) {
 
 		$matches = 0;
+
+		$output = '<p>' . __('Valid Links') . '<ol style="margin:0;">';
+
+		// Valid links
 
 		foreach ( $link_matches as $link ) {
 			$url = parse_url($link[2]);
 			$site_url = parse_url(get_site_url());
 
-			if ( isset($site_url['host']) && isset($url['host']) && $site_url['host'] != $url['host'] ) {
+			if ( isset($site_url['host']) && isset($url['host']) && $site_url['host'] != $url['host'] && ( !isset($link['broken']) || ( isset($link['broken']) && !$link['broken'] ) ) ) {
 				$output .= '<li style="margin: 0;"><a href="' . $link[2] . '" target="_blank">' . $link[2] . '</a></li>';
 				$matches++;
 			}
 		}
+
+		$output .= '</ol></p>';
+
+		// Broken Links
+
+		$output .= '<p>' . __('Broken Links') . '<ol style="margin:0;">';
+
+		// Valid links
+
+		foreach ( $link_matches as $link ) {
+			$url = parse_url($link[2]);
+			$site_url = parse_url(get_site_url());
+
+			if ( isset($site_url['host']) && isset($url['host']) && $site_url['host'] != $url['host'] && isset($link['broken']) && $link['broken'] ) {
+				$output .= '<li style="margin: 0;" class="msa-broken-link"><a href="' . $link[2] . '" target="_blank">' . $link[2] . '</a></li>';
+				$matches++;
+			}
+		}
+
+		$output .= '</ol></p>';
 
 		if ( $matches == 0 ) {
 			return __('No Links', 'msa');
@@ -264,8 +340,6 @@ function msa_show_external_links( $link_matches ) {
 	} else {
 		return __('No Links', 'msa');
 	}
-
-	$output .= '</ol>';
 
 	return $output;
 
@@ -280,23 +354,57 @@ function msa_show_external_links( $link_matches ) {
  */
 function msa_show_images($content) {
 
-
-
 	preg_match_all('|<img(?:.*)/>|Ui', $content, $matches, PREG_SET_ORDER);
 
 	$images = 0;
 
 	$output = __('Count: ' . count($matches), 'msa');
-	$output .= '<div class="msa-images">';
+	$output .= '<div class="msa-images"><p>' . __('Has Alt tag', 'msa') . '</p>';
+
+	// Has Alt tag
 
 	foreach ( $matches as $match ) {
 
+		// Get the scr URL
+
 		$link = array();
-		preg_match( '/src="([^"]*)"/i', $match[0], $link ) ;
+		preg_match( '/src="([^"]*)"/i', $match[0], $link );
 		$link = $link[1];
 
-		$output .= '<a href="' . $link . '" target="_blank">' . $match[0] . '</a>';
-		$images++;
+		// Check for an alt tag
+
+		preg_match( '/alt="([^"]*)"/i', $match[0], $alt );
+		$alt = $alt[1];
+
+		if ( isset($alt) && $alt != '' ) {
+			$output .= '<a href="' . $link . '" target="_blank">' . $match[0] . '</a>';
+			$images++;
+		}
+	}
+
+	$output .= '</div>';
+
+	$output .= '<div class="msa-images"><p>' . __('Does not have Alt tag', 'msa') . '</p>';
+
+	// Does not have alt tag
+
+	foreach ( $matches as $match ) {
+
+		// Get the scr URL
+
+		$link = array();
+		preg_match( '/src="([^"]*)"/i', $match[0], $link );
+		$link = $link[1];
+
+		// Check for an alt tag
+
+		preg_match( '/alt="([^"]*)"/i', $match[0], $alt );
+		$alt = $alt[1];
+
+		if ( empty($alt) || $alt == '' ) {
+			$output .= '<a class="msa-no-alt-tag" href="' . $link . '" target="_blank">' . $match[0] . '</a>';
+			$images++;
+		}
 	}
 
 	$output .= '</div>';
