@@ -39,9 +39,7 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 	$post = (object) $audit_post['post'];
 	$data = $audit_post['data'];
 
-	$score = msa_calculate_score($post, $audit_post['data']);
-	$images = msa_show_images($post->post_content);
-	$headings = msa_show_headings($post->post_content); ?>
+	$score = msa_calculate_score($post, $audit_post['data']); ?>
 
 	<h1><?php _e('Single Post', 'msa'); ?>
 		<a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $_GET['audit']; ?>" class="page-title-action"><?php _e('All Posts', 'msa'); ?></a>
@@ -53,17 +51,24 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 			<div class="msa-header-score-container">
 				<span class="msa-header-score-description"><?php _e('Post Score', 'msa'); ?></span>
 				<div class="msa-header-score msa-post-status-text-<?php echo msa_get_score_status($score['score']); ?>">
-					<?php echo msa_get_letter_grade($score['score']); ?>
+					<?php echo round($score['score'] * 100) . '%'; ?>
 				</div>
+				<p><?php _e('Analysis Date: ' . date('M j, Y', strtotime($audit['date'])), 'msa'); ?></p>
 			</div>
+
 		</div>
 
 		<div class="msa-column msa-header-column msa-detail-container">
 			<h1><?php _e('Content Analysis: Post Detail', 'msa'); ?></h1>
-			<p><?php _e('Analysis Date: ' . date('m/d/Y', strtotime($audit['date'])), 'msa'); ?></p>
 			<hr />
-			<h1><?php echo $post->post_title; ?></h1>
-			<a href="<?php echo get_permalink($post->ID); ?>" target="_blank"><?php echo get_permalink($post->ID); ?></a>
+			<div class="msa-google-preview">
+				<a class="msa-google-preview-title" href="#"><?php echo $post->post_title; ?></a>
+				<span class="msa-google-preview-url"><?php echo get_permalink($post->ID); ?></span>
+				<p class="msa-google-preview-description">
+					<span class="msa-google-preview-date"><?php echo date('M j, Y', strtotime($post->post_date)); ?> - </span>
+					<span class="msa-google-preview-content"><?php echo strip_shortcodes(strip_tags( msa_get_post_excerpt($post))); ?></span>
+				</p>
+			</div>
 		</div>
 
 		<div class="msa-column msa-header-column msa-action-container">
@@ -72,10 +77,54 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 
 	</div>
 
-	<div class="msa-column msa-left-column">
+	<div class="msa-column msa-left-column metabox-holder">
 
 		<div class="msa-column-container">
 
+			<div class="postbox" id="general">
+				<h3 class="hndle ui-sortable-handle"><?php _e('General Data', 'msa'); ?>
+					<a class="button" href="<?php echo get_edit_post_link($post->ID); ?>" target="_blank"><?php _e('Edit Post', 'msa'); ?></a>
+					<a class="button" href="<?php echo get_permalink($post->ID); ?>" target="_blank"><?php _e('View Post', 'msa'); ?></a>
+				</h3>
+				<div class="inside">
+					<table class="wp-list-table widefat striped posts msa-audit-table">
+						<tbody>
+
+							<tr>
+								<td><?php _e('ID', 'msa'); ?></td>
+								<td><?php echo $post->ID; ?></td>
+							</tr>
+
+							<tr>
+								<td><?php _e('Slug', 'msa'); ?></td>
+								<td>/<?php echo $post->post_name; ?></td>
+							</tr>
+
+							<tr>
+								<td><?php _e('Title', 'msa'); ?></td>
+								<td><?php echo $post->post_title; ?></td>
+							</tr>
+
+							<tr>
+								<td><?php _e('Published Date', 'msa'); ?></td>
+								<td><?php echo date('M j, Y', strtotime($post->post_date)); ?></td>
+							</tr>
+
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<?php $condition_categories = msa_get_condition_categories();
+			foreach ( $condition_categories as $key => $condition_category ) { ?>
+
+				<div class="postbox" id="<?php echo $key; ?>">
+					<?php echo apply_filters('msa_condition_category_content', $key, $post, $data ); ?>
+				</div>
+
+			<?php } ?>
+
+<!--
 			<table class="wp-list-table widefat striped posts msa-audit-table">
 
 				<thead>
@@ -130,100 +179,10 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 						<td><?php echo $data['comment_count']; ?></td>
 					</tr>
 
-	<!--
-					if ( file_exists(WP_PLUGIN_DIR . '/wordpress-seo/inc/class-wpseo-utils.php') && is_plugin_active('wordpress-seo/wp-seo.php') ) {
-
-						<tr>
-							<td><?php _e('SEO Score', 'msa'); ?></td>
-							<td><div class="wpseo-score-icon <?php echo esc_attr( $data['yoast-seo-score-label'] ); ?>"></div></td>
-						</tr>
-
-						<tr>
-							<td><?php _e('Focus Keyword', 'msa'); ?></td>
-							<td><?php echo $data['yoast-seo-focuskw']; ?></td>
-						</tr>
-
-						<tr>
-							<td><?php _e('Meta Description', 'msa'); ?></td>
-							<td><?php echo $data['yoast-seo-meta-desc']; ?></td>
-						</tr>
-
-						<tr>
-							<td><?php _e('Meta Description Length', 'msa'); ?></td>
-							<td><?php echo strlen($data['yoast-seo-meta-desc']); ?></td>
-						</tr>
-
-					}
-	-->
-
-					<tr class="msa-post-status msa-post-status-<?php echo msa_get_score_status($score['data']['internal_links']); ?>">
-						<td><?php _e('Internal Links', 'msa'); ?></td>
-						<td>
-							<?php echo msa_show_internal_links($data['link_matches']); ?>
-						</td>
-					</tr>
-
-					<tr class="msa-post-status msa-post-status-<?php echo msa_get_score_status($score['data']['external_links']); ?>">
-						<td><?php _e('External Links', 'msa'); ?></td>
-						<td>
-							<?php echo msa_show_external_links($data['link_matches']); ?>
-						</td>
-					</tr>
-
-	<!--
-					if ( isset($settings['use_shared_count']) && $settings['use_shared_count'] ) {
-						<tr>
-							<td><?php _e('Share Count', 'msa'); ?></td>
-							<td class="msa-share-count" data-post="<?php echo $post->ID; ?>"><i class="fa fa-refresh fa-spin"></i></td>
-						</tr>
-					}
-	-->
-
-					<tr class="msa-post-status msa-post-status-<?php echo msa_get_score_status($score['data']['images']); ?>">
-						<td><?php _e('Images', 'msa'); ?></td>
-						<td><?php echo $images; ?></td>
-					</tr>
-
-					<tr class="msa-post-status msa-post-status-<?php echo msa_get_score_status($score['data']['headings']); ?>">
-						<td><?php _e('Headings', 'msa'); ?></td>
-						<td><?php echo $headings; ?></td>
-					</tr>
-
-<!--
-					<tr>
-						<td><?php _e('Heading 1 Count', 'msa'); ?></td>
-						<td><?php echo $data['h1']; ?></td>
-					</tr>
-
-					<tr>
-						<td><?php _e('Heading 2 Count', 'msa'); ?></td>
-						<td><?php echo $data['h2']; ?></td>
-					</tr>
-
-					<tr>
-						<td><?php _e('Heading 3 Count', 'msa'); ?></td>
-						<td><?php echo $data['h3']; ?></td>
-					</tr>
-
-					<tr>
-						<td><?php _e('Heading 4 Count', 'msa'); ?></td>
-						<td><?php echo $data['h4']; ?></td>
-					</tr>
-
-					<tr>
-						<td><?php _e('Heading 5 Count', 'msa'); ?></td>
-						<td><?php echo $data['h5']; ?></td>
-					</tr>
-
-					<tr>
-						<td><?php _e('Heading 6 Count', 'msa'); ?></td>
-						<td><?php echo $data['h6']; ?></td>
-					</tr>
--->
-
 				</tbody>
 
 			</table>
+-->
 
 		</div>
 
@@ -233,32 +192,17 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 
 		<div class="msa-column-container">
 
-			<div class="msa-right-column-container">
+			<div class="msa-right-column-container metabox-holder">
 
-				<div class="msa-right-column-item msa-content-details-container">
-					<span class="msa-content-description"><?php _e('Content Description', 'msa'); ?></span>
-					<div class="msa-content-details">
-						<span class="msa-content-details-grade">
-						<?php
-						$data = msa_get_post_audit_data($post);
-						$score = msa_calculate_score($post, $data);
-						echo msa_get_letter_grade($score['score']); ?>
-						</span>
-						<button class="button button-primary msa-save-content-status"><?php _e('Save Content Status', 'msa'); ?></button>
+				<?php echo do_action('msa_single_post_before_sidebar'); ?>
+
+				<div class="msa-right-column-item postbox">
+					<h3 class="hndle ui-sortable-handle"><?php _e('Title', 'msa'); ?></h3>
+					<div class="inside">
 					</div>
 				</div>
 
-				<div class="msa-right-column-item msa-google-preview-container">
-					<div class="msa-google-preview">
-						<a class="msa-google-preview-title" href="#"><?php echo $post->post_title; ?></a>
-						<span class="msa-google-preview-url"><?php echo get_permalink($post->ID); ?></span>
-						<p class="msa-google-preview-description">
-							<span class="msa-google-preview-content"><?php echo strip_shortcodes(strip_tags( msa_get_post_excerpt($post))); ?></span>
-						</p>
-					</div>
-				</div>
-
-				<?php echo do_action('msa_audit_single_post_sidebar_content'); ?>
+				<?php echo do_action('msa_single_post_after_sidebar'); ?>
 
 			</div>
 
@@ -276,11 +220,7 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 	// Get the posts for an audit
 
 	$audit_posts_model = new MSA_Audit_Posts_Model();
-	$posts = $audit_posts_model->get_data($_GET['audit']);
-
-	//$posts = msa_filter_posts($posts);
-
-	?>
+	$posts = $audit_posts_model->get_data($_GET['audit']); ?>
 
 	<h1><?php _e('Single Audit', 'msa'); ?>
 		<a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits'; ?>" class="page-title-action"><?php _e('All Audits', 'msa'); ?></a>
@@ -306,23 +246,6 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 		</div>
 
 	</div>
-
-	<script>
-	jQuery(document).ready(function($){
-
-		// Hide and show the columns
-
-		$('.hide-column-tog').change(function(){
-
-			if ( $(this).prop('checked') ) {
-				$('#' + $(this).val()).show();
-			} else {
-				$('#' + $(this).val()).hide();
-			}
-		});
-
-	});
-	</script>
 
 	<ul class="subsubsub">
 
@@ -369,6 +292,8 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 
 			<table class="form-table">
 				<tbody>
+
+					<?php do_action('msa_all_audits_before_create_new_settings'); ?>
 
 					<!-- Audit Name -->
 
@@ -419,13 +344,15 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 						<th scope="row"><label for="msa-audit-max-posts"><?php _e("Maximum Posts", 'msa'); ?></label></th>
 						<td>
 							<select id="msa-audit-max-posts" name="max-posts">
-								<?php for ($i = 500; $i <= 5000; $i+= 100) { ?>
-									<option value="<?php echo $i; ?>" <?php selected($i, 500, true); ?>><?php _e($i, 'msa'); ?></option>
+								<?php for ($i = 50; $i <= 2000; $i+= 50) { ?>
+									<option value="<?php echo $i; ?>" <?php selected($i, 50, true); ?>><?php _e($i, 'msa'); ?></option>
 								<?php } ?>
 							</select>
 							<p class="description"><?php _e('The maximum number of posts that will be audited.', 'msa'); ?></p>
 						</td>
 					</tr>
+
+					<?php do_action('msa_all_audits_after_create_new_settings'); ?>
 
 				</tbody>
 			</table>
@@ -436,21 +363,6 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 
 		</form>
 	</div>
-
-	<script>
-	jQuery(document).ready(function($){
-		$(".msa-datepicker").datepicker();
-
-		$('.msa-add-new-audit').click(function(){
-
-			if ( $('.msa-create-audit-wrap').css('display') != 'none' ) {
-				$('.msa-create-audit-wrap').slideUp();
-			} else {
-				$('.msa-create-audit-wrap').slideDown();
-			}
-		});
-	});
-	</script>
 
 	<form method="post">
 		<input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>" />

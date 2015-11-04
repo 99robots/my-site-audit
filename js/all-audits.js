@@ -24,6 +24,9 @@
 
 jQuery(document).ready(function($){
 
+	var msa_audit_time = 0;
+	var msa_audit_time_interval;
+
 	// Get all the posts for the audit
 
 	$(".msa-create-audit-form").submit(function(e){
@@ -38,7 +41,9 @@ jQuery(document).ready(function($){
 
 		$('<span class="msa-creating-audit"><img src="' + msa_all_audits_data.site_url + '/wp-admin/images/spinner-2x.gif"/></span>').insertAfter('#submit');
 
+		$(this).append('<div class="msa-info updated"><p>' + msa_all_audits_data.info + '</p></div>');
 		$(this).append('<div class="msa-progress-bar-container"><div class="msa-progress-bar" data-current="1" data-max="0"></div></div>');
+		$(this).append('<div class="msa-posts-completed">0/0</div>');
 
 		// Audit a post
 
@@ -50,26 +55,45 @@ jQuery(document).ready(function($){
 			response = $.parseJSON(response);
 			var posts = response.post_ids;
 
+			$('.msa-estimated-time span').html("N/A");
+			$('.msa-posts-completed').html('0/' + posts.length);
 			$('.msa-progress-bar').attr('data-max', posts.length);
 			$(".msa-create-audit-form").append('<span style="display-none;" class="msa-audit-score" data-audit-id="' + response.audit_id + '" data-num-posts="' + posts.length + '" data-score="0"></span>');
 
+			//msa_add_post_to_audit(response.audit_id, posts[0]);
+
 			for ( var i = 0; i < posts.length; i++) {
-
-				$.post(ajaxurl, {
-						'action': 'msa_add_post_to_audit',
-						'audit_id': response.audit_id,
-						'post_id': posts[i],
-					}, function(response) {
-
-						msa_update_progress_bar();
-
-						var score = $('.msa-audit-score').attr('data-score');
-						$('.msa-audit-score').attr('data-score', parseFloat(score) + parseFloat(response));
-						msa_update_audit_score($('.msa-audit-score').attr('data-audit-id'), $('.msa-audit-score').attr('data-num-posts'), $('.msa-audit-score').attr('data-score'));
-				});
+				msa_add_post_to_audit(response.audit_id, posts[i]);
 			}
 		});
 	});
+
+	/**
+	 * Add a post to the audit
+	 *
+	 * @access public
+	 * @param mixed audit_id
+	 * @param mixed post
+	 * @return void
+	 */
+	function msa_add_post_to_audit(audit_id, post) {
+
+		$.post(ajaxurl, {
+				'action': 'msa_add_post_to_audit',
+				'audit_id': audit_id,
+				'post_id': post,
+			}, function(response) {
+
+				console.log('post completed');
+
+				msa_update_progress_bar();
+
+				var score = $('.msa-audit-score').attr('data-score');
+				$('.msa-audit-score').attr('data-score', parseFloat(score) + parseFloat(response));
+				msa_update_audit_score($('.msa-audit-score').attr('data-audit-id'), $('.msa-audit-score').attr('data-num-posts'), $('.msa-audit-score').attr('data-score'));
+		});
+
+	}
 
 	/**
 	 * Update the audit score
@@ -86,9 +110,9 @@ jQuery(document).ready(function($){
 
 		$.post(ajaxurl, {
 				'action': 'msa_update_audit_score',
-				'audit_id': audit_id, // response.audit_id,
-				'score': score, // parseFloat($('.msa-audit-score').attr('data-score')),
-				'num_posts': num_posts, // posts.length,
+				'audit_id': audit_id,
+				'score': score,
+				'num_posts': num_posts,
 			}, function(response) {
 				//console.log('Score has been updated: ' + response);
 		});
@@ -104,6 +128,7 @@ jQuery(document).ready(function($){
 	function msa_update_progress_bar() {
 
 		$('.msa-progress-bar').attr('data-current', parseInt($('.msa-progress-bar').attr('data-current')) + 1);
+		$('.msa-posts-completed').html(parseInt($('.msa-progress-bar').attr('data-current')) + '/' + parseInt($('.msa-progress-bar').attr('data-max')));
 
 		var width = parseInt($('.msa-progress-bar').attr('data-current')) / parseInt($('.msa-progress-bar').attr('data-max'));
 
@@ -112,8 +137,11 @@ jQuery(document).ready(function($){
 		if ( width >= 1 ) {
 			width = 1;
 
+			$('.msa-info').remove();
+			$('.msa-posts-completed').remove();
 			$('.msa-creating-audit').remove();
 			$('.msa-progress-bar-container').remove();
+			clearInterval(msa_audit_time_interval);
 
 			// Add message saying that the process has been completed
 
@@ -150,6 +178,32 @@ jQuery(document).ready(function($){
 			$(this).hide();
 		}
 
+	});
+
+	// Datepicker
+
+	$(".msa-datepicker").datepicker();
+
+	// Hide and show the create new settings
+
+	$('.msa-add-new-audit').click(function(){
+
+		if ( $('.msa-create-audit-wrap').css('display') != 'none' ) {
+			$('.msa-create-audit-wrap').slideUp();
+		} else {
+			$('.msa-create-audit-wrap').slideDown();
+		}
+	});
+
+	// Hide and show the columns
+
+	$('.hide-column-tog').change(function(){
+
+		if ( $(this).prop('checked') ) {
+			$('#' + $(this).val()).show();
+		} else {
+			$('#' + $(this).val()).hide();
+		}
 	});
 
 });

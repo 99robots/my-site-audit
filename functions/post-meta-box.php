@@ -37,11 +37,11 @@ function msa_add_meta_box() {
 
 	add_meta_box(
 		'msa-meta-box',
-		__('Content Audit', 'msa' ),
+		__('My Site Audit: Post Details', 'msa' ),
 		'msa_meta_box_callback'
 	);
 }
-//add_action('add_meta_boxes', 'msa_add_meta_box');
+add_action('add_meta_boxes', 'msa_add_meta_box');
 
 /**
  * Prints the box content.
@@ -52,21 +52,36 @@ function msa_add_meta_box() {
  */
 function msa_meta_box_callback( $post ) {
 
-	if ( false === ( $settings = get_option('msa_settings') ) ) {
-		$settings = array();
+	// Get the latest audit
+
+	$audit_model = new MSA_Audits_Model();
+	$audit = $audit_model->get_latest();
+
+	// Check to see if we have an audit
+
+	$output = '';
+
+	if ( isset($audit) ) {
+
+		$audit = $audit_model->get_data_from_id($audit['id']);
+		$audit_posts_model 	= new MSA_Audit_Posts_Model();
+		$audit_post = $audit_posts_model->get_data_from_id($audit['id'], $_GET['post']);
+		$post = (object) $audit_post['post'];
+		$data = $audit_post['data'];
+
+		$score = msa_calculate_score($post, $audit_post['data']);
+
+		$condition_categories = msa_get_condition_categories();
+		foreach ( $condition_categories as $key => $condition_category ) {
+			?><div class="postbox" id="<?php echo $key; ?>">
+				<?php echo apply_filters('msa_condition_category_content', $key, $post, $data ); ?>
+			</div><?php
+		}
+
 	}
 
-	$output = '<table class="wp-list-table widefat fixed striped posts">';
-		$output .= '<thead>';
-			$output .= '<th style="width:20%">' . __('Attribute', 'msa') . '</th>';
-			$output .= '<th>' . __('Value', 'msa') . '</th>';
-		$output .= '</thead>';
-		$output .= '<tbody>';
-
-		$output .= msa_show_audit_data($post, $settings, 'inline');
-
-		$output .= '</tbody>';
-	$output .= '</table>';
+	wp_enqueue_style('msa-all-audits-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/all-audits.css');
+	wp_enqueue_style('msa-common-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/css/common.css');
 
 	echo $output;
 

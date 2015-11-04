@@ -108,7 +108,9 @@ class MSA_All_Audits_Table extends WP_List_Table {
 		 *
 		 ========================================================================= */
 
-		usort( $this->items, array( &$this, 'usort_reorder' ) );
+		if ( count($this->items) > 0 ) {
+			usort( $this->items, array( &$this, 'usort_reorder' ) );
+		}
 
 		$total_items = count($this->items);
 
@@ -148,13 +150,14 @@ class MSA_All_Audits_Table extends WP_List_Table {
 	 */
 	function get_columns() {
 
-		$columns['score']     = __('Score', 'msa');
-		$columns['name']      = __('Name', 'msa');
-		$columns['date']      = __('Date', 'msa');
-		$columns['num_posts'] = __('Number of Posts', 'msa');
-		$columns['user']      = __('User', 'msa');
+		$columns['score']         = __('Score', 'msa');
+		$columns['name']          = __('Name', 'msa');
+		$columns['date']          = __('Created On', 'msa');
+		$columns['user']          = __('Created By', 'msa');
+		$columns['num_posts']     = __('Number of Posts', 'msa');
+		$columns['post_types']    = __('Post Types', 'msa');
 
-		return $columns;
+		return apply_filters('msa_all_audits_table_columns', $columns);
 	}
 
 	/**
@@ -230,13 +233,17 @@ class MSA_All_Audits_Table extends WP_List_Table {
 				$output = $user->display_name;
 			break;
 
+			case 'post_types':
+				$output = implode('<br />', $item['args']['post_types']);
+			break;
+
 			default:
 				$output = $item[$column_name];
 			break;
 
 		}
 
-		return $output;
+		return apply_filters('msa_all_audits_table_column_default', $output);
 
 	}
 
@@ -284,17 +291,17 @@ class MSA_All_Audits_Table extends WP_List_Table {
 
 								foreach( json_decode($audit['args']['conditions'], true) as $condition ) {
 
-									$comparison = __('Greater Than', 'msa');
-
 									if ( $condition['comparison'] == 1 ) {
-										$comparison = __('Less Than', 'msa');
+										$comparison = __('Greater Than', 'msa');
 									} else if ( $condition['comparison'] == 2 ) {
+										$comparison = __('Less Than', 'msa');
+									} else if ( $condition['comparison'] == 3 ) {
 										$comparison = __('In Between', 'msa');
 									}
 
 									$value = __('Pass or Fail', 'msa');
 
-									if ( $condition['value'] == 1 ) {
+									if ( $condition['value'] == 2 ) {
 										$value = __('Precentage', 'msa');
 									}
 
@@ -317,11 +324,11 @@ class MSA_All_Audits_Table extends WP_List_Table {
 
 			$actions['edit'] = $condition_modal;
 
-			return sprintf('%1$s %2$s', '<a href="' . get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $item['id'] . '">' . $item['name'] . '</a>', $this->row_actions($actions) );
+			return apply_filters('msa_all_audits_table_column_name', sprintf('%1$s %2$s', '<a href="' . get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $item['id'] . '">' . $item['name'] . '</a><small style="opacity:0.5;padding-left:4px;">id:(' . $item['id'] . ')</small>', $this->row_actions($actions) ) );
 
 		}
 
-		return '<a href="' . $item['extension-link'] . '" target="_blank">' . $item['name'] . '</a>';
+		return apply_filters('msa_all_audits_table_column_name_extension', '<a href="' . $item['extension-link'] . '" target="_blank">' . $item['name'] . '</a>');
 
 	}
 

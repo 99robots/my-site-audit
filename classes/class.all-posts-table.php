@@ -123,7 +123,9 @@ class MSA_All_Posts_Table extends WP_List_Table {
 		 *
 		 ========================================================================= */
 
-		usort( $this->items, array( &$this, 'usort_reorder' ) );
+		if ( count($this->items) > 0 ) {
+			usort( $this->items, array( &$this, 'usort_reorder' ) );
+		}
 
 		$total_items = count($this->items);
 
@@ -132,7 +134,9 @@ class MSA_All_Posts_Table extends WP_List_Table {
 			'per_page'    => $per_page 		// We have to determine how many items to show on a page
 		) );
 
-		$this->items = array_slice($this->items,(($current_page-1)*$per_page),$per_page);
+		if ( is_array($this->items) && count($this->items) > 0 ) {
+			$this->items = array_slice($this->items,(($current_page-1)*$per_page),$per_page);
+		}
 	}
 
 	/**

@@ -24,6 +24,13 @@
 
 /* =====================================================
  *
+ * Helper Classes
+ *
+ ==================================================== */
+
+
+/* =====================================================
+ *
  * Status Colors
  *
  ==================================================== */
@@ -52,26 +59,33 @@
 	border-color: rgb(207,0,0);
 }
 
+.msa-post-status-bg,
 .msa-post-status-bg > td {
 	color: white;
+	background-color: #777;
 }
 
+.msa-post-status-bg-great,
 .msa-post-status-bg-great > td {
 	background-color: rgb(0,207,0);
 }
 
+.msa-post-status-bg-good,
 .msa-post-status-bg-good > td {
 	background-color: rgb(143,207,0);
 }
 
+.msa-post-status-bg-ok,
 .msa-post-status-bg-ok > td {
 	background-color: rgb(207,207,0);
 }
 
+.msa-post-status-bg-poor,
 .msa-post-status-bg-poor > td {
 	background-color: rgb(207,143,0);
 }
 
+.msa-post-status-bg-bad,
 .msa-post-status-bg-bad > td {
 	background-color: rgb(207,0,0);
 }

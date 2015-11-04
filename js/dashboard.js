@@ -24,22 +24,47 @@
 
 jQuery(document).ready(function($){
 
-	// Get all share count data for posts
+	// Save sort order
 
-	$('.' + nnr_ca_data.prefix + 'share-count[data-post]').each(function(index, value){
+	$('.meta-box-sortables-left').sortable({
+        update: function(event, ui) {
+			msa_save_dashboard_panel_order();
+        }
+    });
 
-		$.post(ajaxurl, {
-				'action': 'nnr_ca_share_count_post',
-				'post' : $(value).data('post'),
+    $('.meta-box-sortables-right').sortable({
+        update: function(event, ui) {
+			msa_save_dashboard_panel_order();
+        }
+    });
+
+    /**
+     * Save the dashboard panel order
+     *
+     * @access public
+     * @return void
+     */
+    function msa_save_dashboard_panel_order() {
+
+		var left_order = $('.meta-box-sortables-left').sortable('toArray');
+	    var right_order = $('.meta-box-sortables-right').sortable('toArray');
+
+	    if ( left_order.length == 0 ) {
+			left_order = 'empty';
+	    }
+
+	    if ( right_order.length == 0 ) {
+			right_order = 'empty';
+	    }
+
+	    $.post(ajaxurl, {
+				'action': 'msa_save_dashboard_panel_order',
+				'left_order': left_order,
+				'right_order': right_order,
 			}, function(response) {
-
-			response = $.parseJSON(response);
-
-			$('.' + nnr_ca_data.prefix + 'share-count[data-post="' + response.post + '"]').html(response.count);
-
-			$($.bootstrapSortable);
-
+			console.log(response);
 		});
-	});
+
+    }
 
 });

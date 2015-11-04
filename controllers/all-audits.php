@@ -31,6 +31,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 if ( isset($_POST['submit']) && check_admin_referer('msa-add-audit') ) {
 
+	error_log('submitted data');
+
 	/**
 	 *
 	 * This is the main action for creating an audit

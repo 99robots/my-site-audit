@@ -192,6 +192,7 @@ final class My_Site_Audit {
 			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/activation.php' );
 			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/admin-pages.php' );
 			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/condition.php' );
+			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/condition-category.php' );
 			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/attribute.php' );
 			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/score-status.php' );
 			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/dashboard-panel.php' );
@@ -226,6 +227,10 @@ final class My_Site_Audit {
 
 		if ( function_exists('msa_create_initial_conditions') ) {
 			msa_create_initial_conditions();
+		}
+
+		if ( function_exists('msa_create_initial_condition_categories') ) {
+			msa_create_initial_condition_categories();
 		}
 
 		if ( function_exists('msa_create_initial_attributes') ) {

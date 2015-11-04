@@ -28,6 +28,65 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
+ * Show the content for the condition values that need custom implementation.
+ *
+ * @access public
+ * @param mixed $value
+ * @param mixed $data
+ * @param mixed $post
+ * @param mixed $key
+ * @return void
+ */
+function msa_condition_category_content_value($value, $data, $post, $key) {
+
+	// Modified Date
+
+	if ( $key == 'modified_date' ) {
+		return date('M j, Y', strtotime($post->post_modified));
+	}
+
+	// Links
+
+	if ( $key == 'internal_links' || $key == 'external_links' || $key == 'broken_links' ) {
+		return msa_show_links($data, $key);
+	}
+
+	// Images
+
+	if ( $key == 'images' ) {
+		return msa_show_images($post->post_content);
+	}
+
+	// Missing Alt Tag
+
+	if ( $key == 'missing_alt_tag' ) {
+		return msa_show_images_without_alt($post->post_content);
+	}
+
+	// H1 Tags
+
+	if ( $key == 'h1_tag' ) {
+		return msa_show_h1_tags($post->post_content, $data);
+	}
+
+	// Invalid Headings
+
+	if ( $key == 'invalid_headings' ) {
+		return msa_show_invalid_headings($data['invalid_headings_data']);
+	}
+
+	// Headings
+
+	if ( $key == 'headings' ) {
+		return msa_show_headings($post->post_content, $data);
+	}
+
+	return $value;
+
+}
+add_filter('msa_condition_category_content_value', 'msa_condition_category_content_value', 10, 4);
+
+/**
  * Save the conditions data
  *
  * @access public
@@ -137,9 +196,9 @@ function msa_settings_tab_conditions_content() {
 					<th scope="row"><label for="' . $setting['id'] . '">' . __('Comparison', 'msa') . '</label></th>
 					<td>
 						<select class="' . $setting['class'] . '-comparison" id="' . $setting['id'] . '-comparison" name="' . $setting['name'] . '-comparison">
-							<option value="0" ' . selected('0', $comparison, false) . '>' . __('Greater Than') . '</option>
-							<option value="1" ' . selected('1', $comparison, false) . '>' . __('Less Than') . '</option>
-							<option value="2" ' . selected('2', $comparison, false) . '>' . __('In Between') . '</option>
+							<option value="1" ' . selected('1', $comparison, false) . '>' . __('Greater Than') . '</option>
+							<option value="2" ' . selected('2', $comparison, false) . '>' . __('Less Than') . '</option>
+							<option value="3" ' . selected('3', $comparison, false) . '>' . __('In Between') . '</option>
 						</select>
 						<p class="description">' . __('The type of comparison you want to make against your post data.') . '</p>
 					</td>
@@ -149,8 +208,8 @@ function msa_settings_tab_conditions_content() {
 					<th scope="row"><label for="' . $setting['id'] . '">' . __('Value', 'msa') . '</label></th>
 					<td>
 						<select class="' . $setting['class'] . '-value" id="' . $setting['id'] . '-value" name="' . $setting['name'] . '-value">
-							<option value="0" ' . selected('0', $value, false) . '>' . __('Pass or Fail') . '</option>
-							<option value="1" ' . selected('1', $value, false) . '>' . __('Percentage') . '</option>
+							<option value="1" ' . selected('1', $value, false) . '>' . __('Pass or Fail') . '</option>
+							<option value="2" ' . selected('2', $value, false) . '>' . __('Percentage') . '</option>
 						</select>
 						<p class="description">' . __('The resulting value for that post attribute.') . '</p>
 					</td>
@@ -201,33 +260,39 @@ function msa_create_initial_conditions() {
 	/*
 	 * Comparsion:
 	 *
-	 * 0 = greater than some number
-	 * 1 = less than some number
-	 * 2 = in between some numbers
+	 * 1 = greater than some number
+	 * 2 = less than some number
+	 * 3 = in between some numbers
 	 *
 	 */
 	/*
 	 * Value:
 	 *
-	 * 0 = boolean result (i.e pass or fail)
-	 * 1 = ratio (i.e. .123)
+	 * 1 = boolean result (i.e pass or fail)
+	 * 2 = ratio (i.e. .123)
 	 *
 	 */
+
+	/* =======================================================================
+	 *
+	 * Content
+	 *
+	 * ===================================================================== */
 
 	// Title
 
 	msa_register_condition('title', array(
 		'name' 				=> __('Title', 'msa'),
 		'weight'        	=> 2,
-		'comparison'		=> 1,
-		'value'				=> 0,
+		'comparison'		=> 2,
+		'value'				=> 1,
 		'max'           	=> 60,
 		'max_display_val'	=> __('60 Characters', 'msa'),
+		'category'			=> 'content',
 		'settings'		=> array(
 			'id'				=> 'msa-condition-title',
 			'class'				=> 'msa-condition-title',
 			'name'				=> 'msa-condition-title',
-			'key'				=> 'title',
 			'description-max'	=> __('The maximum number of characters a title is allowed to be.', 'msa'),
 		),
 		'filter'		=> array(
@@ -251,15 +316,15 @@ function msa_create_initial_conditions() {
 	msa_register_condition('modified_date', array(
 		'name' 				=> __('Modified Date', 'msa'),
 		'weight'        	=> 3,
-		'comparison'		=> 1,
-		'value'				=> 1,
+		'comparison'		=> 2,
+		'value'				=> 2,
 		'max'          		=> DAY_IN_SECONDS * 90,
 		'max_display_val'	=> __('90 Days', 'msa'),
+		'category'			=> 'content',
 		'settings'		=> array(
-			'id'				=> 'msa-condition-modified-date',
-			'class'				=> 'msa-condition-modified-date',
-			'name'				=> 'msa-condition-modified-date',
-			'key'				=> 'modified_date',
+			'id'				=> 'msa-condition-modified_date',
+			'class'				=> 'msa-condition-modified_date',
+			'name'				=> 'msa-condition-modified_date',
 			'description-max'	=> __('The maximum number of seconds your posts can go without being modified.', 'msa'),
 		),
 		'filter'		=> array(
@@ -283,15 +348,15 @@ function msa_create_initial_conditions() {
 	msa_register_condition('word_count', array(
 		'name' 				=> __('Word Count', 'msa'),
 		'weight'        	=> 10,
-		'comparison'		=> 0,
-		'value'				=> 1,
+		'comparison'		=> 1,
+		'value'				=> 2,
 		'min'           	=> 750,
 		'min_display_val'	=> __('750 Words', 'msa'),
+		'category'			=> 'content',
 		'settings'		=> array(
-			'id'				=> 'msa-condition-word-count',
-			'class'				=> 'msa-condition-word-count',
-			'name'				=> 'msa-condition-word-count',
-			'key'				=> 'word_count',
+			'id'				=> 'msa-condition-word_count',
+			'class'				=> 'msa-condition-word_count',
+			'name'				=> 'msa-condition-word_count',
 			'description-min'	=> __('The minimum number of words each post should have.', 'msa'),
 		),
 		'filter'		=> array(
@@ -315,15 +380,15 @@ function msa_create_initial_conditions() {
 	msa_register_condition('comment_count', array(
 		'name' 				=> __('Comment Count', 'msa'),
 		'weight'        	=> 1,
-		'comparison'		=> 0,
-		'value'				=> 1,
+		'comparison'		=> 1,
+		'value'				=> 2,
 		'min'           	=> 5,
 		'min_display_val'	=> __('5 Comments', 'msa'),
+		'category'			=> 'content',
 		'settings'		=> array(
-			'id'				=> 'msa-condition-comment-count',
-			'class'				=> 'msa-condition-comment-count',
-			'name'				=> 'msa-condition-comment-count',
-			'key'				=> 'word_count',
+			'id'				=> 'msa-condition-comment_count',
+			'class'				=> 'msa-condition-comment_count',
+			'name'				=> 'msa-condition-comment_count',
 			'description-min'	=> __('The minimum number of comments each post should have.', 'msa'),
 		),
 		'filter'		=> array(
@@ -342,22 +407,28 @@ function msa_create_initial_conditions() {
 		)
 	));
 
+	/* =======================================================================
+	 *
+	 * Links
+	 *
+	 * ===================================================================== */
+
 	// Internal Links
 
 	msa_register_condition('internal_links', array(
 		'name' 				=> __('Internal Links', 'msa'),
 		'weight'        	=> 5,
-		'comparison'		=> 2,
-		'value'				=> 1,
+		'comparison'		=> 3,
+		'value'				=> 2,
 		'min'           	=> 2,
 		'max'           	=> 6,
 		'min_display_val'	=> __('2 Internal Links', 'msa'),
 		'max_display_val'	=> __('6 Internal Links', 'msa'),
+		'category'			=> 'links',
 		'settings'		=> array(
-			'id'				=> 'msa-condition-internal-links',
-			'class'				=> 'msa-condition-internal-links',
-			'name'				=> 'msa-condition-internal-links',
-			'key'				=> 'internal_links',
+			'id'				=> 'msa-condition-internal_links',
+			'class'				=> 'msa-condition-internal_links',
+			'name'				=> 'msa-condition-internal_links',
 			'description-min'	=> __('The minimum number of Internal Links each post should have.', 'msa'),
 			'description-max'	=> __('The maximum number of Internal Links each post should have.', 'msa'),
 		),
@@ -382,17 +453,17 @@ function msa_create_initial_conditions() {
 	msa_register_condition('external_links', array(
 		'name' 				=> __('External Links', 'msa'),
 		'weight'        	=> 5,
-		'comparison'		=> 2,
-		'value'				=> 1,
+		'comparison'		=> 3,
+		'value'				=> 2,
 		'min'           	=> 1,
 		'max'           	=> 14,
 		'min_display_val'	=> __('1 Internal Links', 'msa'),
 		'max_display_val'	=> __('14 Internal Links', 'msa'),
+		'category'			=> 'links',
 		'settings'		=> array(
-			'id'				=> 'msa-condition-external-links',
-			'class'				=> 'msa-condition-external-links',
-			'name'				=> 'msa-condition-external-links',
-			'key'				=> 'external_links',
+			'id'				=> 'msa-condition-external_links',
+			'class'				=> 'msa-condition-external_links',
+			'name'				=> 'msa-condition-external_links',
 			'description-min'	=> __('The minimum number of External Links each post should have.', 'msa'),
 			'description-max'	=> __('The maximum number of External Links each post should have.', 'msa'),
 		),
@@ -412,20 +483,58 @@ function msa_create_initial_conditions() {
 		)
 	));
 
+	// Broken Links
+
+	msa_register_condition('broken_links', array(
+		'name' 			=> __('Broken Links', 'msa'),
+		'weight'        	=> 6,
+		'comparison'		=> 2,
+		'value'				=> 1,
+		'max'           	=> 1,
+		'max_display_val'	=> __('1 Link', 'msa'),
+		'category'			=> 'links',
+		'settings'		=> array(
+			'id'				=> 'msa-condition-broken_links',
+			'class'				=> 'msa-condition-broken_links',
+			'name'				=> 'msa-condition-broken_links',
+			'description-max'	=> __('The maximum number of broken links allowed per post.', 'msa'),
+		),
+		'filter'		=> array(
+			'label'		=> __('Broken Links', 'msa'),
+			'name'		=> 'broken_links',
+			'options'	=> array(
+				array(
+					'name' 	=> __('Has Broken Links', 'msa'),
+					'value'	=> 'notequal-0',
+				),
+				array(
+					'name' 	=> __('Does Not Have Broken Links', 'msa'),
+					'value'	=> 'equal-0',
+				),
+			),
+		)
+	));
+
+	/* =======================================================================
+	 *
+	 * Images
+	 *
+	 * ===================================================================== */
+
 	// Images
 
 	msa_register_condition('images', array(
 		'name' 				=> __('Images', 'msa'),
 		'weight'        	=> 3,
-		'comparison'		=> 0,
-		'value'				=> 1,
+		'comparison'		=> 1,
+		'value'				=> 2,
 		'min'           	=> 2,
 		'min_display_val'	=> __('2 Images', 'msa'),
+		'category'			=> 'images',
 		'settings'		=> array(
 			'id'				=> 'msa-condition-images',
 			'class'				=> 'msa-condition-images',
 			'name'				=> 'msa-condition-images',
-			'key'				=> 'images',
 			'description-min'	=> __('The minimum number of images each post should have.', 'msa'),
 		),
 		'filter'		=> array(
@@ -444,20 +553,122 @@ function msa_create_initial_conditions() {
 		)
 	));
 
+	// Missing Alt Tag
+
+	msa_register_condition('missing_alt_tag', array(
+		'name' 			=> __('Missing Alt Tag', 'msa'),
+		'weight'        	=> 6,
+		'comparison'		=> 2,
+		'value'				=> 1,
+		'max'           	=> 1,
+		'max_display_val'	=> __('1 Missing Alt Tag', 'msa'),
+		'category'			=> 'images',
+		'settings'		=> array(
+			'id'				=> 'msa-condition-missing_alt_tag',
+			'class'				=> 'msa-condition-missing_alt_tag',
+			'name'				=> 'msa-condition-missing_alt_tag',
+			'description-max'	=> __('The maximum number of images without an alt tag allowed per post.', 'msa'),
+		),
+		'filter'		=> array(
+			'label'		=> __('Missing Alt Tag', 'msa'),
+			'name'		=> 'missing_alt_tag',
+			'options'	=> array(
+				array(
+					'name' 	=> __('Has a Missing Alt Tag', 'msa'),
+					'value'	=> 'notequal-0',
+				),
+				array(
+					'name' 	=> __('Does Not Have a Missing Alt Tag', 'msa'),
+					'value'	=> 'equal-0',
+				),
+			),
+		)
+	));
+
+	/* =======================================================================
+	 *
+	 * Headings
+	 *
+	 * ===================================================================== */
+
+	// No h1 tag
+
+	msa_register_condition('h1_tag', array(
+		'name' 				=> __('Has H1 Tags', 'msa'),
+		'weight'        	=> 3,
+		'comparison'		=> 2,
+		'value'				=> 1,
+		'max'           	=> 1,
+		'max_display_val'	=> __('1 H1 Tag', 'msa'),
+		'category'			=> 'headings',
+		'settings'		=> array(
+			'id'				=> 'msa-condition-h1-tag',
+			'class'				=> 'msa-condition-h1-tag',
+			'name'				=> 'msa-condition-h1-tag',
+			'description-max'	=> __('The minimum number of H1 tags allowed for each post.', 'msa'),
+		),
+		'filter'		=> array(
+			'label'		=> __('H1 Tags', 'msa'),
+			'name'		=> 'h1_tag',
+			'options'	=> array(
+				array(
+					'name' 	=> __('Has 1 Tags', 'msa'),
+					'value'	=> 'notequal-0',
+				),
+				array(
+					'name' 	=> __('Does Not Have an H1 Tag', 'msa'),
+					'value'	=> 'equal-0',
+				),
+			)
+		)
+	));
+
+	// Invalid Headings
+
+	msa_register_condition('invalid_headings', array(
+		'name' 				=> __('Invalid Headings', 'msa'),
+		'weight'        	=> 3,
+		'comparison'		=> 2,
+		'value'				=> 1,
+		'max'           	=> 1,
+		'max_display_val'	=> __('1 Invalid Heading', 'msa'),
+		'category'			=> 'headings',
+		'settings'		=> array(
+			'id'				=> 'msa-condition-invalid-headings',
+			'class'				=> 'msa-condition-invalid-headings',
+			'name'				=> 'msa-condition-invalid-headings',
+			'description-max'	=> __('The minimum number of invalid headings allowed for each post.', 'msa'),
+		),
+		'filter'		=> array(
+			'label'		=> __('Invalid Headings', 'msa'),
+			'name'		=> 'invalid_headings',
+			'options'	=> array(
+				array(
+					'name' 	=> __('Has Invalid Headings', 'msa'),
+					'value'	=> 'notequal-0',
+				),
+				array(
+					'name' 	=> __('Does Not Have Invalid Headings', 'msa'),
+					'value'	=> 'equal-0',
+				),
+			)
+		)
+	));
+
 	// Headings
 
 	msa_register_condition('headings', array(
 		'name' 				=> __('Headings', 'msa'),
 		'weight'        	=> 6,
-		'comparison'		=> 0,
-		'value'				=> 1,
+		'comparison'		=> 1,
+		'value'				=> 2,
 		'min'           	=> 5,
 		'min_display_val'	=> __('5 Headings', 'msa'),
+		'category'			=> 'headings',
 		'settings'		=> array(
 			'id'				=> 'msa-condition-headings',
 			'class'				=> 'msa-condition-headings',
 			'name'				=> 'msa-condition-headings',
-			'key'				=> 'images',
 			'description-min'	=> __('The minimum number of headings each post should have.', 'msa'),
 		),
 		'filter'		=> array(
@@ -476,55 +687,42 @@ function msa_create_initial_conditions() {
 		)
 	));
 
-	// Broken Links
-
-	msa_register_condition('broken_links', array(
-		'name' 			=> __('Broken Links', 'msa'),
-		'weight'        	=> 6,
-		'comparison'		=> 1,
-		'value'				=> 0,
-		'max'           	=> 1,
-		'filter'		=> array(
-			'label'		=> __('Broken Links', 'msa'),
-			'name'		=> 'broken_links',
-			'options'	=> array(
-				array(
-					'name' 	=> __('Has Broken Links', 'msa'),
-					'value'	=> 'notequal-0',
-				),
-				array(
-					'name' 	=> __('Does Not Have Broken Links', 'msa'),
-					'value'	=> 'equal-0',
-				),
-			),
-		)
-	));
-
-	// Missing Alt Tag
-
-	msa_register_condition('missing_alt_tag', array(
-		'name' 			=> __('Missing Alt Tag', 'msa'),
-		'weight'        	=> 6,
-		'comparison'		=> 1,
-		'value'				=> 0,
-		'max'           	=> 1,
-		'filter'		=> array(
-			'label'		=> __('Missing Alt Tag', 'msa'),
-			'name'		=> 'missing_alt_tag',
-			'options'	=> array(
-				array(
-					'name' 	=> __('Has a Missing Alt Tag', 'msa'),
-					'value'	=> 'notequal-0',
-				),
-				array(
-					'name' 	=> __('Does Not Have a Missing Alt Tag', 'msa'),
-					'value'	=> 'equal-0',
-				),
-			),
-		)
-	));
-
 	do_action('msa_register_conditions');
+}
+
+/**
+ * Get total weight of all registered conditions
+ *
+ * @access public
+ * @return void
+ */
+function msa_get_total_conditions_weight() {
+
+	$conditions = msa_get_conditions();
+	$weight = 0;
+
+	foreach ( $conditions as $condition ) {
+		$weight += $condition['weight'];
+	}
+
+	return $weight;
+}
+
+/**
+ * Get total weight for specific conditions
+ *
+ * @access public
+ * @return void
+ */
+function msa_get_total_weight_for_conditions($conditions) {
+
+	$weight = 0;
+
+	foreach ( $conditions as $condition ) {
+		$weight += $condition['weight'];
+	}
+
+	return $weight;
 }
 
 /**

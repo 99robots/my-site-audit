@@ -40,7 +40,7 @@ function msa_get_score_status($score) {
 
 	foreach ( $score_statuses as $key => $score_status ) {
 
-		if ( $score >= $score_status['low'] && $score <= $score_status['high'] ) {
+		if ( round($score, 4) >= $score_status['low'] && round($score, 4) <= $score_status['high'] ) {
 			return $key;
 		}
 	}

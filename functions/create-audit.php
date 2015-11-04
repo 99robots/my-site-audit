@@ -49,8 +49,12 @@ function msa_async_create_audit($audit_data) {
 	$audit['score'] = 0;
 	$audit['date'] = date('Y-m-d H:i:s');
 	$audit['user'] = get_current_user_id();
-	$audit['args']['post_types'] = $audit_data['post-types'];
 	$audit['args']['conditions'] = json_encode(msa_get_conditions());
+
+	$audit['args']['before_date'] = $audit_data['after-date'];
+	$audit['args']['before_date'] = $audit_data['before-date'];
+	$audit['args']['post_types'] = $audit_data['post-types'];
+	$audit['args']['max_posts'] = $audit_data['max-posts'];
 
 	// Get all the posts that we are going to perform an audit on
 
@@ -71,6 +75,8 @@ function msa_async_create_audit($audit_data) {
 
 	$audit['num_posts'] = count($posts);
 
+	error_log('creating audit');
+
 	// Only perform the audit if there are posts to perform the audit on
 
 	if ( count($posts) > 0 ) {
@@ -82,6 +88,8 @@ function msa_async_create_audit($audit_data) {
 			$audit_score = 0;
 
 			foreach ( $posts as $post ) {
+
+				error_log('created post');
 
 				$data = msa_get_post_audit_data($post);
 				$score = msa_calculate_score($post, $data);
@@ -104,7 +112,7 @@ function msa_async_create_audit($audit_data) {
 		}
 	}
 }
-//add_action( 'msa_create_audit', 'msa_async_create_audit', 10, 1 );
+//add_action( 'msa_async_create_audit_event', 'msa_async_create_audit', 10, 1 );
 
 /**
  * Create a new post for an audit
@@ -121,7 +129,9 @@ function msa_add_post_to_audit() {
 
 	$audit_posts_model = new MSA_Audit_Posts_Model();
 	$post = get_post($_POST['post_id']);
+
 	$data = msa_get_post_audit_data($post);
+
 	$score = msa_calculate_score($post, $data);
 	$data['score'] = $score['score'];
 

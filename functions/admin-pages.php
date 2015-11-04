@@ -114,6 +114,11 @@ function msa_dashboard_scripts() {
 
 	wp_enqueue_style('msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css');
 
+	// Scripts
+
+	wp_enqueue_script('msa-dashboard-js', 			MY_SITE_AUDIT_PLUGIN_URL . '/js/dashboard.js');
+	wp_enqueue_script('dashboard');
+
 }
 
 /**
@@ -133,6 +138,8 @@ function msa_all_audits_scripts() {
 	wp_enqueue_style('msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css');
 	wp_enqueue_style('msa-jquery-ui-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/includes/jquery-datepicker/jquery-ui.min.css');
 	wp_enqueue_style('msa-jquery-ui-theme-css', 	MY_SITE_AUDIT_PLUGIN_URL . '/includes/jquery-datepicker/jquery-ui.theme.min.css');
+	wp_enqueue_style('media-views');
+
 
 	// Scripts
 
@@ -140,7 +147,9 @@ function msa_all_audits_scripts() {
 	wp_localize_script('msa-all-audits-js', 'msa_all_audits_data', array(
 		'site_url'			=> get_site_url(),
 		'admin_url'			=> get_admin_url(),
+		'info'				=> __('Your Audit is now being created and you can monitor its status from the progress bar below.  Please <strong>DO NOT</strong> refresh this page as that will stop the audit. If you want to stop this audit for any reason, then click <a href="' . get_admin_url() . 'admin.php?page=msa-all-audits" class="msa-force-stop">Force Stop</a>.', 'msa'),
 		'success_message'	=> __('Your Audit has been created! See it ', 'msa'),
+		'estimated_time'	=> __('Estimated Time to Completion:', 'msa'),
 	));
 
 	wp_enqueue_script('jquery');

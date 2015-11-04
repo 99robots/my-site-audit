@@ -38,15 +38,21 @@ $panels = msa_get_dashboard_panels();?>
 
 	<div id="postbox-container-1" class="postbox-container">
 
-		<div class="meta-box-sortables ui-sortable">
+		<div class="meta-box-sortables meta-box-sortables-left ui-sortable">
 
-			<?php foreach ( $panels as $key => $panel ) {
+			<?php
+			$dashboard_panel_order = get_option('msa_dashboard_panel_order');
 
-				if ( $panel['postbox'] != 1 ) {
-					continue;
-				} ?>
+			$show_panels = array();
 
-				<div class="postbox">
+			foreach ( $dashboard_panel_order['left'] as $panel_order ) {
+				$show_panels[$panel_order] = $panels[$panel_order];
+			}
+
+			foreach ( $show_panels as $key => $panel ) { ?>
+
+				<div class="postbox" id="<?php echo $key; ?>">
+					<div class="handlediv" title="Click to toggle"><br></div>
 					<h3 class="hndle ui-sortable-handle"><span><?php echo $panel['title']; ?></span></h3>
 					<div class="inside">
 						<?php echo apply_filters('msa_dashboard_panel_content_' . $key,  $panel['content']); ?>
@@ -61,15 +67,21 @@ $panels = msa_get_dashboard_panels();?>
 
 	<div id="postbox-container-2" class="postbox-container">
 
-		<div class="meta-box-sortables ui-sortable">
+		<div class="meta-box-sortables meta-box-sortables-right ui-sortable">
 
-			<?php foreach ( $panels as $key => $panel ) {
+			<?php
+			$dashboard_panel_order = get_option('msa_dashboard_panel_order');
 
-				if ( $panel['postbox'] != 2 ) {
-					continue;
-				} ?>
+			$show_panels = array();
 
-				<div class="postbox">
+			foreach ( $dashboard_panel_order['right'] as $panel_order ) {
+				$show_panels[$panel_order] = $panels[$panel_order];
+			}
+
+			foreach ( $show_panels as $key => $panel ) { ?>
+
+				<div class="postbox" id="<?php echo $key; ?>">
+					<div class="handlediv" title="Click to toggle"><br></div>
 					<h3 class="hndle ui-sortable-handle"><span><?php echo $panel['title']; ?></span></h3>
 					<div class="inside">
 						<?php echo apply_filters('msa_dashboard_panel_content_' . $key,  $panel['content']); ?>
