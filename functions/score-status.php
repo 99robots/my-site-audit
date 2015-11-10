@@ -107,7 +107,9 @@ function msa_get_post_count_by_status($posts, $status) {
 
 	foreach ( $posts as $key => $item ) {
 
-		if ( $item['data']['score'] >= $score_status['low'] && $item['data']['score'] <= $score_status['high'] ) {
+		$score = $item['data']['score'];
+
+		if ( $score['score'] >= $score_status['low'] && $score['score'] <= $score_status['high'] ) {
 			$count++;
 		}
 	}

@@ -1,11 +1,10 @@
-<?php
 /* ===================================================================
  *
  * My Site Audit https://mysiteaudit.com
  *
- * Created: 10/26/15
- * Package: Controllers/All Audits
- * File: all-audits.php
+ * Created: 11/5/15
+ * Package: Style/Post Meta
+ * File: post-meta.css
  * Author: Kyle Benk
  *
  *
@@ -23,32 +22,24 @@
  *
  * ================================================================= */
 
-// Exit if accessed directly
-
-if ( ! defined( 'ABSPATH' ) ) exit;
-
-// Create a new Audit
-
-if ( isset($_POST['submit']) && check_admin_referer('msa-add-audit') ) {
-
-	/**
-	 *
-	 * This is the main action for creating an audit
-	 *
-	 */
-	do_action('msa_create_audit', $_POST);
-
+.msa-post-meta-container {
+	display: inline-block;
 }
 
-// Delete an audit
-
-if ( isset($_GET['action']) && $_GET['action'] == 'delete' && check_admin_referer('msa-delete-audit')) {
-
-	$audit_model = new MSA_Audits_Model();
-	$audit_model->delete_data($_GET['audit']);
-
-	msa_force_redirect( get_admin_url() . 'admin.php?page=msa-all-audits' );
-
+.msa-post-meta-audit-meta-attributes {
+	padding-right: 20px;
 }
 
-include_once(MY_SITE_AUDIT_PLUGIN_DIR . 'views/all-audits.php');
+.msa-post-meta-attribute {
+	font-weight: bold;
+}
+
+.msa-post-meta-value {
+	padding: 6px 12px;
+	margin: 0;
+}
+
+.msa-post-meta-value.msa-post-status-bg {
+	text-align: center;
+	font-weight: bold;
+}

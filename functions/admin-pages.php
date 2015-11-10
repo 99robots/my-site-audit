@@ -28,7 +28,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * Hooks intot the 'admin_menu' hook to show the settings page
+ * Hooks into the 'admin_menu' hook to show the settings page
  *
  * @access public
  * @static
@@ -41,7 +41,7 @@ function msa_menu() {
 	add_menu_page(
 		__(MY_SITE_AUDIT_ITEM_NAME, 'msa'),
 		__(MY_SITE_AUDIT_ITEM_NAME, 'msa'),
-    	'manage_options',
+    	'edit_pages',
     	'msa-dashboard',
     	'msa_dashboard',
     	MY_SITE_AUDIT_PLUGIN_URL . 'images/logo.png" style="width:20px;padding-top: 6px;'
@@ -53,7 +53,7 @@ function msa_menu() {
     	'msa-dashboard',
     	__('Dashboard', 'msa'),
     	__('Dashboard', 'msa'),
-    	'manage_options',
+    	'edit_pages',
     	'msa-dashboard',
     	'msa_dashboard'
     );
@@ -65,12 +65,19 @@ function msa_menu() {
     	'msa-dashboard',
     	__('All Audits', 'msa'),
     	__('All Audits', 'msa'),
-    	'manage_options',
+    	'edit_pages',
     	'msa-all-audits',
     	'msa_all_audits'
     );
     add_action("admin_print_scripts-$all_audits_page_load", 'msa_all_audits_scripts');
     add_action("load-$all_audits_page_load", 'msa_all_audits_load');
+
+	/**
+	 * Allows other developers the ability to add thier own pages
+	 *
+	 * @param $parent-slug
+	 */
+    do_action('msa_before_admin_pages', 'msa-dashboard');
 
     // Settings
 
@@ -95,6 +102,13 @@ function msa_menu() {
     	'msa_extensions'
     );
     add_action("admin_print_scripts-$extensions_page_load" , 'msa_extensions_scripts');
+
+	/**
+	 * Allows other developers the ability to add thier own pages
+	 *
+	 * @param $parent-slug
+	 */
+    do_action('msa_after_admin_pages', 'msa-dashboard');
 }
 add_action('admin_menu', 'msa_menu');
 
@@ -230,15 +244,9 @@ function msa_all_audits() {
  */
 function msa_all_audits_load() {
 
-	// Single Post
-
-	if ( isset($_GET['audit']) && isset($_GET['post']) ) {
-
-	}
-
 	// Single Audit
 
-	else if ( isset($_GET['audit']) ) {
+	if ( isset($_GET['audit']) ) {
 
 		// Screen Options
 
@@ -247,12 +255,6 @@ function msa_all_audits_load() {
 		$screen = get_current_screen();
 
 		add_filter( 'manage_my-site-audit_page_msa-all-audits_columns', 'msa_all_audits_add_column' );
-
-	}
-
-	// All Audits
-
-	else {
 
 	}
 }

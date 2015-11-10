@@ -87,169 +87,6 @@ function msa_condition_category_content_value($value, $data, $post, $key) {
 add_filter('msa_condition_category_content_value', 'msa_condition_category_content_value', 10, 4);
 
 /**
- * Save the conditions data
- *
- * @access public
- * @param mixed $data
- * @return void
- */
-function msa_settings_tab_conditions_save($data) {
-
-	// Check if we have data already saved
-
-	if ( false === ( $settings = get_option('msa_conditions') ) ) {
-		$settings = array();
-	}
-
-	// Save the data
-
-	$conditions = msa_get_conditions();
-
-	foreach ( $conditions as $key => $condition ) {
-
-		if ( isset($condition['settings']) ) {
-
-			// Weight
-
-			if ( isset($data['msa-condition-' . $key . '-weight']) && !empty($data['msa-condition-' . $key . '-weight']) ) {
-				$settings[$key]['weight'] = $data['msa-condition-' . $key . '-weight'];
-			}
-
-			// Comparison
-
-			if ( isset($data['msa-condition-' . $key . '-comparison']) && !empty($data['msa-condition-' . $key . '-comparison']) ) {
-				$settings[$key]['comparison'] = $data['msa-condition-' . $key . '-comparison'];
-			}
-
-			// Value
-
-			if ( isset($data['msa-condition-' . $key . '-value']) ) {
-				$settings[$key]['value'] = $data['msa-condition-' . $key . '-value'];
-			}
-
-			// Min
-
-			if ( isset($data['msa-condition-' . $key . '-min']) && !empty($data['msa-condition-' . $key . '-min']) ) {
-				$settings[$key]['min'] = $data['msa-condition-' . $key . '-min'];
-			}
-
-			// Max
-
-			if ( isset($data['msa-condition-' . $key . '-max']) && !empty($data['msa-condition-' . $key . '-max']) ) {
-				$settings[$key]['max'] = $data['msa-condition-' . $key . '-max'];
-			}
-
-		}
-
-	}
-
-	update_option('msa_conditions', $settings);
-
-}
-add_action('msa_save_settings', 'msa_settings_tab_conditions_save', 10, 1);
-
-/**
- * The Conditions Tab Content
- *
- * @access public
- * @return void
- */
-function msa_settings_tab_conditions_content() {
-
-	// Check if we have data already saved
-
-	if ( false === ( $settings = get_option('msa_conditions') ) ) {
-		$settings = array();
-	}
-
-	$conditions = msa_get_conditions();
-
-	$output = '';
-
-	foreach ( $conditions as $key => $condition ) {
-
-		if ( !isset($condition['settings']) ) {
-			continue;
-		}
-
-		$setting      = $condition['settings'];
-		$weight       = isset($settings[$key]['weight']) 		? $settings[$key]['weight'] 	: $condition['weight'];
-		$comparison   = isset($settings[$key]['comparison']) 	? $settings[$key]['comparison'] : $condition['comparison'];
-		$value        = isset($settings[$key]['value']) 		? $settings[$key]['value'] 		: $condition['value'];
-		$min          = isset($settings[$key]['min']) 			? $settings[$key]['min'] 		: $condition['min'];
-		$max          = isset($settings[$key]['max']) 			? $settings[$key]['max'] 		: $condition['max'];
-
-		$output .= '<h3 class="msa-settings-heading">' . $condition['name'] . '</h3>';
-
-		$output .= '<table class="form-table">
-			<tbody>
-
-				<tr>
-					<th scope="row"><label for="' . $setting['id'] . '">' . __('Weight', 'msa') . '</label></th>
-					<td>
-						<input type="text" class="regular-text ' . $setting['class'] . '-weight" id="' . $setting['id'] . '-weight" name="' . $setting['name'] . '-weight" value="' . $weight . '">
-						<p class="description">' . __('How important is this condition to the score of the audit?  The higher the value the more important.') . '</p>
-					</td>
-				</tr>
-
-				<tr>
-					<th scope="row"><label for="' . $setting['id'] . '">' . __('Comparison', 'msa') . '</label></th>
-					<td>
-						<select class="' . $setting['class'] . '-comparison" id="' . $setting['id'] . '-comparison" name="' . $setting['name'] . '-comparison">
-							<option value="1" ' . selected('1', $comparison, false) . '>' . __('Greater Than') . '</option>
-							<option value="2" ' . selected('2', $comparison, false) . '>' . __('Less Than') . '</option>
-							<option value="3" ' . selected('3', $comparison, false) . '>' . __('In Between') . '</option>
-						</select>
-						<p class="description">' . __('The type of comparison you want to make against your post data.') . '</p>
-					</td>
-				</tr>
-
-				<tr>
-					<th scope="row"><label for="' . $setting['id'] . '">' . __('Value', 'msa') . '</label></th>
-					<td>
-						<select class="' . $setting['class'] . '-value" id="' . $setting['id'] . '-value" name="' . $setting['name'] . '-value">
-							<option value="1" ' . selected('1', $value, false) . '>' . __('Pass or Fail') . '</option>
-							<option value="2" ' . selected('2', $value, false) . '>' . __('Percentage') . '</option>
-						</select>
-						<p class="description">' . __('The resulting value for that post attribute.') . '</p>
-					</td>
-				</tr>';
-
-				if ( isset($condition['min']) && $condition['min'] != '' ) {
-
-				$output .= '<tr>
-					<th scope="row"><label for="' . $setting['id'] . '">' . __('Minimum Value', 'msa') . '</label></th>
-					<td>
-						<input type="text" class="regular-text ' . $setting['class'] . '-min" id="' . $setting['id'] . '-min" name="' . $setting['name'] . '-min" value="' . $min . '">
-						<p class="description">' . $setting['description-min'] . '</p>
-					</td>
-				</tr>';
-
-				}
-
-				if ( isset($condition['max']) && $condition['max'] != '' ) {
-
-				$output .= '<tr>
-					<th scope="row"><label for="' . $setting['id'] . '">' . __('Maximum Value', 'msa') . '</label></th>
-					<td>
-						<input type="text" class="regular-text ' . $setting['class'] . '-max" id="' . $setting['id'] . '-max" name="' . $setting['name'] . '-max" value="' . $max . '">
-						<p class="description">' . $setting['description-max'] . '</p>
-					</td>
-				</tr>';
-
-				}
-
-			$output .= '</tbody>
-		</table>';
-
-	}
-
-	return $output;
-
-}
-add_filter('msa_settings_tab_content_conditions', 'msa_settings_tab_conditions_content');
-
-/**
  * Create initial conidtions
  *
  * @access public
@@ -287,8 +124,10 @@ function msa_create_initial_conditions() {
 		'comparison'		=> 2,
 		'value'				=> 1,
 		'max'           	=> 60,
+		'units'				=> 'characters',
 		'max_display_val'	=> __('60 Characters', 'msa'),
 		'category'			=> 'content',
+		'show_column'		=> true,
 		'settings'		=> array(
 			'id'				=> 'msa-condition-title',
 			'class'				=> 'msa-condition-title',
@@ -318,9 +157,11 @@ function msa_create_initial_conditions() {
 		'weight'        	=> 3,
 		'comparison'		=> 2,
 		'value'				=> 2,
+		'units'				=> 'seconds',
 		'max'          		=> DAY_IN_SECONDS * 90,
 		'max_display_val'	=> __('90 Days', 'msa'),
 		'category'			=> 'content',
+		'show_column'		=> true,
 		'settings'		=> array(
 			'id'				=> 'msa-condition-modified_date',
 			'class'				=> 'msa-condition-modified_date',
@@ -351,8 +192,10 @@ function msa_create_initial_conditions() {
 		'comparison'		=> 1,
 		'value'				=> 2,
 		'min'           	=> 750,
+		'units'				=> 'words',
 		'min_display_val'	=> __('750 Words', 'msa'),
 		'category'			=> 'content',
+		'show_column'		=> true,
 		'settings'		=> array(
 			'id'				=> 'msa-condition-word_count',
 			'class'				=> 'msa-condition-word_count',
@@ -383,8 +226,10 @@ function msa_create_initial_conditions() {
 		'comparison'		=> 1,
 		'value'				=> 2,
 		'min'           	=> 5,
+		'units'				=> 'comments',
 		'min_display_val'	=> __('5 Comments', 'msa'),
 		'category'			=> 'content',
+		'show_column'		=> true,
 		'settings'		=> array(
 			'id'				=> 'msa-condition-comment_count',
 			'class'				=> 'msa-condition-comment_count',
@@ -422,9 +267,11 @@ function msa_create_initial_conditions() {
 		'value'				=> 2,
 		'min'           	=> 2,
 		'max'           	=> 6,
+		'units'				=> 'links',
 		'min_display_val'	=> __('2 Internal Links', 'msa'),
 		'max_display_val'	=> __('6 Internal Links', 'msa'),
 		'category'			=> 'links',
+		'show_column'		=> true,
 		'settings'		=> array(
 			'id'				=> 'msa-condition-internal_links',
 			'class'				=> 'msa-condition-internal_links',
@@ -457,9 +304,11 @@ function msa_create_initial_conditions() {
 		'value'				=> 2,
 		'min'           	=> 1,
 		'max'           	=> 14,
+		'units'				=> 'links',
 		'min_display_val'	=> __('1 Internal Links', 'msa'),
 		'max_display_val'	=> __('14 Internal Links', 'msa'),
 		'category'			=> 'links',
+		'show_column'		=> true,
 		'settings'		=> array(
 			'id'				=> 'msa-condition-external_links',
 			'class'				=> 'msa-condition-external_links',
@@ -491,8 +340,10 @@ function msa_create_initial_conditions() {
 		'comparison'		=> 2,
 		'value'				=> 1,
 		'max'           	=> 1,
+		'units'				=> 'links',
 		'max_display_val'	=> __('1 Link', 'msa'),
 		'category'			=> 'links',
+		'show_column'		=> true,
 		'settings'		=> array(
 			'id'				=> 'msa-condition-broken_links',
 			'class'				=> 'msa-condition-broken_links',
@@ -529,8 +380,10 @@ function msa_create_initial_conditions() {
 		'comparison'		=> 1,
 		'value'				=> 2,
 		'min'           	=> 2,
+		'units'				=> 'images',
 		'min_display_val'	=> __('2 Images', 'msa'),
 		'category'			=> 'images',
+		'show_column'		=> true,
 		'settings'		=> array(
 			'id'				=> 'msa-condition-images',
 			'class'				=> 'msa-condition-images',
@@ -561,8 +414,10 @@ function msa_create_initial_conditions() {
 		'comparison'		=> 2,
 		'value'				=> 1,
 		'max'           	=> 1,
+		'units'				=> 'missing alt tags',
 		'max_display_val'	=> __('1 Missing Alt Tag', 'msa'),
 		'category'			=> 'images',
+		'show_column'		=> true,
 		'settings'		=> array(
 			'id'				=> 'msa-condition-missing_alt_tag',
 			'class'				=> 'msa-condition-missing_alt_tag',
@@ -599,8 +454,10 @@ function msa_create_initial_conditions() {
 		'comparison'		=> 2,
 		'value'				=> 1,
 		'max'           	=> 1,
+		'units'				=> 'h1 tags',
 		'max_display_val'	=> __('1 H1 Tag', 'msa'),
 		'category'			=> 'headings',
+		'show_column'		=> true,
 		'settings'		=> array(
 			'id'				=> 'msa-condition-h1-tag',
 			'class'				=> 'msa-condition-h1-tag',
@@ -631,8 +488,10 @@ function msa_create_initial_conditions() {
 		'comparison'		=> 2,
 		'value'				=> 1,
 		'max'           	=> 1,
+		'units'				=> 'invalid headings',
 		'max_display_val'	=> __('1 Invalid Heading', 'msa'),
 		'category'			=> 'headings',
+		'show_column'		=> true,
 		'settings'		=> array(
 			'id'				=> 'msa-condition-invalid-headings',
 			'class'				=> 'msa-condition-invalid-headings',
@@ -663,8 +522,10 @@ function msa_create_initial_conditions() {
 		'comparison'		=> 1,
 		'value'				=> 2,
 		'min'           	=> 5,
+		'units'				=> 'headings',
 		'min_display_val'	=> __('5 Headings', 'msa'),
 		'category'			=> 'headings',
+		'show_column'		=> true,
 		'settings'		=> array(
 			'id'				=> 'msa-condition-headings',
 			'class'				=> 'msa-condition-headings',

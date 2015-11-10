@@ -28,6 +28,63 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
+ * Save all the general settings
+ *
+ * @access public
+ * @param mixed $data
+ * @return void
+ */
+function msa_settings_tab_settings_save($data) {
+
+	// Check if we have data already saved
+
+	if ( false === ( $settings = get_option('msa_settings') ) ) {
+		$settings = array();
+	}
+
+	// Save the data
+
+	update_option('msa_settings', $settings);
+
+}
+add_action('msa_save_settings', 'msa_settings_tab_settings_save', 10, 1);
+
+/**
+ * This function will show all the general settings for My Site Audit
+ *
+ * @access public
+ * @param mixed $content
+ * @return void
+ */
+function msa_settings_tab_settings_content($content) {
+
+	// Check if we have data already saved
+
+	if ( false === ( $settings = get_option('msa_settings') ) ) {
+		$settings = array();
+	}
+
+	$output .= '<h3 class="msa-settings-heading">' . __('User Access', 'msa') . '</h3>';
+	$output .= '<table class="form-table">
+		<tbody>
+
+			<tr>
+				<th scope="row"><label for="msa-user-access">' . __('User Access', 'msa') . '</label></th>
+				<td>
+					<input type="text" class="regular-text msa-user-access" id="msa-user-access" name="msa-user-access" value="' . $settings['user_access'] . '">
+					<p class="description">' . __('What Users have access to the Audit Data.') . '</p>
+				</td>
+			</tr>
+
+		</tbody>
+	</table>';
+
+	return $output;
+
+}
+add_filter('msa_settings_tab_content_settings', 'msa_settings_tab_settings_content', 10, 1);
+
+/**
  * Create the initial settings tabs
  *
  * @access public
@@ -50,15 +107,6 @@ function msa_create_initial_settings_tabs() {
 		'id'		=> 'extensions',
 		'current'	=> false,
 		'tab'		=> __('Extensions', 'msa'),
-		'content'	=> '',
-	));
-
-	// Conditions
-
-	msa_register_settings_tabs('conditions', array(
-		'id'		=> 'conditions',
-		'current'	=> false,
-		'tab'		=> __('Conditions', 'msa'),
 		'content'	=> '',
 	));
 

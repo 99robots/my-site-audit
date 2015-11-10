@@ -101,12 +101,6 @@ class MSA_Audits_Model {
 
 		$data = $this->validate_data($data);
 
-		// Check to see if we can add a new audit
-
-		if ( !apply_filters('msa_can_add_new_audit', true, $data) ) {
-			return false;
-		}
-
 		global $wpdb;
 
 		$result = $wpdb->query( $wpdb->prepare("INSERT INTO `" . $this->get_table_name() . "` (

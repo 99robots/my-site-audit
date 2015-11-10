@@ -48,16 +48,22 @@ function msa_calculate_score($post, $data) {
 
 		if ( $condition['comparison'] == 1 && isset($condition['min']) ) {
 
-			$value = min( $data[$key] / $condition['min'], 1 );
-
+			if ( $condition['min'] != 0 ) {
+				$value = min( $data[$key] / $condition['min'], 1 );
+			} else {
+				$value = 0;
+			}
 		}
 
 		// Less Than
 
 		else if ( $condition['comparison'] == 2 && isset($condition['max']) ) {
 
-			$value = 1 - min( $data[$key] / $condition['max'], 1 );
-
+			if ( $condition['max'] != 0 ) {
+				$value = 1 - min( $data[$key] / $condition['max'], 1 );
+			} else {
+				$value = 0;
+			}
 		}
 
 		// Range
@@ -71,17 +77,12 @@ function msa_calculate_score($post, $data) {
 
 		}
 
-		$score_data[$key] = $condition['value'] == 0 && $value != 0 ? 1 : $value;
+		// Convert to bool if needed
 
-		$value *= $condition['weight'];
+		$value = $condition['value'] == 1 && $value != 0 ? 1 : $value;
 
-		// Convert the ratio into a bool
-
-		if ( $condition['value'] == 1 && $value != 0 ) {
-			$value = $condition['weight'];
-		}
-
-		$score += $value;
+		$score_data[$key] = $value;
+		$score += $value * $condition['weight'];
 		$weight += $condition['weight'];
 
 	}
@@ -218,28 +219,7 @@ function msa_get_post_audit_data($post) {
 	$score = msa_calculate_score($post, $data);
 	$data['score'] = $score['score'];
 
-	/*
-	// Yoast Score
-
-	if ( file_exists(WP_PLUGIN_DIR . '/wordpress-seo/inc/class-wpseo-utils.php') && is_plugin_active('wordpress-seo/wp-seo.php') ) {
-
-		include_once(WP_PLUGIN_DIR. '/wordpress-seo/inc/class-wpseo-utils.php');
-
-		$data['yoast-seo-meta-desc'] = get_post_meta($post->ID, '_yoast_wpseo_metadesc', true);
-		$data['yoast-seo-focuskw'] = get_post_meta($post->ID, '_yoast_wpseo_focuskw', true);
-
-		$data['yoast-seo-score_label'] = 'na';
-		$data['yoast-seo-score'] = get_post_meta($post->ID, '_yoast_wpseo_linkdex', true);
-
-		if ( $data['yoast-seo-score'] !== '' ) {
-			$nr = WPSEO_Utils::calc( $data['yoast-seo-score'], '/', 10, true );
-			$data['yoast-seo-score-label'] 	= WPSEO_Utils::translate_score( $nr );
-			unset( $nr );
-		}
-	}
-*/
-
-	return $data;
+	return apply_filters('msa_get_post_audit_data', $data, $post);
 
 }
 
@@ -418,8 +398,10 @@ function msa_show_h1_tags($content, $data) {
 
 	$invalid_headings = array();
 
-	foreach ( $data['invalid_headings'] as $invalid_heading ) {
-		$invalid_headings[] = $invalid_heading['html'];
+	if ( isset($data['invalid_headings_data']) && count($data['invalid_headings_data']) > 0 ) {
+		foreach ( $data['invalid_headings_data'] as $invalid_heading ) {
+			$invalid_headings[] = $invalid_heading['html'];
+		}
 	}
 
 	foreach ( $matches as $match ) {
@@ -469,8 +451,10 @@ function msa_show_headings($content, $data) {
 
 	$invalid_headings = array();
 
-	foreach ( $data['invalid_headings'] as $invalid_heading ) {
-		$invalid_headings[] = $invalid_heading['html'];
+	if ( isset($data['invalid_headings_data']) && count($data['invalid_headings_data']) > 0 ) {
+		foreach ( $data['invalid_headings_data'] as $invalid_heading ) {
+			$invalid_headings[] = $invalid_heading['html'];
+		}
 	}
 
 	foreach ( $matches as $match ) {
@@ -642,11 +626,13 @@ function msa_filter_posts($posts) {
 
 			foreach ( $posts as $key => $item ) {
 
+				$post_value = $item['data']['values'][$name];
+
 				// Greater Than
 
 				if ( $compare == 'more' ) {
 
-					if ( $item['data'][$name] < $value ) {
+					if ( isset($post_value) && $post_value < $value ) {
 						unset($posts[$key]);
 					}
 
@@ -656,7 +642,7 @@ function msa_filter_posts($posts) {
 
 				else if ( $compare == 'less' ) {
 
-					if ( $item['data'][$name] > $value ) {
+					if ( isset($post_value) && $post_value > $value ) {
 						unset($posts[$key]);
 					}
 
@@ -666,7 +652,7 @@ function msa_filter_posts($posts) {
 
 				else if ( $compare === 'equal' ) {
 
-					if ( $item['data'][$name] != $value ) {
+					if ( isset($post_value) && $post_value != $value ) {
 						unset($posts[$key]);
 					}
 
@@ -676,7 +662,7 @@ function msa_filter_posts($posts) {
 
 				else if ( $compare === 'notequal' ) {
 
-					if ( $item['data'][$name] == $value ) {
+					if ( isset($post_value) && $post_value == $value ) {
 						unset($posts[$key]);
 					}
 

@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 require_once('header.php');
 
-$panels = msa_get_dashboard_panels();?>
+$panels = msa_get_dashboard_panels(); ?>
 
 <h1><?php _e('Dashboard', 'msa'); ?></h1>
 
@@ -46,7 +46,10 @@ $panels = msa_get_dashboard_panels();?>
 			$show_panels = array();
 
 			foreach ( $dashboard_panel_order['left'] as $panel_order ) {
-				$show_panels[$panel_order] = $panels[$panel_order];
+
+				if ( isset($panels[$panel_order]) ) {
+					$show_panels[$panel_order] = $panels[$panel_order];
+				}
 			}
 
 			foreach ( $show_panels as $key => $panel ) { ?>
@@ -75,7 +78,10 @@ $panels = msa_get_dashboard_panels();?>
 			$show_panels = array();
 
 			foreach ( $dashboard_panel_order['right'] as $panel_order ) {
-				$show_panels[$panel_order] = $panels[$panel_order];
+
+				if ( isset($panels[$panel_order]) ) {
+					$show_panels[$panel_order] = $panels[$panel_order];
+				}
 			}
 
 			foreach ( $show_panels as $key => $panel ) { ?>

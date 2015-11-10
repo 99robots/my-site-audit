@@ -75,8 +75,6 @@ function msa_async_create_audit($audit_data) {
 
 	$audit['num_posts'] = count($posts);
 
-	error_log('creating audit');
-
 	// Only perform the audit if there are posts to perform the audit on
 
 	if ( count($posts) > 0 ) {
@@ -88,8 +86,6 @@ function msa_async_create_audit($audit_data) {
 			$audit_score = 0;
 
 			foreach ( $posts as $post ) {
-
-				error_log('created post');
 
 				$data = msa_get_post_audit_data($post);
 				$score = msa_calculate_score($post, $data);
@@ -131,16 +127,17 @@ function msa_add_post_to_audit() {
 	$post = get_post($_POST['post_id']);
 
 	$data = msa_get_post_audit_data($post);
-
 	$score = msa_calculate_score($post, $data);
-	$data['score'] = $score['score'];
 
 	// Add a new record in the audit posts table
 
 	$audit_posts_model->add_data(array(
 		'audit_id' 	=> $_POST['audit_id'],
 		'post'		=> $post,
-		'data'		=> $data,
+		'data'		=> array(
+			'score'		=> $score,
+			'values'	=> $data,
+		),
 	));
 
 	echo $score['score'];
@@ -180,6 +177,16 @@ add_action( 'wp_ajax_msa_update_audit_score', 'msa_ajax_update_audit_score');
  * @return void
  */
 function msa_get_post_ids() {
+
+	// Check to see if we can add a new audit
+
+	if ( !apply_filters('msa_can_add_new_audit', true) ) {
+		echo json_encode(array(
+			'status'	=> 'error',
+			'message'	=> __('Cannot create a new audit.  You already have the maximum amount of audits saved.  Please delete one in order to create one.', 'msa'),
+		));
+		die();
+	}
 
 	$query_parameters = html_entity_decode($_POST['data']);
 	parse_str($query_parameters, $data);
@@ -221,7 +228,11 @@ function msa_get_post_ids() {
 		$audit['num_posts'] = count($post_ids);
 		$audit_id = $audit_model->add_data($audit);
 
-		echo json_encode( array('post_ids' => $post_ids, 'audit_id' => $audit_id ) );
+		echo json_encode( array(
+			'status'	=> 'success',
+			'post_ids' 	=> $post_ids,
+			'audit_id' 	=> $audit_id,
+		) );
 		die();
 	}
 

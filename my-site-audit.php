@@ -31,7 +31,7 @@ License: GPL2
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-if ( !class_exists('NNR_Content_Audit') ) :
+if ( !class_exists('My_Site_Audit') ) :
 
 /**
  * My_Site_Audit class.
@@ -48,7 +48,7 @@ final class My_Site_Audit {
 	private static $instance;
 
 	/**
-	 * Creates or retrieves the Get_Notified instance
+	 * Creates or retrieves the My_Site_Audit instance
 	 *
 	 * @access public
 	 * @static
@@ -69,7 +69,7 @@ final class My_Site_Audit {
 
 		}
 
-		// Return the Get_Notified object
+		// Return the My_Site_Audit object
 
 		return self::$instance;
 	}
@@ -106,12 +106,6 @@ final class My_Site_Audit {
 
 		if ( !defined('MY_SITE_AUDIT_ITEM_NAME') ) {
 			define('MY_SITE_AUDIT_ITEM_NAME', 'My Site Audit');
-		}
-
-		// Store URL
-
-		if ( !defined('MY_SITE_AUDIT_STORE_URL') ) {
-			define('MY_SITE_AUDIT_STORE_URL', 'https://mysiteaudit.com');
 		}
 
 		// Minimum PHP version

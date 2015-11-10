@@ -121,84 +121,7 @@ add_filter('msa_settings_tab_content_extensions', 'msa_settings_tab_extensions_c
  */
 function msa_create_initial_extensions() {
 
-	// Conditions Control
-
-	msa_register_extensions('conditions_control', array(
-		'title'		=> __('Conditions Control', 'msa'),
-		'content'	=> '',
-		'settings'	=> array(
-			'id'	=> 'msa-conditions-control',
-			'class'	=> 'msa-conditions-control',
-		),
-	));
-
-	// Extension 1
-
-	msa_register_extensions('extension_1', array(
-		'title'		=> __('Extension 1', 'msa'),
-		'content'	=> '',
-		'settings'	=> array(
-			'id'	=> 'msa-extension-1',
-			'class'	=> 'msa-extension-1',
-		),
-	));
-
-	// Extension 2
-
-	msa_register_extensions('extension_2', array(
-		'title'		=> __('Extension 2', 'msa'),
-		'content'	=> '',
-		'settings'	=> array(
-			'id'	=> 'msa-extension-2',
-			'class'	=> 'msa-extension-2',
-		),
-	));
-
-	// Extension 3
-
-	msa_register_extensions('extension_3', array(
-		'title'		=> __('Extension 3', 'msa'),
-		'content'	=> '',
-		'settings'	=> array(
-			'id'	=> 'msa-extension-3',
-			'class'	=> 'msa-extension-3',
-		),
-	));
-
-	// Extension 4
-
-	msa_register_extensions('extension_4', array(
-		'title'		=> __('Extension 4', 'msa'),
-		'content'	=> '',
-		'settings'	=> array(
-			'id'	=> 'msa-extension-4',
-			'class'	=> 'msa-extension-4',
-		),
-	));
-
-	// Extension 5
-
-	msa_register_extensions('extension_5', array(
-		'title'		=> __('Extension 5', 'msa'),
-		'content'	=> '',
-		'settings'	=> array(
-			'id'	=> 'msa-extension-5',
-			'class'	=> 'msa-extension-5',
-		),
-	));
-
-	// Extension 6
-
-	msa_register_extensions('extension_6', array(
-		'title'		=> __('Extension 6', 'msa'),
-		'content'	=> '',
-		'settings'	=> array(
-			'id'	=> 'msa-extension-6',
-			'class'	=> 'msa-extension-6',
-		),
-	));
-
-	do_action('msa_register_extensions');
+	do_action('msa_register_extension');
 }
 
 /**
@@ -227,7 +150,7 @@ function msa_get_extensions() {
  * @param array $args (default: array())
  * @return void
  */
-function msa_register_extensions($extension, $args = array()) {
+function msa_register_extension($extension, $args = array()) {
 
 	global $msa_extensions;
 

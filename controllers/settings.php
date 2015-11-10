@@ -39,9 +39,15 @@ if ( isset($_POST['submit']) && check_admin_referer('msa-settings') ) {
 
 	do_action('msa_save_settings', $_POST);
 
+	// Save all the general settings
+
+	//$settings['']
+
+/*
 	?><script>
 		window.location = "<?php echo get_admin_url() . 'admin.php?page=msa-settings'; ?>";
 	</script><?php
+*/
 
 /*
 	$settings['shared_count_api_key'] = isset($_POST['msa-shared-count-api-key']) ? sanitize_text_field($_POST['msa-shared-count-api-key']) : '';

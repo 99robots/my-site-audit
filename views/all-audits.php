@@ -37,9 +37,8 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 	$audit_posts_model 	= new MSA_Audit_Posts_Model();
 	$audit_post = $audit_posts_model->get_data_from_id($_GET['audit'], $_GET['post']);
 	$post = (object) $audit_post['post'];
-	$data = $audit_post['data'];
-
-	$score = msa_calculate_score($post, $audit_post['data']); ?>
+	$data = $audit_post['data']['values'];
+	$score = $audit_post['data']['score']; ?>
 
 	<h1><?php _e('Single Post', 'msa'); ?>
 		<a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $_GET['audit']; ?>" class="page-title-action"><?php _e('All Posts', 'msa'); ?></a>
@@ -124,66 +123,6 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 
 			<?php } ?>
 
-<!--
-			<table class="wp-list-table widefat striped posts msa-audit-table">
-
-				<thead>
-					<th style="width: 33.333%;"><?php _e("Attribute", 'msa'); ?></th>
-					<th><?php _e("Value", 'msa'); ?></th>
-				</thead>
-
-				<tbody>
-
-					<tr class="msa-post-status-bg msa-post-status-bg-<?php echo msa_get_score_status($score['score']); ?>">
-						<td><?php _e('Score', 'msa'); ?></td>
-						<td><?php echo 100 * $score['score']; ?>%</td>
-					</tr>
-
-					<tr>
-						<td><?php _e('Published Date', 'msa'); ?></td>
-						<td><?php echo date('M j, Y', strtotime($post->post_date)); ?></td>
-					</tr>
-
-					<tr>
-						<td><?php _e('ID', 'msa'); ?></td>
-						<td><?php echo $post->ID; ?></td>
-					</tr>
-
-					<tr>
-						<td><?php _e('Slug', 'msa'); ?></td>
-						<td><a href="<?php echo get_permalink($post->ID); ?>" target="_blank">/<?php echo $post->post_name; ?></a></td>
-					</tr>
-
-					<tr>
-						<td><?php _e('Title', 'msa'); ?></td>
-						<td><?php echo $post->post_title; ?></td>
-					</tr>
-
-					<tr class="msa-post-status msa-post-status-<?php echo msa_get_score_status($score['data']['title']); ?>">
-						<td><?php _e('Title Length', 'msa'); ?></td>
-						<td><?php echo strlen($post->post_title); ?></td>
-					</tr>
-
-					<tr class="msa-post-status msa-post-status-<?php echo msa_get_score_status($score['data']['modified_date']); ?>">
-						<td><?php _e('Modified Date', 'msa'); ?></td>
-						<td><?php echo date('M j, Y', strtotime($post->post_modified)); ?></td>
-					</tr>
-
-					<tr class="msa-post-status msa-post-status-<?php echo msa_get_score_status($score['data']['word_count']); ?>">
-						<td><?php _e('Word Count', 'msa'); ?></td>
-						<td><?php echo $data['word_count']; ?></td>
-					</tr>
-
-					<tr class="msa-post-status msa-post-status-<?php echo msa_get_score_status($score['data']['comment_count']); ?>">
-						<td><?php _e('Comment Count', 'msa'); ?></td>
-						<td><?php echo $data['comment_count']; ?></td>
-					</tr>
-
-				</tbody>
-
-			</table>
--->
-
 		</div>
 
 	</div>
@@ -194,15 +133,7 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 
 			<div class="msa-right-column-container metabox-holder">
 
-				<?php echo do_action('msa_single_post_before_sidebar'); ?>
-
-				<div class="msa-right-column-item postbox">
-					<h3 class="hndle ui-sortable-handle"><?php _e('Title', 'msa'); ?></h3>
-					<div class="inside">
-					</div>
-				</div>
-
-				<?php echo do_action('msa_single_post_after_sidebar'); ?>
+				<?php echo do_action('msa_single_post_sidebar'); ?>
 
 			</div>
 
@@ -232,7 +163,7 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 			<div class="msa-header-score-container">
 				<span class="msa-header-score-description"><?php _e('Audit Score', 'msa'); ?></span>
 				<div class="msa-header-score msa-post-status-text-<?php echo msa_get_score_status($audit['score']); ?>">
-					<?php echo msa_get_letter_grade($audit['score']); ?>
+					<?php echo round($audit['score'] * 100) . '%'; ?>
 				</div>
 			</div>
 		</div>

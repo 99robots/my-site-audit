@@ -120,26 +120,9 @@ class MSA_All_Audits_Table extends WP_List_Table {
 		) );
 
 		$this->items = array_slice($this->items,(($current_page-1)*$per_page),$per_page);
-
 		$this->items = array_reverse($this->items);
 
-		// Add a new row to show that to get more audits they need to purchase an add-on
-
-		if ( count($this->items) > 0 ) {
-
-			$this->items[] = array(
-				'extension'			=> true,
-				'extension-link' 	=> 'https://mysiteaudit.com',
-				'score'				=> 1,
-				'name'				=> __('Want to Save more Audits? Get the Extension!', 'msa'),
-				'date'				=> date('Y-m-d H:i:s'),
-				'num_posts'			=> '',
-				'user'				=> 0,
-			);
-
-			$this->items = apply_filters('msa_all_audits_table_items', $this->items);
-
-		}
+		$this->items = apply_filters('msa_all_audits_table_items', $this->items);
 	}
 
 	/**
@@ -291,10 +274,15 @@ class MSA_All_Audits_Table extends WP_List_Table {
 
 								foreach( json_decode($audit['args']['conditions'], true) as $condition ) {
 
+									$min = isset($condition['units']) ? $condition['min'] . ' ' . $condition['units'] : $condition['min'];
+									$max = isset($condition['units']) ? $condition['max'] . ' ' . $condition['units'] : $condition['max'];
+
 									if ( $condition['comparison'] == 1 ) {
 										$comparison = __('Greater Than', 'msa');
+										$max = '';
 									} else if ( $condition['comparison'] == 2 ) {
 										$comparison = __('Less Than', 'msa');
+										$min = '';
 									} else if ( $condition['comparison'] == 3 ) {
 										$comparison = __('In Between', 'msa');
 									}
@@ -310,8 +298,8 @@ class MSA_All_Audits_Table extends WP_List_Table {
 										<td>' . $condition['weight'] . '</td>
 										<td>' . $comparison . '</td>
 										<td>' . $value . '</td>
-										<td>' . (isset($condition['min_display_val']) ? $condition['min_display_val'] : '') . '</td>
-										<td>' . (isset($condition['max_display_val']) ? $condition['max_display_val'] : '') . '</td>
+										<td>' . $min . '</td>
+										<td>' . $max . '</td>
 									</tr>';
 
 								}
@@ -351,7 +339,7 @@ class MSA_All_Audits_Table extends WP_List_Table {
 			echo '</tr>';
 
 		} else {
-			echo '<tr class="msa-post-status msa-post-status-' . msa_get_score_status($item['score']) .'">';
+			echo '<tr class="msa-post-status msa-post-status-' . msa_get_score_status($item['score']) . '">';
 			$this->single_row_columns( $item );
 			echo '</tr>';
 		}

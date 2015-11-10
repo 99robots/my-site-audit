@@ -213,14 +213,14 @@ class MSA_All_Posts_Table extends WP_List_Table {
 		// If no order, default to asc
 		$order = ( ! empty($_GET['order'] ) ) ? $_GET['order'] : 'asc';
 
-		if ( isset($a['data'][$orderby]) ) {
-			$a_data = $a['data'][$orderby];
+		if ( isset($a['data']['values'][$orderby]) ) {
+			$a_data = $a['data']['values'][$orderby];
 		} else {
 			$a_data = '';
 		}
 
-		if ( isset($b['data'][$orderby]) ) {
-			$b_data = $b['data'][$orderby];
+		if ( isset($b['data']['values'][$orderby]) ) {
+			$b_data = $b['data']['values'][$orderby];
 		} else {
 			$b_data = '';
 		}
@@ -245,7 +245,8 @@ class MSA_All_Posts_Table extends WP_List_Table {
 	 */
 	public function column_default( $item, $column_name ) {
 
-		$score = msa_calculate_score($item['post'], $item['data']);
+		$score = $item['data']['score'];
+		$values = $item['data']['values'];
 		$caret = '';
 
 		// Conditions
@@ -257,13 +258,13 @@ class MSA_All_Posts_Table extends WP_List_Table {
 		$attributes = msa_get_attributes();
 
 		if ( isset($conditions[$column_name]) ) {
-			$caret = '<i class="fa fa-caret-' . ( $score['data'][$column_name] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data'][$column_name]) . '"></i> ';
+			//$caret = '<i class="fa fa-caret-' . ( $score['data'][$column_name] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data'][$column_name]) . '"></i> ';
 		}
 
 		switch( $column_name ) {
 
 			case 'score':
-				$data = round(100 * $item['score']) . '%';
+				$data = round(100 * $score['score']) . '%';
 				$caret = '';
 			break;
 
@@ -281,8 +282,8 @@ class MSA_All_Posts_Table extends WP_List_Table {
 
 			default:
 
-				if ( isset($item['data'][$column_name]) && ( isset($conditions[$column_name]) || isset($attributes[$column_name]) ) ) {
-					$data = $item['data'][$column_name];
+				if ( isset($values[$column_name]) && ( isset($conditions[$column_name]) || isset($attributes[$column_name]) ) ) {
+					$data = $values[$column_name];
 				} else {
 					$data = '';
 				}
@@ -305,9 +306,7 @@ class MSA_All_Posts_Table extends WP_List_Table {
 	 */
 	public function single_row( $item ) {
 
-		$score = msa_calculate_score($item['post'], $item['data']);
-
-		echo '<tr class="msa-post-status msa-post-status-' . msa_get_score_status($score['score']) .'">';
+		echo '<tr class="msa-post-status msa-post-status-' . msa_get_score_status($item['data']['score']['score']) .'">';
 		$this->single_row_columns( $item );
 		echo '</tr>';
 	}
@@ -338,7 +337,7 @@ class MSA_All_Posts_Table extends WP_List_Table {
 
 				// Conditions
 
-				foreach ( $conditions as $condition ) {
+				foreach ( $conditions as $key => $condition ) {
 
 					if ( isset($condition['filter']) ) {
 
@@ -348,7 +347,7 @@ class MSA_All_Posts_Table extends WP_List_Table {
 							$value = '';
 						} ?>
 
-						<div style="display: inline-block;">
+						<div class="msa-filter-container msa-filter-conditions-container filter-<?php echo $key; ?>">
 							<label class="msa-filter-label"><?php echo $condition['filter']['label']; ?></label>
 							<select class="msa-filter" name="<?php echo $condition['filter']['name']; ?>">
 								<option value="" <?php selected("", $value, true); ?>><?php _e('All', 'msa'); ?></option>
@@ -376,7 +375,7 @@ class MSA_All_Posts_Table extends WP_List_Table {
 
 						$attribute['filter']['options'] = apply_filters('msa_filter_attribute_' . $key, $attribute['filter']['options'])?>
 
-						<div style="display: inline-block;">
+						<div class="msa-filter-container msa-filter-attributes-container filter-<?php echo $key; ?>">
 							<label class="msa-filter-label"><?php echo $attribute['filter']['label']; ?></label>
 							<select class="msa-filter" name="<?php echo $attribute['filter']['name']; ?>">
 								<option value="" <?php selected("", $value, true); ?>><?php _e('All', 'msa'); ?></option>

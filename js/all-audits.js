@@ -41,11 +41,7 @@ jQuery(document).ready(function($){
 
 		$('<span class="msa-creating-audit"><img src="' + msa_all_audits_data.site_url + '/wp-admin/images/spinner-2x.gif"/></span>').insertAfter('#submit');
 
-		$(this).append('<div class="msa-info updated"><p>' + msa_all_audits_data.info + '</p></div>');
-		$(this).append('<div class="msa-progress-bar-container"><div class="msa-progress-bar" data-current="1" data-max="0"></div></div>');
-		$(this).append('<div class="msa-posts-completed">0/0</div>');
-
-		// Audit a post
+		// Get the post IDs to audit
 
 		$.post(ajaxurl, {
 				'action': 'msa_get_post_ids_for_audit',
@@ -53,18 +49,37 @@ jQuery(document).ready(function($){
 			}, function(response) {
 
 			response = $.parseJSON(response);
-			var posts = response.post_ids;
 
-			$('.msa-estimated-time span').html("N/A");
-			$('.msa-posts-completed').html('0/' + posts.length);
-			$('.msa-progress-bar').attr('data-max', posts.length);
-			$(".msa-create-audit-form").append('<span style="display-none;" class="msa-audit-score" data-audit-id="' + response.audit_id + '" data-num-posts="' + posts.length + '" data-score="0"></span>');
+			// Check if we have an error
 
-			//msa_add_post_to_audit(response.audit_id, posts[0]);
+			if ( response.status == 'success' ) {
 
-			for ( var i = 0; i < posts.length; i++) {
-				msa_add_post_to_audit(response.audit_id, posts[i]);
+				$(".msa-create-audit-form").append('<div class="msa-info updated"><p>' + msa_all_audits_data.info + '</p></div>');
+				$(".msa-create-audit-form").append('<div class="msa-progress-bar-container"><div class="msa-progress-bar" data-current="1" data-max="0"></div></div>');
+				$(".msa-create-audit-form").append('<div class="msa-posts-completed">0/0</div>');
+
+				var posts = response.post_ids;
+
+				$('.msa-estimated-time span').html("N/A");
+				$('.msa-posts-completed').html('0/' + posts.length);
+				$('.msa-progress-bar').attr('data-max', posts.length);
+				$(".msa-create-audit-form").append('<span style="display-none;" class="msa-audit-score" data-audit-id="' + response.audit_id + '" data-num-posts="' + posts.length + '" data-score="0"></span>');
+
+				//msa_add_post_to_audit(response.audit_id, posts[0]);
+
+				for ( var i = 0; i < posts.length; i++) {
+					msa_add_post_to_audit(response.audit_id, posts[i]);
+				}
+
+			} else {
+				$('.msa-info').remove();
+				$('.msa-posts-completed').remove();
+				$('.msa-creating-audit').remove();
+				$('.msa-progress-bar-container').remove();
+				$(".msa-create-audit-wrap").slideUp();
+				$('<div class="error"><p>' + response.message + '</p></div>').insertAfter('.msa-create-audit-wrap');
 			}
+
 		});
 	});
 
@@ -84,13 +99,11 @@ jQuery(document).ready(function($){
 				'post_id': post,
 			}, function(response) {
 
-				console.log('post completed');
-
 				msa_update_progress_bar();
 
 				var score = $('.msa-audit-score').attr('data-score');
 				$('.msa-audit-score').attr('data-score', parseFloat(score) + parseFloat(response));
-				msa_update_audit_score($('.msa-audit-score').attr('data-audit-id'), $('.msa-audit-score').attr('data-num-posts'), $('.msa-audit-score').attr('data-score'));
+				msa_update_audit_score($('.msa-audit-score').attr('data-audit-id'), $('.msa-audit-score').attr('data-num-posts'), score);
 		});
 
 	}
@@ -182,7 +195,9 @@ jQuery(document).ready(function($){
 
 	// Datepicker
 
-	$(".msa-datepicker").datepicker();
+	if ( $(".msa-datepicker").length != 0 ) {
+		$(".msa-datepicker").datepicker();
+	}
 
 	// Hide and show the create new settings
 
@@ -197,12 +212,24 @@ jQuery(document).ready(function($){
 
 	// Hide and show the columns
 
+	$('.hide-column-tog').each(function(index,value){
+		if ( $(value).prop('checked') ) {
+			$('.column-' + $(value).val()).show();
+			$('.filter-' + $(value).val()).show();
+		} else {
+			$('.column-' + $(value).val()).hide();
+			$('.filter-' + $(value).val()).hide();
+		}
+	});
+
 	$('.hide-column-tog').change(function(){
 
 		if ( $(this).prop('checked') ) {
-			$('#' + $(this).val()).show();
+			$('.column-' + $(this).val()).show();
+			$('.filter-' + $(this).val()).show();
 		} else {
-			$('#' + $(this).val()).hide();
+			$('.column-' + $(this).val()).hide();
+			$('.filter-' + $(this).val()).hide();
 		}
 	});
 

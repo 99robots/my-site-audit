@@ -136,7 +136,7 @@ class MSA_Audit_Posts_Model {
 			) VALUES (%d, %d, %f, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %s, %d, %s, %s, %d, %s)",
 				$data['audit_id'],
 				$data['post']->ID,
-				$data['data']['score'],
+				$data['data']['score']['score'],
 				$data['post']->post_author,
 				date($this->data_format, strtotime($data['post']->post_date)),
 				date($this->data_format, strtotime($data['post']->post_date_gmt)),

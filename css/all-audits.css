@@ -173,6 +173,10 @@
 	width: 80px;
 }
 
+.msa-filter-container {
+	display: inline-block;
+}
+
 /* =====================================================
  *
  * Single Post

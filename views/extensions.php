@@ -29,7 +29,59 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 require_once('header.php');
 
-$extensions = msa_get_extensions(); ?>
+$extensions = msa_get_extensions();
+
+// Conditions Control
+
+if ( !isset($extensions['conditions_control']) ) {
+	$extensions['conditions_control'] = array(
+		'title'		=> __('Conditions Control', 'msa'),
+		'content'	=> '',
+		'settings'	=> array(
+			'id'	=> 'msa-conditions-control',
+			'class'	=> 'msa-conditions-control',
+		),
+	);
+}
+
+// Yoast SEO
+
+if ( !isset($extensions['yoast_seo']) ) {
+	$extensions['yoast_seo'] = array(
+		'title'		=> __('Yoast SEO', 'msa'),
+		'content'	=> '',
+		'settings'	=> array(
+			'id'	=> 'msa-yoast-seo',
+			'class'	=> 'msa-yoast-seo',
+		),
+	);
+}
+
+// Tasks
+
+if ( !isset($extensions['tasks']) ) {
+	$extensions['tasks'] = array(
+		'title'		=> __('Tasks', 'msa'),
+		'content'	=> '',
+		'settings'	=> array(
+			'id'	=> 'msa-tasks',
+			'class'	=> 'msa-tasks',
+		),
+	);
+}
+
+// Activity
+
+if ( !isset($extensions['activity']) ) {
+	$extensions['activity'] = array(
+		'title'		=> __('Activity', 'msa'),
+		'content'	=> '',
+		'settings'	=> array(
+			'id'	=> 'msa-activity',
+			'class'	=> 'msa-activity',
+		),
+	);
+} ?>
 
 <h1><?php _e("Extensions", 'msa'); ?></h1>
 
@@ -39,10 +91,10 @@ $extensions = msa_get_extensions(); ?>
 
 	<div class="postbox-container">
 
-		<div class="meta-box-sortables ui-sortable">
+		<div class="meta-box-sortables">
 
 			<div class="postbox">
-				<h3 class="hndle ui-sortable-handle"><span><?php echo $extension['title']; ?></span></h3>
+				<h3 class="hndle" style="cursor: auto;"><span><?php echo $extension['title']; ?></span></h3>
 				<div class="inside">
 					<?php echo apply_filters('msa_extension_content_' . $key, $extension['content']); ?>
 				</div>

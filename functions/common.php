@@ -87,10 +87,37 @@ function msa_add_new_audit_check($data) {
 	$audit_model = new MSA_Audits_Model();
 	$audits = $audit_model->get_data();
 
-	if ( count($audits) > 0 ) {
+	if ( count($audits) >= 5 ) {
 		return false;
 	}
 
 	return true;
 }
 add_filter('msa_can_add_new_audit', 'msa_add_new_audit_check', 10, 1);
+
+/**
+ * Filters all the audits from the list of audits
+ *
+ * @access public
+ * @param mixed $audit
+ * @return void
+ */
+function msa_save_more_audits_extension($audits) {
+
+	if ( count($audits) >= 5 ) {
+
+		$audits[] = array(
+			'extension'			=> true,
+			'extension-link' 	=> 'https://mysiteaudit.com',
+			'score'				=> 1,
+			'name'				=> __('Want to Save more Audits? Get the Extension!', 'msa'),
+			'date'				=> date('Y-m-d H:i:s'),
+			'num_posts'			=> '',
+			'user'				=> 0,
+		);
+	}
+
+	return $audits;
+
+}
+add_filter('msa_all_audits_table_items', 'msa_save_more_audits_extension', 10, 1);

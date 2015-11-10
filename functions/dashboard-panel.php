@@ -124,27 +124,19 @@ function msa_create_initial_dashboard_panels() {
 		'content'	=> '',
 	));
 
-	// Example Post Box
+	// Tasks
 
-	msa_register_dashboard_panel('example_1', array(
-		'post_box' 	=> 0,
-		'title'		=> __('Example Post Box 1', 'msa'),
+	msa_register_dashboard_panel('tasks', array(
+		'post_box' 	=> 1,
+		'title'		=> __('Tasks', 'msa'),
 		'content'	=> '',
 	));
 
-	// Example Post Box
+	// Activity
 
-	msa_register_dashboard_panel('example_2', array(
+	msa_register_dashboard_panel('activity', array(
 		'post_box' 	=> 1,
-		'title'		=> __('Example Post Box 2', 'msa'),
-		'content'	=> '',
-	));
-
-	// Example Post Box
-
-	msa_register_dashboard_panel('example_3', array(
-		'post_box' 	=> 1,
-		'title'		=> __('Example Post Box 3', 'msa'),
+		'title'		=> __('Activity', 'msa'),
 		'content'	=> '',
 	));
 

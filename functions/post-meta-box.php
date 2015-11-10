@@ -37,7 +37,7 @@ function msa_add_meta_box() {
 
 	add_meta_box(
 		'msa-meta-box',
-		__('My Site Audit: Post Details', 'msa' ),
+		__('My Site Audit', 'msa' ),
 		'msa_meta_box_callback'
 	);
 }
@@ -59,8 +59,6 @@ function msa_meta_box_callback( $post ) {
 
 	// Check to see if we have an audit
 
-	$output = '';
-
 	if ( isset($audit) ) {
 
 		$audit = $audit_model->get_data_from_id($audit['id']);
@@ -72,6 +70,23 @@ function msa_meta_box_callback( $post ) {
 		$score = msa_calculate_score($post, $audit_post['data']);
 
 		$condition_categories = msa_get_condition_categories();
+
+		$user = get_userdata($audit['user']);
+
+		?><div class="msa-post-meta-container msa-post-meta-audit-meta-attributes">
+			<p class="msa-post-meta-attribute"><?php _e('Score: ', 'msa'); ?></p>
+			<p class="msa-post-meta-attribute"><?php _e('From Audit: ', 'msa'); ?></p>
+			<p class="msa-post-meta-attribute"><?php _e('Created On: ', 'msa'); ?></p>
+			<p class="msa-post-meta-attribute"><?php _e('Created By: ', 'msa'); ?></p>
+		</div>
+
+		<div class="msa-post-meta-container msa-post-meta-audit-meta-values">
+			<p class="msa-post-meta-value msa-post-status-bg msa-post-status-bg-<?php echo msa_get_score_status($score['score']); ?>"><?php echo round($score['score'] * 100, 2); ?>%</p>
+			<p class="msa-post-meta-value"><a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit['id']; ?>" target="_blank"><?php echo $audit['name']; ?></a></p>
+			<p class="msa-post-meta-value"><?php echo date('M j, Y', strtotime($audit['date'])); ?></p>
+			<p class="msa-post-meta-value"><?php echo $user->display_name; ?></p>
+		</div><?php
+
 		foreach ( $condition_categories as $key => $condition_category ) {
 			?><div class="postbox" id="<?php echo $key; ?>">
 				<?php echo apply_filters('msa_condition_category_content', $key, $post, $data ); ?>
@@ -81,8 +96,6 @@ function msa_meta_box_callback( $post ) {
 	}
 
 	wp_enqueue_style('msa-all-audits-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/all-audits.css');
+	wp_enqueue_style('msa-post-meta-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/post-meta.css');
 	wp_enqueue_style('msa-common-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/css/common.css');
-
-	echo $output;
-
 }
