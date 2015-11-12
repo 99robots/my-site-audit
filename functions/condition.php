@@ -120,7 +120,7 @@ function msa_create_initial_conditions() {
 
 	msa_register_condition('title', array(
 		'name' 				=> __('Title', 'msa'),
-		'weight'        	=> 2,
+		'weight'        	=> 5,
 		'comparison'		=> 2,
 		'value'				=> 1,
 		'max'           	=> 60,
@@ -135,7 +135,7 @@ function msa_create_initial_conditions() {
 			'description-max'	=> __('The maximum number of characters a title is allowed to be.', 'msa'),
 		),
 		'filter'		=> array(
-			'label'		=> __('Title Length', 'msa'),
+			'label'		=> __('Title Lengths', 'msa'),
 			'name'		=> 'title',
 			'options'	=> array(
 				array(
@@ -154,11 +154,11 @@ function msa_create_initial_conditions() {
 
 	msa_register_condition('modified_date', array(
 		'name' 				=> __('Modified Date', 'msa'),
-		'weight'        	=> 3,
+		'weight'        	=> 5,
 		'comparison'		=> 2,
 		'value'				=> 2,
 		'units'				=> 'seconds',
-		'max'          		=> DAY_IN_SECONDS * 90,
+		'max'          		=> DAY_IN_SECONDS * 180,
 		'max_display_val'	=> __('90 Days', 'msa'),
 		'category'			=> 'content',
 		'show_column'		=> true,
@@ -169,16 +169,16 @@ function msa_create_initial_conditions() {
 			'description-max'	=> __('The maximum number of seconds your posts can go without being modified.', 'msa'),
 		),
 		'filter'		=> array(
-			'label'		=> __('Modified Date', 'msa'),
+			'label'		=> __('Modified Dates', 'msa'),
 			'name'		=> 'modified_date',
 			'options'	=> array(
 				array(
 					'name' 	=> __('More Than 90 Days Ago', 'msa'),
-					'value'	=> 'more-' . DAY_IN_SECONDS * 90,
+					'value'	=> 'more-' . DAY_IN_SECONDS * 180,
 				),
 				array(
 					'name' 	=> __('Less Than 90 Days Ago', 'msa'),
-					'value'	=> 'less-' . DAY_IN_SECONDS * 90,
+					'value'	=> 'less-' . DAY_IN_SECONDS * 180,
 				),
 			)
 		)
@@ -188,7 +188,7 @@ function msa_create_initial_conditions() {
 
 	msa_register_condition('word_count', array(
 		'name' 				=> __('Word Count', 'msa'),
-		'weight'        	=> 10,
+		'weight'        	=> 15,
 		'comparison'		=> 1,
 		'value'				=> 2,
 		'min'           	=> 750,
@@ -203,7 +203,7 @@ function msa_create_initial_conditions() {
 			'description-min'	=> __('The minimum number of words each post should have.', 'msa'),
 		),
 		'filter'		=> array(
-			'label'		=> __('Word Count', 'msa'),
+			'label'		=> __('Word Counts', 'msa'),
 			'name'		=> 'word_count',
 			'options'	=> array(
 				array(
@@ -222,7 +222,7 @@ function msa_create_initial_conditions() {
 
 	msa_register_condition('comment_count', array(
 		'name' 				=> __('Comment Count', 'msa'),
-		'weight'        	=> 1,
+		'weight'        	=> 5,
 		'comparison'		=> 1,
 		'value'				=> 2,
 		'min'           	=> 5,
@@ -237,7 +237,7 @@ function msa_create_initial_conditions() {
 			'description-min'	=> __('The minimum number of comments each post should have.', 'msa'),
 		),
 		'filter'		=> array(
-			'label'		=> __('Comment Count', 'msa'),
+			'label'		=> __('Comment Counts', 'msa'),
 			'name'		=> 'comment_count',
 			'options'	=> array(
 				array(
@@ -262,11 +262,10 @@ function msa_create_initial_conditions() {
 
 	msa_register_condition('internal_links', array(
 		'name' 				=> __('Internal Links', 'msa'),
-		'weight'        	=> 5,
-		'comparison'		=> 3,
+		'weight'        	=> 8,
+		'comparison'		=> 1,
 		'value'				=> 2,
-		'min'           	=> 2,
-		'max'           	=> 6,
+		'min'           	=> 3,
 		'units'				=> 'links',
 		'min_display_val'	=> __('2 Internal Links', 'msa'),
 		'max_display_val'	=> __('6 Internal Links', 'msa'),
@@ -285,11 +284,11 @@ function msa_create_initial_conditions() {
 			'options'	=> array(
 				array(
 					'name' 	=> __('More Than 4 Internal Links', 'msa'),
-					'value'	=> 'more-4',
+					'value'	=> 'more-3',
 				),
 				array(
 					'name' 	=> __('Less Than 4 Internal Links', 'msa'),
-					'value'	=> 'less-4',
+					'value'	=> 'less-3',
 				),
 			)
 		)
@@ -299,11 +298,10 @@ function msa_create_initial_conditions() {
 
 	msa_register_condition('external_links', array(
 		'name' 				=> __('External Links', 'msa'),
-		'weight'        	=> 5,
-		'comparison'		=> 3,
+		'weight'        	=> 8,
+		'comparison'		=> 1,
 		'value'				=> 2,
-		'min'           	=> 1,
-		'max'           	=> 14,
+		'min'           	=> 6,
 		'units'				=> 'links',
 		'min_display_val'	=> __('1 Internal Links', 'msa'),
 		'max_display_val'	=> __('14 Internal Links', 'msa'),
@@ -322,11 +320,11 @@ function msa_create_initial_conditions() {
 			'options'	=> array(
 				array(
 					'name' 	=> __('More Than 7 External Links', 'msa'),
-					'value'	=> 'more-7',
+					'value'	=> 'more-6',
 				),
 				array(
 					'name' 	=> __('Less Than 7 External Links', 'msa'),
-					'value'	=> 'less-7',
+					'value'	=> 'less-6',
 				),
 			)
 		)
@@ -336,7 +334,7 @@ function msa_create_initial_conditions() {
 
 	msa_register_condition('broken_links', array(
 		'name' 			=> __('Broken Links', 'msa'),
-		'weight'        	=> 6,
+		'weight'        	=> 14,
 		'comparison'		=> 2,
 		'value'				=> 1,
 		'max'           	=> 1,
@@ -376,10 +374,10 @@ function msa_create_initial_conditions() {
 
 	msa_register_condition('images', array(
 		'name' 				=> __('Images', 'msa'),
-		'weight'        	=> 3,
+		'weight'        	=> 12,
 		'comparison'		=> 1,
 		'value'				=> 2,
-		'min'           	=> 2,
+		'min'           	=> 3,
 		'units'				=> 'images',
 		'min_display_val'	=> __('2 Images', 'msa'),
 		'category'			=> 'images',
@@ -396,11 +394,11 @@ function msa_create_initial_conditions() {
 			'options'	=> array(
 				array(
 					'name' 	=> __('More Than 2 Images', 'msa'),
-					'value'	=> 'more-2',
+					'value'	=> 'more-3',
 				),
 				array(
 					'name' 	=> __('Less Than 2 Images', 'msa'),
-					'value'	=> 'less-2',
+					'value'	=> 'less-3',
 				),
 			)
 		)
@@ -410,7 +408,7 @@ function msa_create_initial_conditions() {
 
 	msa_register_condition('missing_alt_tag', array(
 		'name' 			=> __('Missing Alt Tag', 'msa'),
-		'weight'        	=> 6,
+		'weight'        	=> 8,
 		'comparison'		=> 2,
 		'value'				=> 1,
 		'max'           	=> 1,
@@ -425,7 +423,7 @@ function msa_create_initial_conditions() {
 			'description-max'	=> __('The maximum number of images without an alt tag allowed per post.', 'msa'),
 		),
 		'filter'		=> array(
-			'label'		=> __('Missing Alt Tag', 'msa'),
+			'label'		=> __('Missing Alt Tags', 'msa'),
 			'name'		=> 'missing_alt_tag',
 			'options'	=> array(
 				array(
@@ -484,7 +482,7 @@ function msa_create_initial_conditions() {
 
 	msa_register_condition('invalid_headings', array(
 		'name' 				=> __('Invalid Headings', 'msa'),
-		'weight'        	=> 3,
+		'weight'        	=> 4,
 		'comparison'		=> 2,
 		'value'				=> 1,
 		'max'           	=> 1,
@@ -518,7 +516,7 @@ function msa_create_initial_conditions() {
 
 	msa_register_condition('headings', array(
 		'name' 				=> __('Headings', 'msa'),
-		'weight'        	=> 6,
+		'weight'        	=> 13,
 		'comparison'		=> 1,
 		'value'				=> 2,
 		'min'           	=> 5,

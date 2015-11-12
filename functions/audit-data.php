@@ -70,7 +70,7 @@ function msa_calculate_score($post, $data) {
 
 		else if ( $condition['comparison'] == 3 && isset($condition['max']) && isset($condition['min']) ) {
 
-			$range = $condition['max'] - $condition['min'];
+			$range = $condition['max'] - $condition['min'] + 2;
 			$mean = ($condition['max'] + $condition['min']) / 2;
 
 			$value = ( 1 -  min( floor( abs( $data[$key] - $mean ) ) / floor( ( $range / 2 ) ) , 1 ) );
@@ -604,7 +604,7 @@ function msa_filter_posts($posts) {
 
 		foreach ( $posts as $key => $item ) {
 
-			if ( $item['data']['score'] < $_GET['score-low'] || $item['data']['score'] > $_GET['score-high'] ) {
+			if ( $item['data']['values']['score'] < $_GET['score-low'] || $item['data']['values']['score'] > $_GET['score-high'] ) {
 				unset($posts[$key]);
 			}
 		}

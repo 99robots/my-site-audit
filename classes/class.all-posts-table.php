@@ -33,8 +33,6 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 
 if ( !class_exists('MSA_All_Posts_Table') ) :
 
-add_filter('msa_single_audit_posts', array('MSA_All_Posts_Table', 'posts_from_filters'), 10, 2);
-
 class MSA_All_Posts_Table extends WP_List_Table {
 
 	/**
@@ -182,16 +180,22 @@ class MSA_All_Posts_Table extends WP_List_Table {
 
 		$conditions = msa_get_conditions();
 
-		foreach ( $conditions as $slug => $condition ) {
-			$sortable_columns[$slug] = array($slug, true);
+		foreach ( $conditions as $key => $condition ) {
+
+			if ( $key == 'score' ) {
+				$sortable_columns[$key] = array($key, true);
+			} else {
+				$sortable_columns[$key] = array($key, false);
+			}
+
 		}
 
 		// Attributes
 
 		$attributes = msa_get_attributes();
 
-		foreach ( $attributes as $slug => $attribute ) {
-			$sortable_columns[$slug] = array($slug, true);
+		foreach ( $attributes as $key => $attribute ) {
+			$sortable_columns[$key] = array($key, false);
 		}
 
 		return $sortable_columns;
@@ -348,9 +352,9 @@ class MSA_All_Posts_Table extends WP_List_Table {
 						} ?>
 
 						<div class="msa-filter-container msa-filter-conditions-container filter-<?php echo $key; ?>">
-							<label class="msa-filter-label"><?php echo $condition['filter']['label']; ?></label>
+							<!-- <label class="msa-filter-label"><?php echo $condition['filter']['label']; ?></label> -->
 							<select class="msa-filter" name="<?php echo $condition['filter']['name']; ?>">
-								<option value="" <?php selected("", $value, true); ?>><?php _e('All', 'msa'); ?></option>
+								<option value="" <?php selected("", $value, true); ?>><?php _e('All ' . $condition['filter']['label'], 'msa'); ?></option>
 								<?php foreach ( $condition['filter']['options'] as $option ) { ?>
 									<option value="<?php echo $option['value']; ?>" <?php selected($option['value'], $value, true); ?>><?php echo $option['name']; ?></option>
 								<?php } ?>
@@ -376,9 +380,9 @@ class MSA_All_Posts_Table extends WP_List_Table {
 						$attribute['filter']['options'] = apply_filters('msa_filter_attribute_' . $key, $attribute['filter']['options'])?>
 
 						<div class="msa-filter-container msa-filter-attributes-container filter-<?php echo $key; ?>">
-							<label class="msa-filter-label"><?php echo $attribute['filter']['label']; ?></label>
+							<!-- <label class="msa-filter-label"><?php echo $attribute['filter']['label']; ?></label> -->
 							<select class="msa-filter" name="<?php echo $attribute['filter']['name']; ?>">
-								<option value="" <?php selected("", $value, true); ?>><?php _e('All', 'msa'); ?></option>
+								<option value="" <?php selected("", $value, true); ?>><?php _e('All ' . $attribute['filter']['label'], 'msa'); ?></option>
 								<?php foreach ( $attribute['filter']['options'] as $option ) { ?>
 									<option value="<?php echo $option['value']; ?>" <?php selected($option['value'], $value, true); ?>><?php echo $option['name']; ?></option>
 								<?php } ?>

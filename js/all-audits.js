@@ -22,10 +22,11 @@
  *
  * ================================================================= */
 
-jQuery(document).ready(function($){
+jQuery(document).ready(function($) {
 
-	var msa_audit_time = 0;
-	var msa_audit_time_interval;
+	var msa_audit_post_ids = [];
+	var msa_audit_score = 0;
+	var msa_audit_updates = 0;
 
 	// Get all the posts for the audit
 
@@ -59,6 +60,7 @@ jQuery(document).ready(function($){
 				$(".msa-create-audit-form").append('<div class="msa-posts-completed">0/0</div>');
 
 				var posts = response.post_ids;
+				msa_audit_post_ids = response.post_ids;
 
 				$('.msa-estimated-time span').html("N/A");
 				$('.msa-posts-completed').html('0/' + posts.length);
@@ -100,10 +102,7 @@ jQuery(document).ready(function($){
 			}, function(response) {
 
 				msa_update_progress_bar();
-
-				var score = $('.msa-audit-score').attr('data-score');
-				$('.msa-audit-score').attr('data-score', parseFloat(score) + parseFloat(response));
-				msa_update_audit_score($('.msa-audit-score').attr('data-audit-id'), $('.msa-audit-score').attr('data-num-posts'), score);
+				msa_audit_score += parseFloat(response);
 		});
 
 	}
@@ -117,17 +116,18 @@ jQuery(document).ready(function($){
 	 * @param mixed score
 	 * @return void
 	 */
-	function msa_update_audit_score(audit_id, num_posts, score) {
+	function msa_update_audit_score() {
 
 		// Update the audit score
 
 		$.post(ajaxurl, {
 				'action': 'msa_update_audit_score',
-				'audit_id': audit_id,
-				'score': score,
-				'num_posts': num_posts,
+				'audit_id': $('.msa-audit-score').attr('data-audit-id'),
+				'score': msa_audit_score,
+				'num_posts': msa_audit_post_ids.length,
 			}, function(response) {
-				//console.log('Score has been updated: ' + response);
+				console.log('Score has been updated: ' + response);
+				msa_audit_complete();
 		});
 
 	}
@@ -149,20 +149,30 @@ jQuery(document).ready(function($){
 
 		if ( width >= 1 ) {
 			width = 1;
-
-			$('.msa-info').remove();
-			$('.msa-posts-completed').remove();
-			$('.msa-creating-audit').remove();
-			$('.msa-progress-bar-container').remove();
-			clearInterval(msa_audit_time_interval);
-
-			// Add message saying that the process has been completed
-
-			var audit_id = $('.msa-audit-score').attr('data-audit-id');
-			$(".msa-create-audit-form").append('<div class="updated"><p>' + msa_all_audits_data.success_message + '<a href="' + msa_all_audits_data.admin_url + 'admin.php?page=msa-all-audits&audit=' + audit_id + '">here.</a></p></div>');
+			msa_update_audit_score();
 		}
 
 		$('.msa-progress-bar').css('width', 100 * width + '%' );
+
+	}
+
+	/**
+	 * The audit has completd not lets show a success message
+	 *
+	 * @access public
+	 * @return void
+	 */
+	function msa_audit_complete() {
+
+		$('.msa-info').remove();
+		$('.msa-posts-completed').remove();
+		$('.msa-creating-audit').remove();
+		$('.msa-progress-bar-container').remove();
+
+		// Add message saying that the process has been completed
+
+		var audit_id = $('.msa-audit-score').attr('data-audit-id');
+		$(".msa-create-audit-form").append('<div class="updated"><p>' + msa_all_audits_data.success_message + '<a href="' + msa_all_audits_data.admin_url + 'admin.php?page=msa-all-audits&audit=' + audit_id + '">here.</a></p></div>');
 
 	}
 

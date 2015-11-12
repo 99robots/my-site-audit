@@ -124,14 +124,6 @@ function msa_create_initial_dashboard_panels() {
 		'content'	=> '',
 	));
 
-	// Tasks
-
-	msa_register_dashboard_panel('tasks', array(
-		'post_box' 	=> 1,
-		'title'		=> __('Tasks', 'msa'),
-		'content'	=> '',
-	));
-
 	// Activity
 
 	msa_register_dashboard_panel('activity', array(

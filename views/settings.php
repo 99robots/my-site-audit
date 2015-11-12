@@ -61,44 +61,6 @@ $settings_tabs = msa_get_settings_tabs(); ?>
 
 		<?php } ?>
 
-<!--
-		<div id="settings" class="msa-vertical-tabs-content-item msa-vertical-tabs-content-current">
-
-			<h3><?php _e("Settings", 'msa'); ?></h3>
-
-			<table class="form-table">
-				<tbody>
-
-					<tr>
-						<th scope="row"><label for="msa-shared-count-api-key"><?php _e("Shared Count API Key", 'msa'); ?></label></th>
-						<td>
-							<input type="text" class="regular-text msa-shared-count-api-key" id="msa-shared-count-api-key" name="msa-shared-count-api-key" value="<?php echo isset($settings['shared_count_api_key']) ? esc_attr($settings['shared_count_api_key']) : ''; ?>"/>
-							<p class="description"><?php _e('Input your', 'msa'); ?> <a href="https://admin.sharedcount.com/admin/user/home.php" target="_blank"><?php _e("Shared Count API Key", 'msa'); ?></a> <?php _e('in order to get the', 'msa'); ?> <a href="https://admin.sharedcount.com/faq.php" target="_blank"><?php _e("share count data", 'msa'); ?></a> <?php _e('for your site\'s posts.', 'msa'); ?></p>
-						</td>
-					</tr>
-
-					<tr>
-						<th scope="row"><label for="msa-shared-count-test"></label></th>
-						<td>
-							<button class="button msa-shared-count-test"><?php _e("Test", 'msa'); ?></button>
-						</td>
-					</tr>
-
-					<tr>
-						<th scope="row"><label for="msa-use-shared-count"><?php _e("Use Shared Count", 'msa'); ?></label></th>
-						<td>
-							<input type="checkbox" class="msa-use-shared-count" id="msa-use-shared-count" name="msa-use-shared-count" <?php echo isset($settings['use_shared_count']) && $settings['use_shared_count'] ? 'checked="checked"' : ''; ?>>
-							<p class="description"><?php _e("Do you want to use Shared Count Data with your author stats?", 'msa'); ?></p>
-						</td>
-					</tr>
-
-				</tbody>
-
-			</table>
-
-		</div>
--->
-
 		<?php submit_button(); ?>
 
 		<?php wp_nonce_field('msa-settings'); ?>

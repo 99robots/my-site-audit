@@ -174,8 +174,6 @@ final class My_Site_Audit {
 
 			// Includes
 
-			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'includes/sharedcount/sharedcount.php' );
-
 			// Model
 
 			require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'model/audits.php' );

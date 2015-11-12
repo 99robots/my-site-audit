@@ -64,14 +64,14 @@ function msa_settings_tab_settings_content($content) {
 		$settings = array();
 	}
 
-	$output .= '<h3 class="msa-settings-heading">' . __('User Access', 'msa') . '</h3>';
+	$output = '<h3 class="msa-settings-heading">' . __('User Access', 'msa') . '</h3>';
 	$output .= '<table class="form-table">
 		<tbody>
 
 			<tr>
 				<th scope="row"><label for="msa-user-access">' . __('User Access', 'msa') . '</label></th>
 				<td>
-					<input type="text" class="regular-text msa-user-access" id="msa-user-access" name="msa-user-access" value="' . $settings['user_access'] . '">
+					<input type="text" class="regular-text msa-user-access" id="msa-user-access" name="msa-user-access" value="' . (isset($settings['user_access']) ? $settings['user_access'] : '') . '">
 					<p class="description">' . __('What Users have access to the Audit Data.') . '</p>
 				</td>
 			</tr>
