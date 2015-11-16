@@ -87,6 +87,14 @@ function msa_calculate_score($post, $data) {
 
 	}
 
+	// Get the score data for condition categories
+
+	$condition_categories = msa_get_condition_categories();
+
+	foreach ( $condition_categories as $key => $condition_category ) {
+		$score_data[$key] = msa_get_condition_catergory_score($key, $score_data);
+	}
+
 	$score = round($score / $weight, 2);
 
 	return array(
@@ -110,18 +118,129 @@ function msa_get_post_audit_data($post) {
 
 	$data = array();
 
+	/* ===========================================================================
+	 *
+	 * Content
+	 *
+	 * ======================================================================== */
+
 	$content   = preg_replace("/&#?[a-z0-9]{2,8};/i","", $post->post_content);
 	$content   = strip_tags($content);
 	$content   = preg_replace("~(?:\[/?)[^/\]]+/?\]~s", '', $content);
 
-	$data['title']             = strlen($post->post_title);
-	$data['name']              = strlen($post->post_name);
+	$data['title_length']      = strlen($post->post_title);
+	$data['excerpt_length']    = strlen($post->post_excerpt);
 	$data['modified_date']     = max(time() - strtotime($post->post_modified), 0);
 	$data['word_count']        = str_word_count($content);
 	$data['comment_count']     = $post->comment_count;
-	$data['images'] 		   = substr_count($post->post_content, '<img');
 
-	// Headings
+	/* ===========================================================================
+	 *
+	 * Links
+	 *
+	 * ======================================================================== */
+
+	preg_match_all("/<a\s[^>]*href=(\"??)([^\" >]*?)\\1[^>]*>(.*)<\/a>/siU", $post->post_content, $data['link_matches'], PREG_SET_ORDER);
+
+	$data['internal_links'] = 0;
+	$data['external_links'] = 0;
+	$data['broken_links'] = 0;
+
+	$data['internal_links_data'] = array();
+	$data['external_links_data'] = array();
+	$data['broken_links_data'] = array();
+
+	if ( isset($data['link_matches']) && is_array($data['link_matches']) ) {
+
+		foreach ( $data['link_matches'] as $key => $link ) {
+
+			$url = parse_url($link[2]);
+			$site_url = parse_url(get_site_url());
+
+			// Internal Link
+
+			if ( substr($link[2], 0 , 1) == '#' || ( isset($site_url['host']) && isset($url['host']) && $site_url['host'] == $url['host'] ) ) {
+				$data['internal_links_data'][] = array(
+					'url'		=> $link[2],
+				);
+				$data['internal_links']++;
+			}
+
+			// External Link
+
+			else {
+				$data['external_links_data'][] = array(
+					'url'		=> $link[2],
+				);
+				$data['external_links']++;
+			}
+
+			// Check if link is broken
+
+			if ( msa_is_link_broken($link[2]) ) {
+				$data['broken_links_data'][] = array(
+					'url'		=> $link[2],
+				);
+				$data['broken_links']++;
+			}
+		}
+	}
+
+	// Set the broken links to a high number if there are no links
+
+	if ( $data['internal_links'] + $data['external_links'] == 0 ) {
+		$data['broken_links'] = 9999;
+	}
+
+	/* ===========================================================================
+	 *
+	 * Images
+	 *
+	 * ======================================================================== */
+
+	$data['missing_alt_tag'] = 0;
+	$data['broken_images'] = 0;
+	$data['broken_images_data'] = array();
+	$data['image_count'] = substr_count($post->post_content, '<img');
+
+	preg_match_all('|<img(?:.*)/>|Ui', $post->post_content, $img_matches, PREG_SET_ORDER);
+
+	foreach ( $img_matches as $match ) {
+
+		// Check for broken image
+
+		preg_match( '/src="([^"]*)"/i', $match[0], $link );
+		$link = $link[1];
+
+		if ( msa_is_link_broken($link) ) {
+			$data['broken_images_data'][] = array(
+				'url'		=> $link,
+			);
+			$data['broken_images']++;
+		}
+
+		// Check for an alt tag
+
+		preg_match( '/alt="([^"]*)"/i', $match[0], $alt );
+		$alt = $alt[1];
+
+		if ( empty($alt) || $alt == '' ) {
+			$data['missing_alt_tag']++;
+		}
+	}
+
+	// Set the missing alt tags to a fail if there are no images
+
+	if ( $data['image_count'] == 0 ) {
+		$data['missing_alt_tag'] = 9999; // We will set this to some high number so that it fails the test
+		$data['broken_images'] = 9999;
+	}
+
+	/* ===========================================================================
+	 *
+	 * Headings
+	 *
+	 * ======================================================================== */
 
 	$data['h1_tag'] = substr_count($post->post_content, '<h1');
 
@@ -141,86 +260,68 @@ function msa_get_post_audit_data($post) {
 	}
 
 	preg_match_all('/<h([1-6])/', $post->post_content, $matches);
-	$data['headings'] = count($matches[0]);
+	$data['heading_count'] = count($matches[0]);
 
-	// Links
+	// Set the invalid headins to a high number if there are no headings
 
-	preg_match_all("/<a\s[^>]*href=(\"??)([^\" >]*?)\\1[^>]*>(.*)<\/a>/siU", $post->post_content, $data['link_matches'], PREG_SET_ORDER);
-
-	$data['internal_links'] = 0;
-	$data['external_links'] = 0;
-	$data['broken_links'] = 0;
-
-	$data['internal_links_data'] = array();
-	$data['external_links_data'] = array();
-	$data['broken_links_data'] = array();
-
-	if ( isset($data['link_matches']) && is_array($data['link_matches']) ) {
-
-		foreach ( $data['link_matches'] as $key => $link ) {
-
-			$url = parse_url($link[2]);
-			$site_url = parse_url(get_site_url());
-
-			if ( isset($site_url['host']) && isset($url['host']) && $site_url['host'] == $url['host'] ) {
-				$data['internal_links_data'][] = array(
-					'url'		=> $link[2],
-				);
-				$data['internal_links']++;
-			} else {
-				$data['external_links_data'][] = array(
-					'url'		=> $link[2],
-				);
-				$data['external_links']++;
-			}
-
-			// Check if link is broken
-
-			if ( is_string($link[2]) && preg_match('/^http(s)?:\/\/[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(\/.*)?$/i', $link[2] ) ){
-			    $ch = curl_init($link[2]);
-				curl_setopt($ch, CURLOPT_HEADER, true);
-				curl_setopt($ch, CURLOPT_NOBODY, true);
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-				curl_setopt($ch, CURLOPT_TIMEOUT,10);
-				$output = curl_exec($ch);
-				$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-				curl_close($ch);
-			}
-
-			if ( isset($httpcode) && ( (int) ($httpcode / 100) == 4 || (int) ($httpcode / 100) == 5 || $httpcode == 0 ) ) {
-				$data['broken_links_data'][] = array(
-					'url'		=> $link[2],
-				);
-				$data['broken_links']++;
-			}
-		}
+	if ( $data['heading_count'] == 0 ) {
+		$data['invalid_headings'] = 9999;
 	}
 
-	// Check for images with missing alt tags
-
-	$data['missing_alt_tag'] = 0;
-
-	preg_match_all('|<img(?:.*)/>|Ui', $post->post_content, $img_matches, PREG_SET_ORDER);
-
-	foreach ( $img_matches as $match ) {
-
-		// Check for an alt tag
-
-		preg_match( '/alt="([^"]*)"/i', $match[0], $alt );
-		$alt = $alt[1];
-
-		if ( empty($alt) || $alt == '' ) {
-			$data['missing_alt_tag']++;
-		}
-	}
-
-	// Score
-
-	$score = msa_calculate_score($post, $data);
-	$data['score'] = $score['score'];
+	// Return the data
 
 	return apply_filters('msa_get_post_audit_data', $data, $post);
 
+}
+
+/**
+ * Check if a link is broken
+ *
+ * @access public
+ * @param mixed $url
+ * @return void
+ */
+function msa_is_link_broken($url) {
+
+	// Check if this is hash link
+
+	if ( substr($url, 0, 1) == '#' ) {
+		return false;
+	}
+
+	// Check if this is valid URL before we begin the query
+
+	if ( is_string($url) && preg_match('/^http(s)?:\/\/[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(\/.*)?$/i', $url ) ) {
+
+		$ch = curl_init();
+
+		$options = array(
+		    CURLOPT_URL            => $url,
+		    CURLOPT_RETURNTRANSFER => true,
+		    CURLOPT_HEADER         => true,
+		    CURLOPT_FOLLOWLOCATION => true,
+		    CURLOPT_ENCODING       => "",
+		    CURLOPT_AUTOREFERER    => true,
+		    CURLOPT_CONNECTTIMEOUT => 120,
+		    CURLOPT_TIMEOUT        => 120,
+		    CURLOPT_MAXREDIRS      => 10,
+		);
+
+		curl_setopt_array( $ch, $options );
+		$response = curl_exec($ch);
+		$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+		curl_close($ch);
+
+	} else {
+		return true;
+	}
+
+	if ( isset($httpcode) && ( $httpcode == 404 || $httpcode == 0 ) ) {
+		return true;
+	}
+
+	return false;
 }
 
 /**
@@ -307,16 +408,20 @@ function msa_show_images($content) {
 		preg_match( '/alt="([^"]*)"/i', $match[0], $alt );
 		$alt = $alt[1];
 
-		if ( isset($alt) && $alt != '' ) {
-			$output .= '<div class="attachment">
-				<div class="attachment-preview">
-					<div class="thumbnail">
-						<a class="centered" href="' . $link . '" target="_blank">' . $match[0] . '</a>
-					</div>
-				</div>
-			</div>';
-			$images++;
+		$class = '';
+
+		if ( !isset($alt) || ( isset($alt) && $alt == '' ) ) {
+			$class = 'msa-missing-alt-tag';
 		}
+
+		$output .= '<div class="attachment ' . $class . '">
+			<div class="attachment-preview">
+				<div class="thumbnail">
+					<a class="centered" href="' . $link . '" target="_blank">' . $match[0] . '</a>
+				</div>
+			</div>
+		</div>';
+		$images++;
 	}
 
 	$output .= '</div>';
@@ -409,7 +514,6 @@ function msa_show_h1_tags($content, $data) {
 		// Continue if the heading is invalid
 
 		if ( in_array($match[0], $invalid_headings) ) {
-			error_log('invalid');
 			continue;
 		}
 
@@ -459,14 +563,13 @@ function msa_show_headings($content, $data) {
 
 	foreach ( $matches as $match ) {
 
+		$output .= '<div class="msa-headings-item">';
+
 		// Continue if the heading is invalid
 
 		if ( in_array($match[0], $invalid_headings) ) {
-			error_log('invalid');
-			continue;
+			$output .= '<div class="msa-headings-item msa-invalid-heading">';
 		}
-
-		$output .= '<div class="msa-headings-item">';
 
 		// H1
 
@@ -504,7 +607,8 @@ function msa_show_headings($content, $data) {
 			$output .= '<span class="msa-heading-h6">h6</span>';
 		}
 
-		$output .= strip_tags($match[1], '<h1><h2><h3><h4><h5><h6>');
+		//$output .= strip_tags($match[1], '<h1><h2><h3><h4><h5><h6>');
+		$output .= $match[1];
 		$output .= '</div>';
 		$headings++;
 	}
@@ -571,7 +675,8 @@ function msa_show_invalid_headings($invalid_headings) {
 			$output .= '<span class="msa-heading msa-heading-h6">h6</span>';
 		}
 
-		$output .= '<div class="msa-heading-item-html">' . $match['html'] . '</div>';
+		//$output .= '<div class="msa-heading-item-html">' . $match['html'] . '</div>';
+		$output .= $match['text'];
 		$output .= '</div>';
 		$headings++;
 	}

@@ -39,6 +39,21 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 function msa_condition_category_content_value($value, $data, $post, $key) {
 
+	// Invalid Data
+
+	if ( $key == 'broken_links' || $key == 'broken_images' || $key == 'invalid_headings' ) {
+
+		if ( $value >= 9999 ) {
+			return __('Count: 0', 'msa');
+		}
+	}
+
+	// Excerpt Length
+
+	if ( $key == 'excerpt_length' ) {
+		return strlen($post->post_excerpt);
+	}
+
 	// Modified Date
 
 	if ( $key == 'modified_date' ) {
@@ -53,7 +68,7 @@ function msa_condition_category_content_value($value, $data, $post, $key) {
 
 	// Images
 
-	if ( $key == 'images' ) {
+	if ( $key == 'image_count' ) {
 		return msa_show_images($post->post_content);
 	}
 
@@ -77,7 +92,7 @@ function msa_condition_category_content_value($value, $data, $post, $key) {
 
 	// Headings
 
-	if ( $key == 'headings' ) {
+	if ( $key == 'heading_count' ) {
 		return msa_show_headings($post->post_content, $data);
 	}
 
@@ -85,6 +100,41 @@ function msa_condition_category_content_value($value, $data, $post, $key) {
 
 }
 add_filter('msa_condition_category_content_value', 'msa_condition_category_content_value', 10, 4);
+
+/**
+ * Filter the goal for the condition
+ *
+ * @access public
+ * @param mixed $value
+ * @param mixed $data
+ * @param mixed $post
+ * @param mixed $key
+ * @param mixed $condition
+ * @return void
+ */
+function msa_condition_category_content_goal($goal, $data, $post, $key, $condition) {
+
+	// Modified Date
+
+	if ( $key == 'modified_date' ) {
+
+		if ( $condition['comparison'] == 1 ) {
+			$goal = __('Greater Than ' . round($condition['min'] / DAY_IN_SECONDS) . ' Days', 'msa');
+		}
+
+		else if ( $condition['comparison'] == 2 ) {
+			$goal = __('Less Than ' . round($condition['max'] / DAY_IN_SECONDS) . ' Days', 'msa');
+		}
+
+		else if ( $condition['comparison'] == 3 ) {
+			$goal = __('In Between ' . round($condition['min'] / DAY_IN_SECONDS) . ' - ' . round($condition['max'] / DAY_IN_SECONDS) . ' Days', 'msa');
+		}
+	}
+
+	return $goal;
+
+}
+add_filter('msa_condition_category_content_goal', 'msa_condition_category_content_goal', 10, 5);
 
 /**
  * Create initial conidtions
@@ -118,8 +168,9 @@ function msa_create_initial_conditions() {
 
 	// Title
 
-	msa_register_condition('title', array(
-		'name' 				=> __('Title', 'msa'),
+	msa_register_condition('title_length', array(
+		'name' 				=> __('Title Length', 'msa'),
+		'description' 		=> __('How long your Title should be', 'msa'),
 		'weight'        	=> 5,
 		'comparison'		=> 2,
 		'value'				=> 1,
@@ -129,24 +180,39 @@ function msa_create_initial_conditions() {
 		'category'			=> 'content',
 		'show_column'		=> true,
 		'settings'		=> array(
-			'id'				=> 'msa-condition-title',
-			'class'				=> 'msa-condition-title',
-			'name'				=> 'msa-condition-title',
-			'description-max'	=> __('The maximum number of characters a title is allowed to be.', 'msa'),
+			'id'				=> 'msa-condition-title_length',
+			'class'				=> 'msa-condition-title_length',
+			'name'				=> 'msa-condition-title_length',
+			'description-max'	=> __('The maximum number of characters the Title can be.', 'msa'),
 		),
 		'filter'		=> array(
 			'label'		=> __('Title Lengths', 'msa'),
-			'name'		=> 'title',
-			'options'	=> array(
-				array(
-					'name' 	=> __('More Than 60 Characters', 'msa'),
-					'value'	=> 'more-60',
-				),
-				array(
-					'name' 	=> __('Less Than Characters', 'msa'),
-					'value'	=> 'less-60',
-				),
-			)
+			'name'		=> 'title_length',
+		)
+	));
+
+	// Excerpt Length
+
+	msa_register_condition('excerpt_length', array(
+		'name' 				=> __('Excerpt Length', 'msa'),
+		'description' 		=> __('How long your excerpt should be', 'msa'),
+		'weight'        	=> 5,
+		'comparison'		=> 3,
+		'value'				=> 1,
+		'min'           	=> 1,
+		'max'				=> 156,
+		'units'				=> 'characters',
+		'category'			=> 'content',
+		'show_column'		=> true,
+		'settings'		=> array(
+			'id'				=> 'msa-condition-excerpt_length',
+			'class'				=> 'msa-condition-excerpt_length',
+			'name'				=> 'msa-condition-excerpt_length',
+			'description-max'	=> __('The number of characters the excerpt can be.', 'msa'),
+		),
+		'filter'		=> array(
+			'label'		=> __('Excerpt Length', 'msa'),
+			'name'		=> 'excerpt_length',
 		)
 	));
 
@@ -154,6 +220,7 @@ function msa_create_initial_conditions() {
 
 	msa_register_condition('modified_date', array(
 		'name' 				=> __('Modified Date', 'msa'),
+		'description' 		=> __('How long since you last edited this post', 'msa'),
 		'weight'        	=> 5,
 		'comparison'		=> 2,
 		'value'				=> 2,
@@ -171,16 +238,6 @@ function msa_create_initial_conditions() {
 		'filter'		=> array(
 			'label'		=> __('Modified Dates', 'msa'),
 			'name'		=> 'modified_date',
-			'options'	=> array(
-				array(
-					'name' 	=> __('More Than 90 Days Ago', 'msa'),
-					'value'	=> 'more-' . DAY_IN_SECONDS * 180,
-				),
-				array(
-					'name' 	=> __('Less Than 90 Days Ago', 'msa'),
-					'value'	=> 'less-' . DAY_IN_SECONDS * 180,
-				),
-			)
 		)
 	));
 
@@ -188,6 +245,7 @@ function msa_create_initial_conditions() {
 
 	msa_register_condition('word_count', array(
 		'name' 				=> __('Word Count', 'msa'),
+		'description' 		=> __('How many words this post has', 'msa'),
 		'weight'        	=> 15,
 		'comparison'		=> 1,
 		'value'				=> 2,
@@ -205,16 +263,6 @@ function msa_create_initial_conditions() {
 		'filter'		=> array(
 			'label'		=> __('Word Counts', 'msa'),
 			'name'		=> 'word_count',
-			'options'	=> array(
-				array(
-					'name' 	=> __('More Than 750 Words', 'msa'),
-					'value'	=> 'more-750',
-				),
-				array(
-					'name' 	=> __('Less Than 750 Words', 'msa'),
-					'value'	=> 'less-750',
-				),
-			)
 		)
 	));
 
@@ -222,6 +270,7 @@ function msa_create_initial_conditions() {
 
 	msa_register_condition('comment_count', array(
 		'name' 				=> __('Comment Count', 'msa'),
+		'description' 		=> __('How many comments this post has', 'msa'),
 		'weight'        	=> 5,
 		'comparison'		=> 1,
 		'value'				=> 2,
@@ -239,16 +288,6 @@ function msa_create_initial_conditions() {
 		'filter'		=> array(
 			'label'		=> __('Comment Counts', 'msa'),
 			'name'		=> 'comment_count',
-			'options'	=> array(
-				array(
-					'name' 	=> __('More Than 5 Comments', 'msa'),
-					'value'	=> 'more-5',
-				),
-				array(
-					'name' 	=> __('Less Than 5 Comments', 'msa'),
-					'value'	=> 'less-5',
-				),
-			)
 		)
 	));
 
@@ -262,6 +301,7 @@ function msa_create_initial_conditions() {
 
 	msa_register_condition('internal_links', array(
 		'name' 				=> __('Internal Links', 'msa'),
+		'description' 		=> __('How many internal links this post has', 'msa'),
 		'weight'        	=> 8,
 		'comparison'		=> 1,
 		'value'				=> 2,
@@ -281,16 +321,6 @@ function msa_create_initial_conditions() {
 		'filter'		=> array(
 			'label'		=> __('Internal Links', 'msa'),
 			'name'		=> 'internal_links',
-			'options'	=> array(
-				array(
-					'name' 	=> __('More Than 4 Internal Links', 'msa'),
-					'value'	=> 'more-3',
-				),
-				array(
-					'name' 	=> __('Less Than 4 Internal Links', 'msa'),
-					'value'	=> 'less-3',
-				),
-			)
 		)
 	));
 
@@ -298,6 +328,7 @@ function msa_create_initial_conditions() {
 
 	msa_register_condition('external_links', array(
 		'name' 				=> __('External Links', 'msa'),
+		'description' 		=> __('How many external links this post has', 'msa'),
 		'weight'        	=> 8,
 		'comparison'		=> 1,
 		'value'				=> 2,
@@ -317,23 +348,14 @@ function msa_create_initial_conditions() {
 		'filter'		=> array(
 			'label'		=> __('External Links', 'msa'),
 			'name'		=> 'external_links',
-			'options'	=> array(
-				array(
-					'name' 	=> __('More Than 7 External Links', 'msa'),
-					'value'	=> 'more-6',
-				),
-				array(
-					'name' 	=> __('Less Than 7 External Links', 'msa'),
-					'value'	=> 'less-6',
-				),
-			)
 		)
 	));
 
 	// Broken Links
 
 	msa_register_condition('broken_links', array(
-		'name' 			=> __('Broken Links', 'msa'),
+		'name' 				=> __('Broken Links', 'msa'),
+		'description' 		=> __('How many broken links this post has', 'msa'),
 		'weight'        	=> 14,
 		'comparison'		=> 2,
 		'value'				=> 1,
@@ -351,16 +373,6 @@ function msa_create_initial_conditions() {
 		'filter'		=> array(
 			'label'		=> __('Broken Links', 'msa'),
 			'name'		=> 'broken_links',
-			'options'	=> array(
-				array(
-					'name' 	=> __('Has Broken Links', 'msa'),
-					'value'	=> 'notequal-0',
-				),
-				array(
-					'name' 	=> __('Does Not Have Broken Links', 'msa'),
-					'value'	=> 'equal-0',
-				),
-			),
 		)
 	));
 
@@ -372,8 +384,9 @@ function msa_create_initial_conditions() {
 
 	// Images
 
-	msa_register_condition('images', array(
+	msa_register_condition('image_count', array(
 		'name' 				=> __('Images', 'msa'),
+		'description' 		=> __('How many images this post has', 'msa'),
 		'weight'        	=> 12,
 		'comparison'		=> 1,
 		'value'				=> 2,
@@ -383,31 +396,47 @@ function msa_create_initial_conditions() {
 		'category'			=> 'images',
 		'show_column'		=> true,
 		'settings'		=> array(
-			'id'				=> 'msa-condition-images',
-			'class'				=> 'msa-condition-images',
-			'name'				=> 'msa-condition-images',
+			'id'				=> 'msa-condition-image_count',
+			'class'				=> 'msa-condition-image_count',
+			'name'				=> 'msa-condition-image_count',
 			'description-min'	=> __('The minimum number of images each post should have.', 'msa'),
 		),
 		'filter'		=> array(
 			'label'		=> __('Images', 'msa'),
-			'name'		=> 'images',
-			'options'	=> array(
-				array(
-					'name' 	=> __('More Than 2 Images', 'msa'),
-					'value'	=> 'more-3',
-				),
-				array(
-					'name' 	=> __('Less Than 2 Images', 'msa'),
-					'value'	=> 'less-3',
-				),
-			)
+			'name'		=> 'image_count',
+		)
+	));
+
+	// Broken Image
+
+	msa_register_condition('broken_images', array(
+		'name' 				=> __('Broken Images', 'msa'),
+		'description' 		=> __('How many broken images this post has', 'msa'),
+		'weight'        	=> 8,
+		'comparison'		=> 2,
+		'value'				=> 1,
+		'max'           	=> 1,
+		'units'				=> 'broken images',
+		'max_display_val'	=> __('1 Broken Image', 'msa'),
+		'category'			=> 'images',
+		'show_column'		=> true,
+		'settings'		=> array(
+			'id'				=> 'msa-condition-broken_images',
+			'class'				=> 'msa-condition-broken_images',
+			'name'				=> 'msa-condition-broken_images',
+			'description-max'	=> __('The maximum number of broken images allowed per post.', 'msa'),
+		),
+		'filter'		=> array(
+			'label'		=> __('Broken Images', 'msa'),
+			'name'		=> 'broken_images',
 		)
 	));
 
 	// Missing Alt Tag
 
 	msa_register_condition('missing_alt_tag', array(
-		'name' 			=> __('Missing Alt Tag', 'msa'),
+		'name' 				=> __('Missing Alt Tag', 'msa'),
+		'description' 		=> __('How many images do not have an alt tag', 'msa'),
 		'weight'        	=> 8,
 		'comparison'		=> 2,
 		'value'				=> 1,
@@ -425,16 +454,6 @@ function msa_create_initial_conditions() {
 		'filter'		=> array(
 			'label'		=> __('Missing Alt Tags', 'msa'),
 			'name'		=> 'missing_alt_tag',
-			'options'	=> array(
-				array(
-					'name' 	=> __('Has a Missing Alt Tag', 'msa'),
-					'value'	=> 'notequal-0',
-				),
-				array(
-					'name' 	=> __('Does Not Have a Missing Alt Tag', 'msa'),
-					'value'	=> 'equal-0',
-				),
-			),
 		)
 	));
 
@@ -444,10 +463,36 @@ function msa_create_initial_conditions() {
 	 *
 	 * ===================================================================== */
 
+	// Headings
+
+	msa_register_condition('heading_count', array(
+		'name' 				=> __('Headings', 'msa'),
+		'description' 		=> __('How many headings are in this post', 'msa'),
+		'weight'        	=> 13,
+		'comparison'		=> 1,
+		'value'				=> 2,
+		'min'           	=> 5,
+		'units'				=> 'headings',
+		'min_display_val'	=> __('5 Headings', 'msa'),
+		'category'			=> 'headings',
+		'show_column'		=> true,
+		'settings'		=> array(
+			'id'				=> 'msa-condition-heading_count',
+			'class'				=> 'msa-condition-heading_count',
+			'name'				=> 'msa-condition-heading_count',
+			'description-min'	=> __('The minimum number of headings each post should have.', 'msa'),
+		),
+		'filter'		=> array(
+			'label'		=> __('Headings', 'msa'),
+			'name'		=> 'heading_count',
+		)
+	));
+
 	// No h1 tag
 
 	msa_register_condition('h1_tag', array(
 		'name' 				=> __('Has H1 Tags', 'msa'),
+		'description' 		=> __('How many H1 tags are in this post', 'msa'),
 		'weight'        	=> 3,
 		'comparison'		=> 2,
 		'value'				=> 1,
@@ -465,16 +510,6 @@ function msa_create_initial_conditions() {
 		'filter'		=> array(
 			'label'		=> __('H1 Tags', 'msa'),
 			'name'		=> 'h1_tag',
-			'options'	=> array(
-				array(
-					'name' 	=> __('Has 1 Tags', 'msa'),
-					'value'	=> 'notequal-0',
-				),
-				array(
-					'name' 	=> __('Does Not Have an H1 Tag', 'msa'),
-					'value'	=> 'equal-0',
-				),
-			)
 		)
 	));
 
@@ -482,6 +517,7 @@ function msa_create_initial_conditions() {
 
 	msa_register_condition('invalid_headings', array(
 		'name' 				=> __('Invalid Headings', 'msa'),
+		'description' 		=> __('How many invalid headings are in this post', 'msa'),
 		'weight'        	=> 4,
 		'comparison'		=> 2,
 		'value'				=> 1,
@@ -499,50 +535,6 @@ function msa_create_initial_conditions() {
 		'filter'		=> array(
 			'label'		=> __('Invalid Headings', 'msa'),
 			'name'		=> 'invalid_headings',
-			'options'	=> array(
-				array(
-					'name' 	=> __('Has Invalid Headings', 'msa'),
-					'value'	=> 'notequal-0',
-				),
-				array(
-					'name' 	=> __('Does Not Have Invalid Headings', 'msa'),
-					'value'	=> 'equal-0',
-				),
-			)
-		)
-	));
-
-	// Headings
-
-	msa_register_condition('headings', array(
-		'name' 				=> __('Headings', 'msa'),
-		'weight'        	=> 13,
-		'comparison'		=> 1,
-		'value'				=> 2,
-		'min'           	=> 5,
-		'units'				=> 'headings',
-		'min_display_val'	=> __('5 Headings', 'msa'),
-		'category'			=> 'headings',
-		'show_column'		=> true,
-		'settings'		=> array(
-			'id'				=> 'msa-condition-headings',
-			'class'				=> 'msa-condition-headings',
-			'name'				=> 'msa-condition-headings',
-			'description-min'	=> __('The minimum number of headings each post should have.', 'msa'),
-		),
-		'filter'		=> array(
-			'label'		=> __('Headings', 'msa'),
-			'name'		=> 'headings',
-			'options'	=> array(
-				array(
-					'name' 	=> __('More Than 5 Headings', 'msa'),
-					'value'	=> 'more-5',
-				),
-				array(
-					'name' 	=> __('Less Than 5 Headings', 'msa'),
-					'value'	=> 'less-5',
-				),
-			)
 		)
 	));
 
@@ -610,6 +602,15 @@ function msa_get_conditions() {
  * @return void
  */
 function msa_register_condition( $condition, $args = array() ) {
+
+	// Make sure this is not already a condition category
+
+	$condition_categories = msa_get_condition_categories();
+
+	if ( isset( $condition_categories[$condition] ) ) {
+		error_log('Unable to register condition: ' . $condition . ' since it is already a condition category.  Please name it something else.');
+		return false;
+	}
 
 	global $msa_conditions;
 

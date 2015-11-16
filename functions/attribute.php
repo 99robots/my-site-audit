@@ -38,10 +38,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 function msa_audit_posts_table_sort_data_attribute($value, $array, $orderby) {
 
+	// Author
+
 	if ( $orderby == 'post_author' ) {
-
 		return $array['post']->post_author;
-
 	}
 
 	return $value;
@@ -59,10 +59,10 @@ add_filter('msa_audit_posts_table_sort_data', 'msa_audit_posts_table_sort_data_a
  */
 function msa_attribute_table_column_post_author($content, $item, $name) {
 
+	// Author
+
 	if ( $name == 'post_author' ) {
-
 		$author = get_userdata($item['post']->post_author);
-
 		return $author->display_name;
 	}
 
@@ -70,6 +70,39 @@ function msa_attribute_table_column_post_author($content, $item, $name) {
 
 }
 add_filter('msa_all_posts_table_column_data', 'msa_attribute_table_column_post_author', 10, 3);
+
+/**
+ * Post Type Attribute options for the filters
+ *
+ * @access public
+ * @param mixed $content
+ * @return void
+ */
+function msa_filter_attribute_post_type_options($content) {
+
+	if ( isset($_GET['audit']) ) {
+
+		// Get all the post types for this audit
+
+		$audit_model = new MSA_Audits_Model();
+		$audit = $audit_model->get_data_from_id($_GET['audit']);
+
+		$form_fields = json_decode($audit['args']['form_fields'], true);
+
+		foreach ( $form_fields['post-types'] as $post_type ) {
+
+			$content[] = array(
+				'name'	=> ucfirst($post_type),
+				'value'	=> $post_type,
+			);
+		}
+
+	}
+
+	return $content;
+
+}
+add_filter('msa_filter_attribute_post-type', 'msa_filter_attribute_post_type_options', 10, 1);
 
 /**
  * Author Attribute options for the filters
@@ -132,6 +165,34 @@ function msa_filter_by_attribute_author($items, $name, $value) {
 }
 add_filter('msa_filter_by_attribute', 'msa_filter_by_attribute_author', 10, 3);
 
+
+/**
+ * Filter all the posts shown by the post type
+ *
+ * @access public
+ * @param mixed $name
+ * @param mixed $value
+ * @return void
+ */
+function msa_filter_by_attribute_post_type($items, $name, $value) {
+
+	// Filter by author
+
+	if ( $name == 'post-type' && $value != '' ) {
+
+		foreach ( $items as $key => $item ) {
+
+			if ( $item['post']->post_type != $value ) {
+				unset($items[$key]);
+			}
+		}
+	}
+
+	return $items;
+
+}
+add_filter('msa_filter_by_attribute', 'msa_filter_by_attribute_post_type', 10, 3);
+
 /**
  * Create all inital attributes
  *
@@ -148,6 +209,18 @@ function msa_create_initial_attributes() {
 		'filter'		=> array(
 			'label'		=> __('Authors', 'msa'),
 			'name'		=> 'author',
+			'options'	=> '',
+		)
+	));
+
+	// Post Type
+
+	msa_register_attribute('post-type', array(
+		'name' 			=> __('Post Type', 'msa'),
+		'post_data'		=> true,
+		'filter'		=> array(
+			'label'		=> __('Post Types', 'msa'),
+			'name'		=> 'post-type',
 			'options'	=> '',
 		)
 	));

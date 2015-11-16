@@ -146,21 +146,30 @@ class MSA_All_Posts_Table extends WP_List_Table {
 	function get_columns() {
 
 		$columns['score'] = __('Score', 'msa');
+		$columns['title'] = __('Title', 'msa');
 
-		// Conditions
+		// Condition Categories
 
-		$conditions = msa_get_conditions();
+		$condition_categories = msa_get_condition_categories();
 
-		foreach ( $conditions as $slug => $condition ) {
-			$columns[$slug] = $condition['name'];
+		foreach ( $condition_categories as $key => $condition_category ) {
+			$columns[$key] = $condition_category['name'];
+
+			// Conditions
+
+			$conditions = msa_get_conditions_from_category($key);
+
+			foreach ( $conditions as $key => $condition ) {
+				$columns[$key] = $condition['name'];
+			}
 		}
 
 		// Attributes
 
 		$attributes = msa_get_attributes();
 
-		foreach ( $attributes as $slug => $attribute ) {
-			$columns[$slug] = $attribute['name'];
+		foreach ( $attributes as $key => $attribute ) {
+			$columns[$key] = $attribute['name'];
 		}
 
 		return $columns;
@@ -175,6 +184,14 @@ class MSA_All_Posts_Table extends WP_List_Table {
 	function get_sortable_columns() {
 
 		$sortable_columns['score'] = array('score', false);
+
+		// Condition Categories
+
+		$condition_categories = msa_get_condition_categories();
+
+		foreach ( $condition_categories as $key => $condition_category ) {
+			$sortable_columns[$key] = array($key, false);
+		}
 
 		// Conditions
 
@@ -215,18 +232,30 @@ class MSA_All_Posts_Table extends WP_List_Table {
 		$orderby = ( ! empty( $_GET['orderby'] ) ) ? $_GET['orderby'] : 'score';
 
 		// If no order, default to asc
-		$order = ( ! empty($_GET['order'] ) ) ? $_GET['order'] : 'asc';
+		$order = ( ! empty($_GET['order'] ) ) ? $_GET['order'] : 'desc';
+
+		$a_data = '';
+		$b_data = '';
 
 		if ( isset($a['data']['values'][$orderby]) ) {
 			$a_data = $a['data']['values'][$orderby];
-		} else {
-			$a_data = '';
 		}
 
 		if ( isset($b['data']['values'][$orderby]) ) {
 			$b_data = $b['data']['values'][$orderby];
-		} else {
-			$b_data = '';
+		}
+
+		$condition_categories = msa_get_condition_categories();
+
+		if ( isset($condition_categories[$orderby]) ) {
+
+			if ( isset($a['data']['score']['data'][$orderby]) ) {
+				$a_data = $a['data']['score']['data'][$orderby];
+			}
+
+			if ( isset($b['data']['score']['data'][$orderby]) ) {
+				$b_data = $b['data']['score']['data'][$orderby];
+			}
 		}
 
 		$a_sort = apply_filters('msa_audit_posts_table_sort_data', $a_data, $a, $orderby);
@@ -251,7 +280,10 @@ class MSA_All_Posts_Table extends WP_List_Table {
 
 		$score = $item['data']['score'];
 		$values = $item['data']['values'];
-		$caret = '';
+
+		// Condition Categories
+
+		$condition_categories = msa_get_condition_categories();
 
 		// Conditions
 
@@ -260,10 +292,6 @@ class MSA_All_Posts_Table extends WP_List_Table {
 		// Attributes
 
 		$attributes = msa_get_attributes();
-
-		if ( isset($conditions[$column_name]) ) {
-			//$caret = '<i class="fa fa-caret-' . ( $score['data'][$column_name] >= .5 ? 'up' : 'down' ) . ' msa-post-status-text-' . msa_get_score_status($score['data'][$column_name]) . '"></i> ';
-		}
 
 		switch( $column_name ) {
 
@@ -276,6 +304,8 @@ class MSA_All_Posts_Table extends WP_List_Table {
 				$data = '<a href="' . get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $_GET['audit'] . '&post=' . $item['post']->ID . '">' . $item['post']->post_title . '</a>';
 			break;
 
+			// Conditions
+
 			case 'modified_date':
 				$data = date('M j, Y', strtotime($item['post']->post_modified));
 			break;
@@ -283,6 +313,12 @@ class MSA_All_Posts_Table extends WP_List_Table {
 			case 'comment_count':
 				$data = $item['post']->comment_count;
 			break;
+
+			case 'post-type':
+				$data = $item['post']->post_type;
+			break;
+
+			// Default
 
 			default:
 
@@ -296,7 +332,23 @@ class MSA_All_Posts_Table extends WP_List_Table {
 
 		}
 
-		return apply_filters('msa_all_posts_table_column_data', $caret . $data, $item, $column_name);
+		// Invalid Data
+
+		if ( $column_name == 'missing_alt_tag' ||  $column_name == 'broken_images' || $column_name == 'broken_links' || $column_name == 'invalid_headings') {
+			if ( $values[$column_name] == 9999 ) {
+				$data = 'N/A';
+			} else {
+				$data = $values[$column_name];
+			}
+		}
+
+		// Check if this is a condition category
+
+		if ( isset($condition_categories[$column_name]) ) {
+			$data = '<span class="msa-post-status-text-' . msa_get_score_status($score['data'][$column_name]) . '">' . round( $score['data'][$column_name] * 100 ) . '%' . '</span>';
+		}
+
+		return apply_filters('msa_all_posts_table_column_data', $data, $item, $column_name);
 
 	}
 
@@ -349,15 +401,34 @@ class MSA_All_Posts_Table extends WP_List_Table {
 							$value = $_GET[$condition['filter']['name']];
 						} else {
 							$value = '';
+						}
+
+						// Options
+
+						$options = '';
+
+						if ( $condition['comparison'] == 1 ) {
+
+							$options .= '<option value="less-' . $condition['min'] . '" ' . selected('less-' . $condition['min'], $value, false) . '>' . __('Less than ', 'msa') . ' ' . $condition['min'] . ' ' . $condition['units'] . '</option>';
+							$options .= '<option value="more-' . $condition['min'] . '" ' . selected('more-' . $condition['min'], $value, false) . '>' . __('More than ', 'msa') . ' ' . $condition['min'] . ' ' . $condition['units'] . '</option>';
+
+						} else if ( $condition['comparison'] == 2 ) {
+
+							$options .= '<option value="less-' . $condition['max'] . '" ' . selected('less-' . $condition['max'], $value, false) . '>' . __('Less than ', 'msa') . ' ' . $condition['max'] . ' ' . $condition['units'] . '</option>';
+							$options .= '<option value="more-' . $condition['max'] . '" ' . selected('more-' . $condition['max'], $value, false) . '>' . __('More than ', 'msa') . ' ' . $condition['max'] . ' ' . $condition['units'] . '</option>';
+
+						} else if ( $condition['comparison'] == 3 ) {
+
+							$options .= '<option value="less-' . $condition['max'] . '" ' . selected('less-' . $condition['max'], $value, false) . '>' . __('Less than ', 'msa') . ' ' . $condition['max'] . ' ' . $condition['units'] . '</option>';
+							$options .= '<option value="more-' . $condition['max'] . '" ' . selected('more-' . $condition['max'], $value, false) . '>' . __('More than ', 'msa') . ' ' . $condition['max'] . ' ' . $condition['units'] . '</option>';
+
 						} ?>
 
 						<div class="msa-filter-container msa-filter-conditions-container filter-<?php echo $key; ?>">
 							<!-- <label class="msa-filter-label"><?php echo $condition['filter']['label']; ?></label> -->
 							<select class="msa-filter" name="<?php echo $condition['filter']['name']; ?>">
 								<option value="" <?php selected("", $value, true); ?>><?php _e('All ' . $condition['filter']['label'], 'msa'); ?></option>
-								<?php foreach ( $condition['filter']['options'] as $option ) { ?>
-									<option value="<?php echo $option['value']; ?>" <?php selected($option['value'], $value, true); ?>><?php echo $option['name']; ?></option>
-								<?php } ?>
+								<?php echo $options; ?>
 							</select>
 						</div>
 
@@ -395,38 +466,26 @@ class MSA_All_Posts_Table extends WP_List_Table {
 
 			?><button class="msa-filter-button button"><?php _e('Filter', 'msa'); ?></button>
 			<button class="msa-clear-filters-button button"><?php _e('Clear Filters', 'msa'); ?></button>
-			</div>
-			<script>
-				jQuery(document).ready(function($){
-
-					// Add Filters
-
-					$('.msa-filter-button').click(function(e) {
-						e.preventDefault();
-
-						var parameters = '';
-
-						$('.msa-filter').each(function(index, value) {
-
-							if ( $(value).length != 0 ) {
-								parameters += "&" + $(value).attr('name') + "=" + $(value).val();
-							}
-						});
-
-					    window.location += parameters;
-					});
-
-					// Clear Filters
-
-					$('.msa-clear-filters-button').click(function(e){
-						e.preventDefault();
-						window.location = "<?php echo get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $_GET['audit']; ?>";
-					});
-				});
-			</script><?php
+			</div><?php
 
 		}
 
+		// Output stlying for the condition categories
+
+		$condition_categories = msa_get_condition_categories();
+
+		?><style><?php
+
+		foreach ( $condition_categories as $key => $condition_category ) {
+			?>th#<?php echo $key; ?>.manage-column.column-<?php echo $key; ?>,
+			.<?php echo $key; ?>.column-<?php echo $key; ?> {
+				font-weight: bold;
+				border-left: 1px solid #dfdfdf;
+				background: linear-gradient(rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.02));
+			}<?php
+		}
+
+		?></style><?php
 	}
 
 	/**

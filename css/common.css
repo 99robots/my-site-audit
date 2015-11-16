@@ -28,6 +28,61 @@
  *
  ==================================================== */
 
+/* Tooltips */
+
+.msa-tooltips {
+	color: #333;
+	position: absolute;
+	top: 0px;
+	right: 2px;
+	line-height: 12px;
+}
+
+.msa-tooltips span {
+	position: absolute;
+	width:140px;
+	color: #FFFFFF;
+	background: #000;
+	height: auto;
+	line-height: 1.5em;
+	padding: 12px 0px;
+	text-align: center;
+	visibility: hidden;
+	border-radius: 6px;
+	white-space: normal;
+}
+
+.msa-tooltips span:after {
+	content: '';
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	margin-left: -3px;
+	width: 0;
+	height: 0;
+	border-top: 8px solid #000;
+	border-right: 8px solid transparent;
+	border-left: 8px solid transparent;
+}
+
+.msa-tooltips:hover span {
+	visibility: visible;
+	opacity: 0.9;
+	bottom: 30px;
+	left: 50%;
+	margin-left: -76px;
+	z-index: 999;
+}
+
+.msa-tooltips:hover {
+	color: #333;
+	opacity: 1;
+}
+
+.msa-tooltips i {
+	font-size: 12px;
+	opacity: 0.25;
+}
 
 /* =====================================================
  *
@@ -108,4 +163,44 @@
 
 .msa-post-status-text-bad {
 	color: rgb(207,0,0);
+}
+
+.msa-post-status-border-great {
+	border-color: rgb(0,207,0) !important;
+}
+
+.msa-post-status-border-good {
+	border-color: rgb(143,207,0) !important;
+}
+
+.msa-post-status-border-ok {
+	border-color: rgb(207,207,0) !important;
+}
+
+.msa-post-status-border-poor {
+	border-color: rgb(207,143,0) !important;
+}
+
+.msa-post-status-border-bad {
+	border-color: rgb(207,0,0) !important;
+}
+
+/* =====================================================
+ *
+ * Media Queries
+ *
+ ==================================================== */
+
+@media screen and (max-width: 768px) {
+
+	.wp-list-table.msa-audit-table .msa-condition-weight-col,
+	.wp-list-table.msa-audit-table .msa-condition-weight,
+	.wp-list-table.msa-audit-table .msa-condition-goal-col,
+	.wp-list-table.msa-audit-table .msa-condition-goal {
+		display: none !important;
+	}
+
+	.wp-list-table tr:not(.inline-edit-row):not(.no-items) td:not(.check-column) {
+		display: table-cell;
+	}
 }

@@ -149,18 +149,13 @@ class MSA_All_Audits_Table extends WP_List_Table {
 	 * @access public
 	 * @return void
 	 */
-/*
 	function get_sortable_columns() {
 
 		$sortable_columns['score']        = array('score', false);
-		$sortable_columns['name']         = array('name', false);
-		$sortable_columns['date']         = array('date', false);
 		$sortable_columns['num_posts']    = array('num_posts', false);
-		$sortable_columns['user']         = array('user', false);
 
 		return $sortable_columns;
 	}
-*/
 
 	/**
 	 * Sort the data
@@ -179,7 +174,7 @@ class MSA_All_Audits_Table extends WP_List_Table {
 		$order = ( ! empty($_GET['order'] ) ) ? $_GET['order'] : 'asc';
 
 		// Determine sort order
-		$result = ($a['args'][$orderby] < $b['args'][$orderby]) ? -1 : 1;
+		$result = ($a[$orderby] < $b[$orderby]) ? -1 : 1;
 
 		// Send final sort direction to usort
 		return ( $order === 'asc' ) ? $result : -$result;
@@ -294,8 +289,8 @@ class MSA_All_Audits_Table extends WP_List_Table {
 									}
 
 									$condition_modal .= '<tr>
-										<td>' . $condition['name'] . '</td>
-										<td>' . $condition['weight'] . '</td>
+										<td>' . ( isset($condition['name']) ? $condition['name'] : '' ) . '</td>
+										<td>' . ( isset($condition['weight']) ? $condition['weight'] : '' ) . '</td>
 										<td>' . $comparison . '</td>
 										<td>' . $value . '</td>
 										<td>' . $min . '</td>

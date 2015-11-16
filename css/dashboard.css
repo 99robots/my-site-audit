@@ -28,6 +28,89 @@
  *
  ==================================================== */
 
+#dashboard-widgets .postbox .inside {
+	display: inline-block;
+	width: 100%;
+	-webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.msa-left-column {
+	width: 30%;
+}
+
+.msa-right-column {
+	width: 70%;
+}
+
+.msa-left-column,
+.msa-right-column {
+	float: left;
+	display: inline-block;
+	-webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.msa-left-column-content {
+	padding: 20px;
+	padding-left: 10px;
+}
+
+.msa-right-column-content {
+	padding-top: 20px;
+	padding-left: 10px;
+}
+
+/* Credit: http://littledice.me/2014/04/16/responsive-circles-with-css/ */
+
+.msa-circle {
+	margin-left: auto;
+	margin-right: auto;
+	border-radius: 50%;
+	width: 200px;
+	max-width: 100%;
+	position: relative;
+}
+
+.msa-circle-border {
+	border: 5px solid;
+}
+
+.msa-circle-solid{
+	background-color: whitesmoke;
+}
+
+.msa-circle:before {
+	content: "";
+	display: block;
+	padding-top: 100%;
+}
+
+.msa-circle-inner {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	text-align: center;
+}
+
+.msa-score-text {
+	margin: auto;
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	height: 1em;
+	line-height: 1em;
+	font-size: 3em;
+}
+
+/* Credit: http://littledice.me/2014/04/16/responsive-circles-with-css/ */
+
 /* =====================================================
  *
  * Yoast SEO

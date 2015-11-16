@@ -125,6 +125,32 @@ function msa_create_initial_extensions() {
 }
 
 /**
+ * Get all the remote extensions
+ *
+ * @access public
+ * @return void
+ */
+function msa_get_remote_extensions() {
+
+	$remote_extensions = array();
+
+	if ( function_exists('curl_init') ) {
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_URL, 'https://99robots.com/my-site-audit/extensions.json');
+		$remote_extensions = curl_exec($ch);
+		curl_close($ch);
+
+		$remote_extensions = json_decode($remote_extensions, true);
+	}
+
+	return $remote_extensions;
+
+}
+
+/**
  * Get the settings extensions
  *
  * @access public

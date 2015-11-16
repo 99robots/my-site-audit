@@ -37,9 +37,9 @@ function msa_activation() {
 	// Add the version number to the database
 
 	if ( function_exists('is_multisite') && is_multisite() ) {
-		update_site_option('msa-version', MY_SITE_AUDIT_VERSION);
+		update_site_option('msa_version', MY_SITE_AUDIT_VERSION);
 	} else {
-		update_option('msa-version', MY_SITE_AUDIT_VERSION);
+		update_option('msa_version', MY_SITE_AUDIT_VERSION);
 	}
 
 	// Create the audits table

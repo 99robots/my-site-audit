@@ -64,35 +64,41 @@ function msa_meta_box_callback( $post ) {
 		$audit = $audit_model->get_data_from_id($audit['id']);
 		$audit_posts_model 	= new MSA_Audit_Posts_Model();
 		$audit_post = $audit_posts_model->get_data_from_id($audit['id'], $_GET['post']);
-		$post = (object) $audit_post['post'];
-		$data = $audit_post['data'];
 
-		$score = msa_calculate_score($post, $audit_post['data']);
+		if ( $audit_post ) {
 
-		$condition_categories = msa_get_condition_categories();
+			$post = (object) $audit_post['post'];
+			$data = $audit_post['data']['values'];
+			$score = $audit_post['data']['score'];
 
-		$user = get_userdata($audit['user']);
+			$condition_categories = msa_get_condition_categories();
 
-		?><div class="msa-post-meta-container msa-post-meta-audit-meta-attributes">
-			<p class="msa-post-meta-attribute"><?php _e('Score: ', 'msa'); ?></p>
-			<p class="msa-post-meta-attribute"><?php _e('From Audit: ', 'msa'); ?></p>
-			<p class="msa-post-meta-attribute"><?php _e('Created On: ', 'msa'); ?></p>
-			<p class="msa-post-meta-attribute"><?php _e('Created By: ', 'msa'); ?></p>
-		</div>
+			$user = get_userdata($audit['user']);
 
-		<div class="msa-post-meta-container msa-post-meta-audit-meta-values">
-			<p class="msa-post-meta-value msa-post-status-bg msa-post-status-bg-<?php echo msa_get_score_status($score['score']); ?>"><?php echo round($score['score'] * 100, 2); ?>%</p>
-			<p class="msa-post-meta-value"><a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit['id']; ?>" target="_blank"><?php echo $audit['name']; ?></a></p>
-			<p class="msa-post-meta-value"><?php echo date('M j, Y', strtotime($audit['date'])); ?></p>
-			<p class="msa-post-meta-value"><?php echo $user->display_name; ?></p>
-		</div><?php
+			do_action('msa_before_post_meta_box', $audit['id'], $_GET['post']);
 
-		foreach ( $condition_categories as $key => $condition_category ) {
-			?><div class="postbox" id="<?php echo $key; ?>">
-				<?php echo apply_filters('msa_condition_category_content', $key, $post, $data ); ?>
+			?><div class="msa-post-meta-container msa-post-meta-audit-meta-attributes">
+				<p class="msa-post-meta-attribute"><?php _e('Score: ', 'msa'); ?></p>
+				<p class="msa-post-meta-attribute"><?php _e('From Audit: ', 'msa'); ?></p>
+				<p class="msa-post-meta-attribute"><?php _e('Created On: ', 'msa'); ?></p>
+				<p class="msa-post-meta-attribute"><?php _e('Created By: ', 'msa'); ?></p>
+			</div>
+
+			<div class="msa-post-meta-container msa-post-meta-audit-meta-values">
+				<p class="msa-post-meta-value msa-post-status-bg msa-post-status-bg-<?php echo msa_get_score_status($score['score']); ?>"><?php echo round($score['score'] * 100, 2); ?>%</p>
+				<p class="msa-post-meta-value"><a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit['id']; ?>" target="_blank"><?php echo $audit['name']; ?></a></p>
+				<p class="msa-post-meta-value"><?php echo date('M j, Y', strtotime($audit['date'])); ?></p>
+				<p class="msa-post-meta-value"><?php echo $user->display_name; ?></p>
 			</div><?php
-		}
 
+			foreach ( $condition_categories as $key => $condition_category ) {
+				?><div class="postbox" id="<?php echo $key; ?>">
+					<?php echo apply_filters('msa_condition_category_content', $key, $post, $data, $score ); ?>
+				</div><?php
+			}
+
+			do_action('msa_after_post_meta_box', $audit['id'], $_GET['post']);
+		}
 	}
 
 	wp_enqueue_style('msa-all-audits-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/all-audits.css');

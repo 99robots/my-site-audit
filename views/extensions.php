@@ -31,59 +31,15 @@ require_once('header.php');
 
 $extensions = msa_get_extensions();
 
-// Conditions Control
+// Get all the remote extensions
 
-if ( !isset($extensions['conditions_control']) ) {
-	$extensions['conditions_control'] = array(
-		'title'		=> __('Conditions Control', 'msa'),
-		'content'	=> '',
-		'settings'	=> array(
-			'id'	=> 'msa-conditions-control',
-			'class'	=> 'msa-conditions-control',
-		),
-	);
-}
+$remote_extensions = msa_get_remote_extensions();
 
-// Yoast SEO
+$extensions = array_merge($remote_extensions, $extensions); ?>
 
-if ( !isset($extensions['yoast_seo']) ) {
-	$extensions['yoast_seo'] = array(
-		'title'		=> __('Yoast SEO', 'msa'),
-		'content'	=> '',
-		'settings'	=> array(
-			'id'	=> 'msa-yoast-seo',
-			'class'	=> 'msa-yoast-seo',
-		),
-	);
-}
-
-// Tasks
-
-if ( !isset($extensions['tasks']) ) {
-	$extensions['tasks'] = array(
-		'title'		=> __('Tasks', 'msa'),
-		'content'	=> '',
-		'settings'	=> array(
-			'id'	=> 'msa-tasks',
-			'class'	=> 'msa-tasks',
-		),
-	);
-}
-
-// Activity
-
-if ( !isset($extensions['activity']) ) {
-	$extensions['activity'] = array(
-		'title'		=> __('Activity', 'msa'),
-		'content'	=> '',
-		'settings'	=> array(
-			'id'	=> 'msa-activity',
-			'class'	=> 'msa-activity',
-		),
-	);
-} ?>
-
-<h1><?php _e("Extensions", 'msa'); ?></h1>
+<h1><?php _e("Extensions", 'msa'); ?>
+	<a href="https://99robots.com/products" class="page-title-action"><?php _e('Browse All Extensions', 'msa'); ?></a>
+</h1>
 
 <div id="dashboard-widgets" class="metabox-holder">
 

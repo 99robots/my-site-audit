@@ -47,7 +47,7 @@ function msa_save_dashboard_panel_order() {
 		die();
 	}
 
-	$dashboard_panel_order = get_option('msa_dashboard_panel_order');
+	$dashboard_panel_order = get_option('msa_dashboard_panel_order_' . get_current_user_id());
 
 	$dashboard_panel_order['left'] = $_POST['left_order'] == 'empty' ? array() : $_POST['left_order'];
 	$dashboard_panel_order['right'] = $_POST['right_order'] == 'empty' ? array() : $_POST['right_order'];
@@ -76,25 +76,34 @@ function msa_dashboard_panel_last_audit_content() {
 
 	if ( isset($audit) ) {
 
-		$output = '<table class="wp-list-table widefat striped">
-			<thead>
-				<tr>
-					<th>' . __('Attribute', 'msa') . '</th>
-					<th>' . __('Value', 'msa') . '</th>
-				</tr>
-			</thead>
-			<tbody>';
+		// msa-post-status-bg msa-post-status-bg-' . msa_get_score_status($audit['score']) . '
 
-			$user = get_userdata($audit['user']);
+		$output = '<div class="msa-left-column">
+			<div class="msa-left-column-content">
+				<div class="msa-circle msa-circle-border msa-post-status-border-' . msa_get_score_status($audit['score']) . '">
+				     <div class="msa-circle-inner">
+				         <div class="msa-score-text msa-post-status-text-' . msa_get_score_status($audit['score']) . '">' . round(100 * $audit['score']) . '%' . '</div>
+				     </div>
+				</div>
+			</div>
+		</div>';
 
-			$output .= '<tr class="msa-post-status-bg msa-post-status-bg-' . msa_get_score_status($audit['score']) . '"><td>' . __('Score', 'msa') . '</td> <td>' . round(100 * $audit['score']) . '%' . '</td></tr>';
-			$output .= '<tr><td>' . __('Name', 'msa') . '</td> <td><a href="' . get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit['id'] . '">' . $audit['name'] . '</a></td></tr>';
-			$output .= '<tr><td>' . __('Date', 'msa') . '</td> <td>' . date('M d Y, h:i:s', strtotime($audit['date'])) . '</td></tr>';
-			$output .= '<tr><td>' . __('Number of Posts', 'msa') . '</td> <td>' . $audit['num_posts'] . '</td></tr>';
-			$output .= '<tr><td>' . __('Created By', 'msa') . '</td> <td>' . $user->display_name . '</td></tr>';
+		$output .= '<div class="msa-right-column">
+			<div class="msa-right-column-content">
+				<table class="wp-list-table widefat striped">
+					<tbody>';
 
-		$output .= '</tbody>
-		</table>';
+					$user = get_userdata($audit['user']);
+
+					$output .= '<tr><td>' . __('Name', 'msa') . '</td> <td><a href="' . get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit['id'] . '">' . $audit['name'] . '</a></td></tr>';
+					$output .= '<tr><td>' . __('Date', 'msa') . '</td> <td>' . date('M d Y, h:i:s', strtotime($audit['date'])) . '</td></tr>';
+					$output .= '<tr><td>' . __('Number of Posts', 'msa') . '</td> <td>' . $audit['num_posts'] . '</td></tr>';
+					$output .= '<tr><td>' . __('Created By', 'msa') . '</td> <td>' . $user->display_name . '</td></tr>';
+
+				$output .= '</tbody>
+				</table>
+			</div>
+		</div>';
 
 	} else {
 
@@ -124,14 +133,6 @@ function msa_create_initial_dashboard_panels() {
 		'content'	=> '',
 	));
 
-	// Activity
-
-	msa_register_dashboard_panel('activity', array(
-		'post_box' 	=> 1,
-		'title'		=> __('Activity', 'msa'),
-		'content'	=> '',
-	));
-
 	do_action('msa_register_dashboard_panels');
 }
 
@@ -151,7 +152,7 @@ function msa_get_dashboard_panels() {
 
 	// If the dashboard panel order is not set then set it to default
 
-	if ( false === ( $dashboard_panel_order = get_option('msa_dashboard_panel_order') ) ) {
+	if ( false === ( $dashboard_panel_order = get_option('msa_dashboard_panel_order_' . get_current_user_id() ) ) ) {
 
 		$dashboard_panel_order = array(
 			'left' 	=> array(),
@@ -169,7 +170,7 @@ function msa_get_dashboard_panels() {
 			}
 		}
 
-		update_option('msa_dashboard_panel_order', $dashboard_panel_order);
+		update_option('msa_dashboard_panel_order_' . get_current_user_id(), $dashboard_panel_order);
 	}
 
 	// Add panels
@@ -188,7 +189,7 @@ function msa_get_dashboard_panels() {
 
 		}
 
-		update_option('msa_dashboard_panel_order', $dashboard_panel_order);
+		update_option('msa_dashboard_panel_order_' . get_current_user_id(), $dashboard_panel_order);
 	}
 
 	return apply_filters('msa_get_dashboard_panels', $msa_dashboard_panels);

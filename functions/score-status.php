@@ -130,15 +130,15 @@ function msa_create_initial_score_statuses() {
 	msa_register_score_status('bad', array(
 		'name' 			=> __('Bad', 'msa'),
 		'low'			=> 0,
-		'high'			=> 0.3333,
+		'high'			=> 0.1999,
 	));
 
 	// Poor
 
 	msa_register_score_status('poor', array(
 		'name' 			=> __('Poor', 'msa'),
-		'low'			=> 0.3334,
-		'high'			=> 0.5000,
+		'low'			=> 0.2,
+		'high'			=> 0.3999,
 	));
 
 
@@ -146,8 +146,8 @@ function msa_create_initial_score_statuses() {
 
 	msa_register_score_status('ok', array(
 		'name' 			=> __('Ok', 'msa'),
-		'low'			=> 0.5001,
-		'high'			=> 0.6666,
+		'low'			=> 0.4,
+		'high'			=> 0.5999,
 	));
 
 
@@ -155,8 +155,8 @@ function msa_create_initial_score_statuses() {
 
 	msa_register_score_status('good', array(
 		'name' 			=> __('Good', 'msa'),
-		'low'			=> 0.6667,
-		'high'			=> 0.8333,
+		'low'			=> 0.6,
+		'high'			=> 0.7999,
 	));
 
 
@@ -164,7 +164,7 @@ function msa_create_initial_score_statuses() {
 
 	msa_register_score_status('great', array(
 		'name' 			=> __('Great', 'msa'),
-		'low'			=> 0.8334,
+		'low'			=> 0.8,
 		'high'			=> 1,
 	));
 

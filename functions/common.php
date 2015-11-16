@@ -52,7 +52,7 @@ function msa_get_post_excerpt($post) {
 	// Check to see if there is excerpt data
 
 	if ( isset($post->post_excerpt) && $post->post_excerpt != '' ) {
-		return $post->post_excerpt;
+		$the_excerpt = $post->post_excerpt;
 	}
 
 	// There is no post excerpt so we need to get part of the post content
@@ -61,19 +61,52 @@ function msa_get_post_excerpt($post) {
 
 		$the_excerpt = $post->post_content;
 	    $the_excerpt = strip_tags(strip_shortcodes($the_excerpt));
-	    $words = explode(' ', $the_excerpt, 35 + 1);
-
-	    if ( count($words) > 35 ) {
-			array_pop($words);
-	        array_push($words, '…');
-	        $the_excerpt = implode(' ', $words);
-	    }
-
-	    return $the_excerpt;
-
 	}
 
+	// Truncate the string if its too long
+
+	if ( strlen( $the_excerpt ) > 156 ) {
+		$the_excerpt = substr($the_excerpt, 0, 156) . '…';
+	}
+
+	return $the_excerpt;
+
 }
+
+/**
+ * Add or remove the show columns
+ *
+ * @access public
+ * @return void
+ */
+function msa_show_column() {
+
+	if ( !isset($_POST['action_needed']) || !isset($_POST['column']) ) {
+		echo '';
+		die();
+	}
+
+	if ( false === ( $show_columns = get_option( 'msa_show_columns_' . get_current_user_id() ) ) ) {
+		$show_columns = array();
+	}
+
+	if ( $_POST['action_needed'] == 'add' ) {
+		$show_columns[] = $_POST['column'];
+	} else {
+
+		foreach ( $show_columns as $key => $show_column ) {
+			if ( $show_column == $_POST['column'] ) {
+				unset($show_columns[$key]);
+			}
+		}
+	}
+
+	update_option( 'msa_show_columns_' . get_current_user_id(), $show_columns );
+
+	echo json_encode($show_columns);
+	die();
+}
+add_action('wp_ajax_msa_show_column', 'msa_show_column');
 
 /**
  * Check to see if we can add a new audit

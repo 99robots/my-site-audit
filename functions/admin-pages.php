@@ -41,7 +41,7 @@ function msa_menu() {
 	add_menu_page(
 		__(MY_SITE_AUDIT_ITEM_NAME, 'msa'),
 		__(MY_SITE_AUDIT_ITEM_NAME, 'msa'),
-    	'edit_pages',
+    	'edit_posts',
     	'msa-dashboard',
     	'msa_dashboard',
     	MY_SITE_AUDIT_PLUGIN_URL . 'images/logo.png" style="width:20px;padding-top: 6px;'
@@ -53,7 +53,7 @@ function msa_menu() {
     	'msa-dashboard',
     	__('Dashboard', 'msa'),
     	__('Dashboard', 'msa'),
-    	'edit_pages',
+    	'edit_posts',
     	'msa-dashboard',
     	'msa_dashboard'
     );
@@ -161,9 +161,19 @@ function msa_all_audits_scripts() {
 	wp_localize_script('msa-all-audits-js', 'msa_all_audits_data', array(
 		'site_url'			=> get_site_url(),
 		'admin_url'			=> get_admin_url(),
+		'audit_page'		=> get_admin_url() . 'admin.php?page=msa-all-audits',
 		'info'				=> __('Your Audit is now being created and you can monitor its status from the progress bar below.  Please <strong>DO NOT</strong> refresh this page as that will stop the audit. If you want to stop this audit for any reason, then click <a href="' . get_admin_url() . 'admin.php?page=msa-all-audits" class="msa-force-stop">Force Stop</a>.', 'msa'),
 		'success_message'	=> __('Your Audit has been created! See it ', 'msa'),
-		'estimated_time'	=> __('Estimated Time to Completion:', 'msa'),
+	));
+
+	if ( false === ( $show_columns = get_option( 'msa_show_columns_' . get_current_user_id() ) ) ) {
+		$show_columns = array();
+	}
+
+	wp_enqueue_script('msa-single-audit-js', 			MY_SITE_AUDIT_PLUGIN_URL . '/js/single-audit.js');
+	wp_localize_script('msa-single-audit-js', 'msa_single_audit_data', array(
+		'audit_page'		=> get_admin_url() . 'admin.php?page=msa-all-audits',
+		'show_columns'		=> $show_columns,
 	));
 
 	wp_enqueue_script('jquery');
@@ -246,20 +256,25 @@ function msa_all_audits_load() {
 
 	// Single Audit
 
-	if ( isset($_GET['audit']) ) {
+	if ( isset($_GET['audit']) && !isset($_GET['post']) ) {
 
 		// Screen Options
-
-		add_screen_option( 'per_page' );
-
-		$screen = get_current_screen();
 
 		add_filter( 'manage_my-site-audit_page_msa-all-audits_columns', 'msa_all_audits_add_column' );
 
 	}
 }
 
+/**
+ * Add all the screen option columns
+ *
+ * @access public
+ * @param mixed $columns
+ * @return void
+ */
 function msa_all_audits_add_column( $columns ) {
+
+	// Condition
 
 	$conditions = msa_get_conditions();
 

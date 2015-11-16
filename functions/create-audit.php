@@ -88,8 +88,6 @@ function msa_async_create_audit($audit_data) {
 			foreach ( $posts as $post ) {
 
 				$data = msa_get_post_audit_data($post);
-				$score = msa_calculate_score($post, $data);
-				$data['score'] = $score['score'];
 
 				// Add a new record in the audit posts table
 
@@ -126,8 +124,14 @@ function msa_add_post_to_audit() {
 	$audit_posts_model = new MSA_Audit_Posts_Model();
 	$post = get_post($_POST['post_id']);
 
+	// Data
+
 	$data = msa_get_post_audit_data($post);
+
+	// Score
+
 	$score = msa_calculate_score($post, $data);
+	$data['score'] = $score['score'];
 
 	// Add a new record in the audit posts table
 
@@ -199,10 +203,11 @@ function msa_get_post_ids() {
 
 	$audit = array();
 
-	$audit['name'] = $data['name'];
+	$audit['name'] = stripcslashes(sanitize_text_field($data['name']));
 	$audit['score'] = 0;
 	$audit['date'] = date('Y-m-d H:i:s');
 	$audit['user'] = get_current_user_id();
+	$audit['args']['form_fields'] = json_encode($data);
 	$audit['args']['post_types'] = $data['post-types'];
 	$audit['args']['conditions'] = json_encode(msa_get_conditions());
 
@@ -212,13 +217,13 @@ function msa_get_post_ids() {
 		'public' 			=> true,
 		'date_query' 		=> array(
 			array(
-				'after'     => $data['after-date'],
-				'before'    => $data['before-date'],
+				'after'     => strip_tags($data['after-date']),
+				'before'    => strip_tags($data['before-date']),
 				'inclusive' => true,
 			),
 		),
 		'post_type'			=> $data['post-types'],
-		'posts_per_page'	=> $data['max-posts'],
+		'posts_per_page'	=> strip_tags($data['max-posts']),
 		'fields'			=> 'ids',
 	);
 
@@ -236,7 +241,10 @@ function msa_get_post_ids() {
 		die();
 	}
 
-	echo '';
+	echo json_encode( array(
+		'status'	=> 'error',
+		'message'	=> __('No posts found.', 'msa'),
+	) );
 	die();
 }
 add_action( 'wp_ajax_msa_get_post_ids_for_audit', 'msa_get_post_ids' );

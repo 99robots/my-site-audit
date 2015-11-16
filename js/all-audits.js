@@ -49,6 +49,8 @@ jQuery(document).ready(function($) {
 				'data': $(".msa-create-audit-form").serialize(),
 			}, function(response) {
 
+			$('.msa-creating-audit').remove();
+
 			response = $.parseJSON(response);
 
 			// Check if we have an error
@@ -67,8 +69,6 @@ jQuery(document).ready(function($) {
 				$('.msa-progress-bar').attr('data-max', posts.length);
 				$(".msa-create-audit-form").append('<span style="display-none;" class="msa-audit-score" data-audit-id="' + response.audit_id + '" data-num-posts="' + posts.length + '" data-score="0"></span>');
 
-				//msa_add_post_to_audit(response.audit_id, posts[0]);
-
 				for ( var i = 0; i < posts.length; i++) {
 					msa_add_post_to_audit(response.audit_id, posts[i]);
 				}
@@ -76,7 +76,6 @@ jQuery(document).ready(function($) {
 			} else {
 				$('.msa-info').remove();
 				$('.msa-posts-completed').remove();
-				$('.msa-creating-audit').remove();
 				$('.msa-progress-bar-container').remove();
 				$(".msa-create-audit-wrap").slideUp();
 				$('<div class="error"><p>' + response.message + '</p></div>').insertAfter('.msa-create-audit-wrap');
@@ -127,6 +126,7 @@ jQuery(document).ready(function($) {
 				'num_posts': msa_audit_post_ids.length,
 			}, function(response) {
 				console.log('Score has been updated: ' + response);
+				window.location = msa_all_audits_data.audit_page + '&audit=' + $('.msa-audit-score').attr('data-audit-id');
 				msa_audit_complete();
 		});
 
@@ -166,8 +166,8 @@ jQuery(document).ready(function($) {
 
 		$('.msa-info').remove();
 		$('.msa-posts-completed').remove();
-		$('.msa-creating-audit').remove();
 		$('.msa-progress-bar-container').remove();
+		$(".msa-create-audit-wrap").slideUp();
 
 		// Add message saying that the process has been completed
 
@@ -217,29 +217,6 @@ jQuery(document).ready(function($) {
 			$('.msa-create-audit-wrap').slideUp();
 		} else {
 			$('.msa-create-audit-wrap').slideDown();
-		}
-	});
-
-	// Hide and show the columns
-
-	$('.hide-column-tog').each(function(index,value){
-		if ( $(value).prop('checked') ) {
-			$('.column-' + $(value).val()).show();
-			$('.filter-' + $(value).val()).show();
-		} else {
-			$('.column-' + $(value).val()).hide();
-			$('.filter-' + $(value).val()).hide();
-		}
-	});
-
-	$('.hide-column-tog').change(function(){
-
-		if ( $(this).prop('checked') ) {
-			$('.column-' + $(this).val()).show();
-			$('.filter-' + $(this).val()).show();
-		} else {
-			$('.column-' + $(this).val()).hide();
-			$('.filter-' + $(this).val()).hide();
 		}
 	});
 
