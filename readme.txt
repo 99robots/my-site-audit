@@ -32,7 +32,7 @@ This section describes how to install the plugin and get it working. You can dow
 
 e.g.
 
-1. Upload `my-site-audit.php` to the `/wp-content/plugins/` directory
+1. Upload `my-site-audit` to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 
 == Frequently Asked Questions ==
@@ -47,5 +47,5 @@ e.g.
 
 == Changelog ==
 
-= 1.0.0 = 2015-11-24
+= 1.0.0 = 2015-11-20
 * Initial Release :)

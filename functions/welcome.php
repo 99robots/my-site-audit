@@ -294,7 +294,7 @@ function msa_welcome_page_tabs() {
 		</a>
 
 		<a class="nav-tab <?php echo $selected == 'msa-credits' ? 'nav-tab-active' : ''; ?>" href="<?php echo esc_url( admin_url( add_query_arg( array( 'page' => 'msa-credits' ), 'index.php' ) ) ); ?>">
-			<?php _e( 'Credits', 'msa' ); ?>
+			<?php _e( 'Contributors', 'msa' ); ?>
 		</a>
 
 	</h2>
