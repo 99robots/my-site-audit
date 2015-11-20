@@ -31,21 +31,30 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 if ( isset($_POST['submit']) && check_admin_referer('msa-add-audit') ) {
 
-	/**
-	 *
-	 * This is the main action for creating an audit
-	 *
-	 */
-	do_action('msa_create_audit', $_POST);
+	// Check if they can add a new audit
 
-	$_POST['user'] = get_current_user_id();
+	if ( apply_filters('msa_can_add_new_audit', true) ) {
 
-	$date_range = json_decode(stripcslashes($_POST['date-range']), true);
+		/**
+		 *
+		 * This is the main action for creating an audit
+		 *
+		 */
+		do_action('msa_create_audit', $_POST);
 
-	$_POST['after-date'] = $date_range['start'];
-	$_POST['before-date'] = $date_range['end'];
+		$_POST['user'] = get_current_user_id();
 
-	msa_add_audit_to_queue($_POST);
+		$date_range = json_decode(stripcslashes($_POST['date-range']), true);
+
+		$_POST['after-date'] = $date_range['start'];
+		$_POST['before-date'] = $date_range['end'];
+
+		msa_add_audit_to_queue($_POST);
+
+	} else {
+
+		set_transient('msa_unable_to_create_audit', __('Unable to create your audit because you reached the maximum number of audits you can have.  In order to add a new audit you will first need to delete one.  If you want want to increase the amount of audits you can have please ') . '<a href="' . MY_SITE_AUDIT_EXT_URL . '" target="_blank">' . __('download the extension') . '</a>' );
+	}
 
 	msa_force_redirect(get_admin_url() . 'admin.php?page=msa-all-audits');
 }

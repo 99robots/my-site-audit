@@ -352,12 +352,12 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 							<th scope="row"><label for="msa-audit-max-posts"><?php _e("Maximum Posts", 'msa'); ?></label></th>
 							<td>
 								<select id="msa-audit-max-posts" name="max-posts">
-									<option value="-1" selected="selected"><?php _e('All Posts in Date Range', 'msa'); ?></option>
-									<?php for ($i = 50; $i <= 3000; $i+= 50) { ?>
+									<?php echo apply_filters('msa_create_audit_maximum_posts_select', ''); ?>
+									<?php for ($i = 50; $i <= 500; $i+= 50) { ?>
 										<option value="<?php echo $i; ?>"><?php _e($i, 'msa'); ?></option>
 									<?php } ?>
 								</select>
-								<p class="description"><?php _e('The maximum number of posts that will be audited.', 'msa'); ?></p>
+								<p class="description"><?php _e('The maximum number of posts that will be audited. You can increase the maximum number of posts you can audit, just', 'msa'); ?> <a href="<?php echo MY_SITE_AUDIT_EXT_URL; ?>" target="_blank"><?php _e('download the extension.'); ?></a></p>
 							</td>
 						</tr>
 

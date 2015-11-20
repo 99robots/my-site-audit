@@ -121,11 +121,11 @@ add_action('admin_menu', 'msa_menu');
  */
 function msa_dashboard_scripts() {
 
+	msa_include_default_styles();
+
 	// Style
 
-	wp_enqueue_style('msa-common-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/css/common.css');
 	wp_enqueue_style('msa-dashboard-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/dashboard.css');
-
 	wp_enqueue_style('msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css');
 
 	// Scripts
@@ -144,11 +144,11 @@ function msa_dashboard_scripts() {
  */
 function msa_all_audits_scripts() {
 
+	msa_include_default_styles();
+
 	// Style
 
 	wp_enqueue_style('msa-all-audits-css', 					MY_SITE_AUDIT_PLUGIN_URL . '/css/all-audits.css');
-	wp_enqueue_style('msa-common-css', 						MY_SITE_AUDIT_PLUGIN_URL . '/css/common.css');
-
 	wp_enqueue_style('msa-fontawesome-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css');
 	wp_enqueue_style('msa-jquery-ui-css', 					MY_SITE_AUDIT_PLUGIN_URL . '/includes/jquery-datepicker/jquery-ui.min.css');
 	wp_enqueue_style('msa-jquery-ui-theme-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/includes/jquery-datepicker/jquery-ui.theme.min.css');
@@ -200,11 +200,11 @@ function msa_all_audits_scripts() {
  */
 function msa_settings_scripts() {
 
+	msa_include_default_styles();
+
 	// Style
 
-	wp_enqueue_style('msa-common-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/css/common.css');
 	wp_enqueue_style('msa-settings-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/settings.css');
-
 	wp_enqueue_style('msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css');
 
 	// Script
@@ -235,11 +235,26 @@ function msa_settings_scripts() {
  */
 function msa_extensions_scripts() {
 
+	msa_include_default_styles();
+
 	// Style
 
 	wp_enqueue_style('msa-extensions-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/css/extensions.css');
 
 	wp_enqueue_style('msa-fontawesome-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css');
+
+}
+
+/**
+ * Include the default styles on all pages
+ *
+ * @access public
+ * @return void
+ */
+function msa_include_default_styles() {
+
+	wp_enqueue_style('msa-common-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/css/common.css');
+	wp_enqueue_style('msa-theme-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/css/theme.css');
 
 }
 

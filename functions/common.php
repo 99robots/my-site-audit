@@ -120,7 +120,7 @@ function msa_add_new_audit_check($data) {
 	$audit_model = new MSA_Audits_Model();
 	$audits = $audit_model->get_data();
 
-	if ( count($audits) >= 5 ) {
+	if ( count($audits) >= MY_SITE_AUDIT_MAX_AUDITS ) {
 		return false;
 	}
 
@@ -137,11 +137,11 @@ add_filter('msa_can_add_new_audit', 'msa_add_new_audit_check', 10, 1);
  */
 function msa_save_more_audits_extension($audits) {
 
-	if ( count($audits) >= 5 ) {
+	if ( count($audits) >= MY_SITE_AUDIT_MAX_AUDITS ) {
 
 		$audits[] = array(
 			'extension'			=> true,
-			'extension-link' 	=> 'https://mysiteaudit.com',
+			'extension-link' 	=> MY_SITE_AUDIT_EXT_URL,
 			'score'				=> 1,
 			'name'				=> __('Want to Save more Audits? Get the Extension!', 'msa'),
 			'date'				=> date('Y-m-d H:i:s'),

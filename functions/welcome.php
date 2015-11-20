@@ -45,6 +45,7 @@ function msa_welcome_menus() {
 		'msa_welcome_getting_started_page'
 	);
 
+/*
 	// About Page
 
 	add_dashboard_page(
@@ -54,6 +55,7 @@ function msa_welcome_menus() {
 		'msa-about',
 		'msa_welcome_about_page'
 	);
+*/
 
 	// Changelog Page
 
@@ -281,9 +283,11 @@ function msa_welcome_page_tabs() {
 	?>
 	<h2 class="nav-tab-wrapper">
 
+<!--
 		<a class="nav-tab <?php echo $selected == 'msa-about' ? 'nav-tab-active' : ''; ?>" href="<?php echo esc_url( admin_url( add_query_arg( array( 'page' => 'msa-about' ), 'index.php' ) ) ); ?>">
 			<?php _e( "What's New", 'msa' ); ?>
 		</a>
+-->
 
 		<a class="nav-tab <?php echo $selected == 'msa-getting-started' ? 'nav-tab-active' : ''; ?>" href="<?php echo esc_url( admin_url( add_query_arg( array( 'page' => 'msa-getting-started' ), 'index.php' ) ) ); ?>">
 			<?php _e( 'Getting Started', 'msa' ); ?>
@@ -333,7 +337,7 @@ function msa_welcome_page_redirect() {
 	// Update
 
 	else {
-		wp_safe_redirect( admin_url( 'index.php?page=msa-about' ) );
+		wp_safe_redirect( admin_url( 'index.php?page=msa-getting-started' ) );
 		exit;
 	}
 

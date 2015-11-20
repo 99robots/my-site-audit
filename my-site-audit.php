@@ -117,7 +117,7 @@ final class My_Site_Audit {
 		// Extensions URL
 
 		if ( !defined('MY_SITE_AUDIT_EXT_URL') ) {
-			define('MY_SITE_AUDIT_EXT_URL', 'https://mysiteaudit.com/extensions');
+			define('MY_SITE_AUDIT_EXT_URL', 'https://mysiteaudit.com/extensions?&utm_source=plugin_pages');
 		}
 
 		// Minimum PHP version
@@ -160,6 +160,12 @@ final class My_Site_Audit {
 
 		if ( ! defined( 'MY_SITE_AUDIT_PLUGIN_FILE' ) ) {
 			define( 'MY_SITE_AUDIT_PLUGIN_FILE', __FILE__ );
+		}
+
+		// Max audits
+
+		if ( ! defined( 'MY_SITE_AUDIT_MAX_AUDITS' ) ) {
+			define( 'MY_SITE_AUDIT_MAX_AUDITS', 1 );
 		}
 
 		// Make sure CAL_GREGORIAN is defined

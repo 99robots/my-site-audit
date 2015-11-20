@@ -35,6 +35,20 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 function msa_admin_notices() {
 
+	// Unable to create audit
+
+	if ( false !== ( $no_audit = get_transient('msa_unable_to_create_audit') ) ) {
+
+		?>
+	    <div class="error">
+	        <p><?php echo $no_audit; ?></p>
+	    </div>
+	    <?php
+
+		delete_transient('msa_unable_to_create_audit');
+
+	}
+
 	// Schedule Audit Notice
 
 	if ( false !== ( $scheduled_audit = get_transient('msa_schedule_audit') ) ) {
