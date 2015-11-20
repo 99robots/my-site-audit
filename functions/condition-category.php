@@ -82,7 +82,27 @@ function msa_display_condition_category_data($category, $post, $data, $score) {
 					$more_info = '';
 
 					if ( isset($condition['description']) ) {
-						$more_info = '<a class="msa-condition-more-info msa-tooltips" href="#"><i class="fa fa-info-circle"></i><span>' . $condition['description'] . '</span></a>';
+
+						$learn_more = '';
+
+						if ( isset($condition['learn_more_link']) ) {
+							$learn_more = '<div class="msa-modal-learn-more-link">
+								<a href="' . $condition['learn_more_link'] . '" target="_blank">' . __('Learn More', 'msa') . '</a>
+							</div>';
+						}
+
+						$more_info = '<span class="msa-condition-more-info" data-condition="' . $key . '">
+							<i class="fa fa-info-circle"></i>
+							<div class="msa-modal" data-condition="' . $key . '">
+								<div class="msa-modal-container">
+									<div class="msa-modal-title">
+										<h3>' . $condition['name'] . '</h3>
+									</div>
+									<div class="msa-modal-content">' . $condition['description'] . '</div>' .
+									$learn_more .
+								'</div>
+							</div>
+						</span>';
 					}
 
 					$output .= '<tr class="msa-post-status msa-post-status-' . msa_get_score_status($post_score[$key]) . '">

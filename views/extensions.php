@@ -38,7 +38,7 @@ $remote_extensions = msa_get_remote_extensions();
 $extensions = array_merge($remote_extensions, $extensions); ?>
 
 <h1><?php _e("Extensions", 'msa'); ?>
-	<a href="https://99robots.com/products" class="page-title-action"><?php _e('Browse All Extensions', 'msa'); ?></a>
+	<a href="<?php echo MY_SITE_AUDIT_EXT_URL; ?>" class="page-title-action" target="_blank"><?php _e('Browse All Extensions', 'msa'); ?></a>
 </h1>
 
 <div id="dashboard-widgets" class="metabox-holder">

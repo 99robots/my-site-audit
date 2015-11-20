@@ -36,8 +36,9 @@ jQuery(document).ready(function($) {
 			return;
 		}
 
-		e.preventDefault();
+		//e.preventDefault();
 
+/*
 		// Add a loading icon and a progress bar
 
 		$('<span class="msa-creating-audit"><img src="' + msa_all_audits_data.site_url + '/wp-admin/images/spinner-2x.gif"/></span>').insertAfter('#submit');
@@ -82,6 +83,7 @@ jQuery(document).ready(function($) {
 			}
 
 		});
+*/
 	});
 
 	/**
@@ -206,7 +208,27 @@ jQuery(document).ready(function($) {
 	// Datepicker
 
 	if ( $(".msa-datepicker").length != 0 ) {
-		$(".msa-datepicker").datepicker();
+		$(".msa-datepicker").daterangepicker({
+		     presetRanges: [{
+		         text: 'Last Month',
+		         dateStart: function() { return moment().subtract('months', 1) },
+		         dateEnd: function() { return moment() }
+		     }, {
+		         text: 'Last 6 Months',
+		         dateStart: function() { return moment().subtract('months', 6) },
+		         dateEnd: function() { return moment() }
+		     }, {
+		         text: 'Last Year',
+		         dateStart: function() { return moment().subtract('years', 1) },
+		         dateEnd: function() { return moment() }
+		     }, {
+		         text: 'All Time',
+		         dateStart: function() { return moment().subtract('years', 20) },
+		         dateEnd: function() { return moment() }
+		     }],
+		     applyOnMenuSelect: false,
+		 });
+		$(".msa-datepicker").daterangepicker("setRange", {start: new Date( $(".msa-datepicker").data('start-date') ), end: new Date( $(".msa-datepicker").data('end-date') ) });
 	}
 
 	// Hide and show the create new settings

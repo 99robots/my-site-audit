@@ -60,6 +60,8 @@ function msa_activation() {
 
 	update_option( 'msa_version_upgraded_from', MY_SITE_AUDIT_VERSION );
 
+	delete_transient('msa_running_audit');
+
 }
 
 register_activation_hook( MY_SITE_AUDIT_PLUGIN_FILE, 'msa_activation' );

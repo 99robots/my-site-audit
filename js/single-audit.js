@@ -24,6 +24,24 @@
 
 jQuery(document).ready(function($) {
 
+	// Move show columns around to relate to the condition categories
+
+	$('#adv-settings h5').remove();
+
+	$.each(msa_single_audit_data.condition_categories, function(index, value){
+		$('<div class="msa-condition-category-column msa-condition-category-column-' + index + '">' +
+			'<h5>' + value.name + '</h5>' +
+		+ '</div>').insertBefore('form .metabox-prefs');
+	});
+
+	// Attributes
+
+	$('<h5>' + msa_single_audit_data.attribute_title + '</h5>').insertBefore('form .metabox-prefs');
+
+	$.each(msa_single_audit_data.conditions, function(index, value){
+		$('label[for="' + index + '-hide"]').appendTo('.msa-condition-category-column-' + value.category);
+	});
+
 	// Add Filters
 
 	$('.msa-filter-button').click(function(e) {

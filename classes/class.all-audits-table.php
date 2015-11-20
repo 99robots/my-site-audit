@@ -93,6 +93,10 @@ class MSA_All_Audits_Table extends WP_List_Table {
 			$args['s'] = $_GET['s'];
 		}
 
+		if ( isset($_GET['audit_status']) ) {
+			$args['status'] = $_GET['audit_status'];
+		}
+
 		/* =========================================================================
 		 *
 		 * Get Audits
@@ -120,7 +124,7 @@ class MSA_All_Audits_Table extends WP_List_Table {
 		) );
 
 		$this->items = array_slice($this->items,(($current_page-1)*$per_page),$per_page);
-		$this->items = array_reverse($this->items);
+		//$this->items = array_reverse($this->items);
 
 		$this->items = apply_filters('msa_all_audits_table_items', $this->items);
 	}
@@ -133,12 +137,13 @@ class MSA_All_Audits_Table extends WP_List_Table {
 	 */
 	function get_columns() {
 
-		$columns['score']         = __('Score', 'msa');
-		$columns['name']          = __('Name', 'msa');
-		$columns['date']          = __('Created On', 'msa');
-		$columns['user']          = __('Created By', 'msa');
-		$columns['num_posts']     = __('Number of Posts', 'msa');
-		$columns['post_types']    = __('Post Types', 'msa');
+		$columns['score']             = __('Score', 'msa');
+		$columns['name']              = __('Name', 'msa');
+		$columns['date']              = __('Created On', 'msa');
+		$columns['user']              = __('Created By', 'msa');
+		$columns['num_posts']         = __('Number of Posts', 'msa');
+		$columns['post_date_range']   = __('Post Date Range', 'msa');
+		$columns['post_types']        = __('Post Types', 'msa');
 
 		return apply_filters('msa_all_audits_table_columns', $columns);
 	}
@@ -151,8 +156,8 @@ class MSA_All_Audits_Table extends WP_List_Table {
 	 */
 	function get_sortable_columns() {
 
+		$sortable_columns['date']         = array('date', true);
 		$sortable_columns['score']        = array('score', false);
-		$sortable_columns['num_posts']    = array('num_posts', false);
 
 		return $sortable_columns;
 	}
@@ -199,11 +204,17 @@ class MSA_All_Audits_Table extends WP_List_Table {
 		switch( $column_name ) {
 
 			case 'score':
-				$output = round(100 * $item[$column_name]) . '%';
+
+				if ( $item['status'] == 'completed' ) {
+					$output = round(100 * $item[$column_name]) . '%';
+				} else {
+					$output = __('<span class="msa-spinner" style="padding-left:0;"><img src="' . get_site_url() . '/wp-admin/images/spinner-2x.gif"/></span>', 'msa');
+				}
+
 			break;
 
 			case 'date':
-				$output = date('M d Y, h:i:s', strtotime($item[$column_name]));
+				$output = date('M d Y', strtotime($item[$column_name]));
 			break;
 
 			case 'user':
@@ -213,6 +224,14 @@ class MSA_All_Audits_Table extends WP_List_Table {
 
 			case 'post_types':
 				$output = implode('<br />', $item['args']['post_types']);
+			break;
+
+			case 'post_date_range':
+
+				$form_fields = json_decode($item['args']['form_fields'], true);
+
+				$output = date('M d Y', strtotime($form_fields['after-date']));
+				$output .= ' - ' . date('M d Y', strtotime($form_fields['before-date']));
 			break;
 
 			default:
@@ -233,6 +252,10 @@ class MSA_All_Audits_Table extends WP_List_Table {
 	 * @return void
 	 */
 	public function column_name($item) {
+
+		if ( $item['status'] == 'in-progress' ) {
+			return apply_filters('msa_all_audits_table_column_name_extension', $item['name']);
+		}
 
 		if ( !isset($item['extension']) ) {
 
@@ -334,7 +357,14 @@ class MSA_All_Audits_Table extends WP_List_Table {
 			echo '</tr>';
 
 		} else {
-			echo '<tr class="msa-post-status msa-post-status-' . msa_get_score_status($item['score']) . '">';
+
+			$class = '';
+
+			if ( $item['status'] == 'completed' ) {
+				$class = 'msa-post-status msa-post-status-' . msa_get_score_status($item['score']);
+			}
+
+			echo '<tr class="' . $class . '">';
 			$this->single_row_columns( $item );
 			echo '</tr>';
 		}

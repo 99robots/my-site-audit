@@ -81,6 +81,7 @@ class MSA_Audits_Model {
 				`name` varchar(60) NOT NULL DEFAULT '',
 				`date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
 				`score` decimal(10,10) NOT NULL DEFAULT '.0',
+				`status` varchar(60),
 				`user` int(11),
 				`num_posts` int(11),
 				`args` longtext,
@@ -107,13 +108,15 @@ class MSA_Audits_Model {
 				`name`,
 				`date`,
 				`score`,
+				`status`,
 				`user`,
 				`num_posts`,
 				`args`
-			) VALUES (%s, %s, %f, %d, %d, %s)",
+			) VALUES (%s, %s, %f, %s, %d, %d, %s)",
 				$data['name'],
 				date($this->data_format, strtotime($data['date'])),
 				$data['score'],
+				$data['status'],
 				$data['user'],
 				$data['num_posts'],
 				json_encode($data['args'])
@@ -148,6 +151,7 @@ class MSA_Audits_Model {
 				`name` = %s,
 				`date` = %s,
 				`score` = %f,
+				`status` = %s,
 				`user` = %d,
 				`num_posts` = %d,
 				`args` = %s
@@ -155,6 +159,7 @@ class MSA_Audits_Model {
 				$data['name'],
 				date($this->data_format, strtotime($data['date'])),
 				$data['score'],
+				$data['status'],
 				$data['user'],
 				$data['num_posts'],
 				json_encode($data['args']),
@@ -175,17 +180,32 @@ class MSA_Audits_Model {
 
 		global $wpdb;
 
+		// Create the WHERE clause
+
+		$where = ' WHERE 1=1 ';
+
 		// Search
 
 		$search = '';
 
 		if ( isset($args['s']) ) {
+
 			$s = $wpdb->esc_like($args['s']);
 			$s = '%' . $s . '%';
-			$search = $wpdb->prepare("WHERE `name` LIKE %s", $s);
+			$search = $wpdb->prepare(" AND `name` LIKE %s", $s);
 		}
 
-		$data = $wpdb->get_results("SELECT * FROM `" . $this->get_table_name() . "` " . $search,  'ARRAY_A');
+		// Status
+
+		$status = '';
+
+		if ( isset($args['status']) && $args['status'] != 'all') {
+			$status = $wpdb->prepare(' AND `status` = %s', $args['status']);
+		}
+
+		$where .= $search . $status;
+
+		$data = $wpdb->get_results("SELECT * FROM `" . $this->get_table_name() . "` " . $where . " ORDER BY `id` DESC;",  'ARRAY_A');
 
 		return $this->parse_data($data);
 	}
@@ -222,7 +242,7 @@ class MSA_Audits_Model {
 
 		global $wpdb;
 
-		$data = $wpdb->get_results("SELECT * FROM  `" . $this->get_table_name() . "`  ORDER BY `id` DESC LIMIT 1", 'ARRAY_A');
+		$data = $wpdb->get_results("SELECT * FROM  `" . $this->get_table_name() . "` WHERE `status` = 'completed' ORDER BY `id` DESC LIMIT 1", 'ARRAY_A');
 
 		$parsed_data = $this->parse_data($data);
 
@@ -302,6 +322,7 @@ class MSA_Audits_Model {
 			$entry["name"]         			= $row["name"];
 			$entry["date"]        			= $row["date"];
 			$entry["score"]        			= $row["score"];
+			$entry["status"]        		= $row["status"];
 			$entry["user"]        			= $row["user"];
 			$entry["num_posts"]        		= $row["num_posts"];
 			$entry['args']         			= json_decode($row['args'], true);

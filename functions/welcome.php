@@ -57,6 +57,7 @@ function msa_welcome_menus() {
 
 	// Changelog Page
 
+/*
 	add_dashboard_page(
 		__( 'My Site Audit Changelog', 'msa' ),
 		__( 'My Site Audit Changelog', 'msa' ),
@@ -64,6 +65,7 @@ function msa_welcome_menus() {
 		'msa-changelog',
 		'msa_welcome_changelog_page'
 	);
+*/
 
 	// Credits Page
 
@@ -89,15 +91,14 @@ function msa_welcome_about_page() {
 
 	?><div class="wrap about-wrap">
 
-		<h1><?php _e( 'About My Site Audit', 'msa' ); ?></h1>
+		<h1 class="msa-welcome-header"><?php _e( 'Welcome to My Site Audit', 'msa' ); ?>
+			<span class="msa-badge dashicons dashicons-analytics"></span>
+		</h1>
 
 		<div class="about-text"><?php printf( __( 'Thank you for updating to the latest version!', 'msa' ), MY_SITE_AUDIT_VERSION ); ?></div>
 
 		<?php msa_welcome_page_tabs(); ?>
 
-		<div class="return-to-dashboard">
-			<a href="<?php echo get_admin_url() . 'admin.php?page=msa-settings'; ?>"><?php _e( 'Go to My Site Audit Settings', 'msa' ); ?></a>
-		</div>
 	</div><?php
 }
 
@@ -111,11 +112,105 @@ function msa_welcome_getting_started_page() {
 
 	?><div class="wrap about-wrap">
 
-		<h1><?php printf( __( 'Welcome to My Site Audit %s', 'msa' ), MY_SITE_AUDIT_VERSION ); ?></h1>
+		<h1 class="msa-welcome-header"><?php printf( __( 'Welcome to My Site Audit %s', 'msa' ), MY_SITE_AUDIT_VERSION ); ?>
+			<span class="msa-badge dashicons dashicons-analytics"></span>
+		</h1>
 
 		<div class="about-text"><?php printf( __( 'Thank you for updating to the latest version!', 'msa' ), MY_SITE_AUDIT_VERSION ); ?></div>
 
 		<?php msa_welcome_page_tabs(); ?>
+
+		<div class="feature-section">
+
+			<div class="feature-section-media">
+				<img src="<?php echo MY_SITE_AUDIT_PLUGIN_URL; ?>images/welcome/overview.png"/>
+			</div>
+
+			<div class="feature-section-content">
+
+				<h3><?php _e('Overview'); ?></h3>
+
+				<p><?php _e('We are very excited to announce the release of My Site Audit.  This plugin was built to make auditing your content extremely easy and fast.  Within minutes you will be able to create an audit of all the posts on your site.'); ?></p>
+
+			</div>
+
+		</div>
+
+		<div class="feature-section">
+
+			<div class="feature-section-media">
+				<img src="<?php echo MY_SITE_AUDIT_PLUGIN_URL; ?>images/welcome/quick-setup.png"/>
+			</div>
+
+			<div class="feature-section-content">
+
+				<h3><?php _e('Quick Setup'); ?></h3>
+
+				<p><?php _e('Creating an audit is as simple as 1..2..3'); ?></p>
+
+				<h4><?php _e('Post Date Range'); ?></h4>
+
+				<p><?php _e('You will be able to select the date range for posts to audit.  My Site Audit will then audit posts that were published within the given date range.'); ?></p>
+
+				<h4><?php _e('Post Types'); ?></h4>
+
+				<p><?php _e('Select from any post type you have on your site, even custom post types.  You can chose just one or multiple at a time for a single audit.'); ?></p>
+
+				<h4><?php _e('Maximum Posts'); ?></h4>
+
+				<p><?php _e('There is a built-in safe guard to protect you from auditing more posts then you want to.  We give you the option to select the maximum number of posts to audit even if there are more Posts within the date range.'); ?></p>
+
+			</div>
+
+		</div>
+
+		<div class="feature-section">
+
+			<div class="feature-section-media">
+				<img src="<?php echo MY_SITE_AUDIT_PLUGIN_URL; ?>images/welcome/sort-filter.png"/>
+			</div>
+
+			<div class="feature-section-content">
+
+				<h3><?php _e('Sort and Filter'); ?></h3>
+
+				<p><?php _e('My Site Audit give you the power to sort and filter for posts based on many different criteria.'); ?></p>
+
+				<h4><?php _e('Post Score'); ?></h4>
+
+				<p><?php _e('Just like post stati you can filter posts based on their My Site Audit score.  This is really useful to see exactly what posts need your attention and which ones can wait.'); ?></p>
+
+				<h4><?php _e('Attributes'); ?></h4>
+
+				<p><?php _e('There are a lot of different attributes that you can filter posts by like, word count, comments, images and many more.'); ?></p>
+
+			</div>
+
+		</div>
+
+		<div class="feature-section">
+
+			<div class="feature-section-media">
+				<img src="<?php echo MY_SITE_AUDIT_PLUGIN_URL; ?>images/welcome/improve-content.png"/>
+			</div>
+
+			<div class="feature-section-content">
+
+				<h3><?php _e('Improve your Content'); ?></h3>
+
+				<p><?php _e('My Site Audit was built to help you improve your content and therefore drive more traffic to your site.'); ?></p>
+
+				<h4><?php _e('Increase User Engagement'); ?></h4>
+
+				<p><?php _e('Increasing your Post Score will help to improve your user engagement.  Higher user engagement can result in lower bounce rates and higher site traffic.'); ?></p>
+
+				<h4><?php _e('Better Indexing'); ?></h4>
+
+				<p><?php _e('By editing your content based on the its audit you will increase the ability for it to be indexed better.'); ?></p>
+
+			</div>
+
+		</div>
 
 		<div class="return-to-dashboard">
 			<a href="<?php echo get_admin_url() . 'admin.php?page=msa-settings'; ?>"><?php _e( 'Go to My Site Audit Settings', 'msa' ); ?></a>
@@ -134,7 +229,9 @@ function msa_welcome_changelog_page() {
 
 	?><div class="wrap about-wrap">
 
-		<h1><?php _e( 'My Site Audit Changelog', 'msa' ); ?></h1>
+		<h1 class="msa-welcome-header"><?php _e( 'My Site Audit Changelog', 'msa' ); ?>
+			<span class="msa-badge dashicons dashicons-analytics"></span>
+		</h1>
 
 		<div class="about-text"><?php printf( __( 'Thank you for updating to the latest version!', 'msa' ), MY_SITE_AUDIT_VERSION ); ?></div>
 
@@ -156,15 +253,18 @@ function msa_welcome_credits_page() {
 
 	?><div class="wrap about-wrap">
 
-		<h1><?php _e( 'Creators of My Site Audit', 'msa' ); ?></h1>
+		<h1 class="msa-welcome-header"><?php _e( 'Creators of My Site Audit', 'msa' ); ?>
+			<span class="msa-badge dashicons dashicons-analytics"></span>
+		</h1>
 
 		<div class="about-text"><?php printf( __( 'Thank you for updating to the latest version!', 'msa' ), MY_SITE_AUDIT_VERSION ); ?></div>
 
 		<?php msa_welcome_page_tabs(); ?>
 
-		<div class="return-to-dashboard">
-			<a href="<?php echo get_admin_url() . 'admin.php?page=msa-settings'; ?>"><?php _e( 'Go to My Site Audit Settings', 'msa' ); ?></a>
-		</div>
+		<p class="about-description"><?php _e( 'My Site Audit is created by the great people at 99 Robots.  We are looking for contributors all the time so please', 'msa' ); ?> <a href="https://99robots.com/contact/" target="_blank"><?php _e('Contact Us', 'msa'); ?></a> <?php _e( 'if you want to become a contributor.', 'msa' ); ?></p>
+
+		<?php echo msa_display_contributors(); ?>
+
 	</div><?php
 }
 
@@ -251,9 +351,94 @@ function msa_hide_welcome_dashboard_pages() {
 
 	remove_submenu_page( 'index.php', 'msa-about' );
 	remove_submenu_page( 'index.php', 'msa-getting-started' );
-	remove_submenu_page( 'index.php', 'msa-changelog' );
+	//remove_submenu_page( 'index.php', 'msa-changelog' );
 	remove_submenu_page( 'index.php', 'msa-credits' );
+
+	?>
+	<style>
+		.about-wrap h1.msa-welcome-header {
+			position: relative;
+			margin-right: 0;
+		}
+
+		.msa-badge {
+			position: absolute;
+			top: 0;
+			right: 0;
+			width: 100px;
+			font-size: 100px;
+		}
+	</style>
+	<?php
 
 }
 
 add_action( 'admin_head', 'msa_hide_welcome_dashboard_pages' );
+
+/**
+ * Display a list of contributors
+ *
+ * @access public
+ * @return void
+ */
+function msa_display_contributors() {
+
+	$contributors = msa_get_contributors();
+
+	if ( empty( $contributors ) ) {
+		return '';
+	}
+
+	$contributor_list = '<ul class="wp-people-group">';
+
+	foreach ( $contributors as $contributor ) {
+
+		$contributor_list .= '<li class="wp-person">';
+		$contributor_list .= sprintf( '<a href="%s" title="%s">',
+			esc_url( 'https://github.com/' . $contributor->login ),
+			esc_html( sprintf( __( 'View %s', 'edd' ), $contributor->login ) )
+		);
+
+		$contributor_list .= sprintf( '<img src="%s" width="64" height="64" class="gravatar" alt="%s" />', esc_url( $contributor->avatar_url ), esc_html( $contributor->login ) );
+		$contributor_list .= '</a>';
+		$contributor_list .= sprintf( '<a class="web" href="%s">%s</a>', esc_url( 'https://github.com/' . $contributor->login ), esc_html( $contributor->login ) );
+		$contributor_list .= '</a>';
+		$contributor_list .= '</li>';
+
+	}
+
+	$contributor_list .= '</ul>';
+
+	return $contributor_list;
+}
+
+/**
+ * Get the list of contributors who have worked on My Site Audit
+ *
+ * @access public
+ * @return void
+ */
+function msa_get_contributors() {
+
+	$contributors = get_transient( 'msa_contributors' );
+
+	if ( false !== $contributors ) {
+		return $contributors;
+	}
+
+	$response = wp_remote_get( 'https://api.github.com/repos/99robots/my-site-audit/contributors', array( 'sslverify' => false ) );
+
+	if ( is_wp_error( $response ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
+		return array();
+	}
+
+	$contributors = json_decode( wp_remote_retrieve_body( $response ) );
+
+	if ( ! is_array( $contributors ) ) {
+		return array();
+	}
+
+	set_transient( 'msa_contributors', $contributors, 3600 );
+
+	return $contributors;
+}

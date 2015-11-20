@@ -78,7 +78,7 @@ class MSA_All_Posts_Table extends WP_List_Table {
 		// Get the audit data
 
 		$audit_posts_model 	= new MSA_Audit_Posts_Model();
-		$per_page     		= 20;
+		$per_page     		= $this->get_items_per_page('posts_per_page', 50);
 		$current_page 		= $this->get_pagenum();
 		$args = array(
 			'per_page'		=> $per_page,
@@ -146,7 +146,6 @@ class MSA_All_Posts_Table extends WP_List_Table {
 	function get_columns() {
 
 		$columns['score'] = __('Score', 'msa');
-		$columns['title'] = __('Title', 'msa');
 
 		// Condition Categories
 
@@ -296,12 +295,7 @@ class MSA_All_Posts_Table extends WP_List_Table {
 		switch( $column_name ) {
 
 			case 'score':
-				$data = round(100 * $score['score']) . '%';
-				$caret = '';
-			break;
-
-			case 'title':
-				$data = '<a href="' . get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $_GET['audit'] . '&post=' . $item['post']->ID . '">' . $item['post']->post_title . '</a>';
+				$data = '<span>' . round(100 * $score['score']) . '%</span><br/> <a href="' . get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $_GET['audit'] . '&post=' . $item['post']->ID . '">' . $item['post']->post_title . '</a>';
 			break;
 
 			// Conditions
@@ -496,7 +490,18 @@ class MSA_All_Posts_Table extends WP_List_Table {
 	 * @return array List of CSS classes for the table tag.
 	 */
 	protected function get_table_classes() {
-		return array( 'widefat', 'fixed', 'striped', $this->_args['plural'] );
+
+		$classes = array( 'widefat', 'fixed', 'striped', $this->_args['plural'] );
+
+		if ( count($this->items) == 0 ) {
+			foreach ( $classes as $key => $class ) {
+				if ( $class == 'fixed' ) {
+					unset($classes[$key]);
+				}
+			}
+		}
+
+		return $classes;
 	}
 }
 

@@ -96,7 +96,7 @@ function msa_dashboard_panel_last_audit_content() {
 					$user = get_userdata($audit['user']);
 
 					$output .= '<tr><td>' . __('Name', 'msa') . '</td> <td><a href="' . get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit['id'] . '">' . $audit['name'] . '</a></td></tr>';
-					$output .= '<tr><td>' . __('Date', 'msa') . '</td> <td>' . date('M d Y, h:i:s', strtotime($audit['date'])) . '</td></tr>';
+					$output .= '<tr><td>' . __('Created On', 'msa') . '</td> <td>' . date('M d Y, h:i:s', strtotime($audit['date'])) . '</td></tr>';
 					$output .= '<tr><td>' . __('Number of Posts', 'msa') . '</td> <td>' . $audit['num_posts'] . '</td></tr>';
 					$output .= '<tr><td>' . __('Created By', 'msa') . '</td> <td>' . $user->display_name . '</td></tr>';
 

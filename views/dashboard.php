@@ -32,7 +32,9 @@ require_once('header.php');
 
 $panels = msa_get_dashboard_panels(); ?>
 
-<h1><?php _e('Dashboard', 'msa'); ?></h1>
+<h1><?php _e('Dashboard', 'msa'); ?>
+	<a href="<?php echo get_site_url() . ''; ?>" class="page-title-action"><?php _e('Getting Started', 'msa'); ?></a>
+</h1>
 
 <div id="dashboard-widgets" class="metabox-holder">
 
@@ -41,7 +43,7 @@ $panels = msa_get_dashboard_panels(); ?>
 		<div class="meta-box-sortables meta-box-sortables-left ui-sortable">
 
 			<?php
-			$dashboard_panel_order = get_option('msa_dashboard_panel_order');
+			$dashboard_panel_order = get_option('msa_dashboard_panel_order_' . get_current_user_id());
 
 			$show_panels = array();
 
@@ -73,7 +75,7 @@ $panels = msa_get_dashboard_panels(); ?>
 		<div class="meta-box-sortables meta-box-sortables-right ui-sortable">
 
 			<?php
-			$dashboard_panel_order = get_option('msa_dashboard_panel_order');
+			$dashboard_panel_order = get_option('msa_dashboard_panel_order_' . get_current_user_id());
 
 			$show_panels = array();
 

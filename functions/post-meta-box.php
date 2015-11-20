@@ -92,7 +92,7 @@ function msa_meta_box_callback( $post ) {
 			</div><?php
 
 			foreach ( $condition_categories as $key => $condition_category ) {
-				?><div class="postbox" id="<?php echo $key; ?>">
+				?><div class="postbox" id="<?php echo $key; ?>" style="pointer-events: none;">
 					<?php echo apply_filters('msa_condition_category_content', $key, $post, $data, $score ); ?>
 				</div><?php
 			}

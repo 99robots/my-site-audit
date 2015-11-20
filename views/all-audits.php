@@ -40,7 +40,7 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 	$data = $audit_post['data']['values'];
 	$score = $audit_post['data']['score']; ?>
 
-	<h1><?php _e('Single Post Audit', 'msa'); ?>
+	<h1><?php _e('Post Audit Detials', 'msa'); ?>
 		<a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $_GET['audit']; ?>" class="page-title-action"><?php _e('All Posts', 'msa'); ?></a>
 	</h1>
 
@@ -69,23 +69,6 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 		</div>
 
 		<div class="msa-column msa-header-column msa-action-container">
-
-		</div>
-
-	</div>
-
-	<div class="msa-column msa-left-column metabox-holder">
-
-		<div class="msa-column-container">
-
-			<?php $condition_categories = msa_get_condition_categories();
-			foreach ( $condition_categories as $key => $condition_category ) { ?>
-
-				<div class="postbox" id="<?php echo $key; ?>">
-					<?php echo apply_filters('msa_condition_category_content', $key, $post, $data, $score ); ?>
-				</div>
-
-			<?php } ?>
 
 		</div>
 
@@ -152,6 +135,23 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 
 	</div>
 
+	<div class="msa-column msa-left-column metabox-holder">
+
+		<div class="msa-column-container">
+
+			<?php $condition_categories = msa_get_condition_categories();
+			foreach ( $condition_categories as $key => $condition_category ) { ?>
+
+				<div class="postbox" id="<?php echo $key; ?>">
+					<?php echo apply_filters('msa_condition_category_content', $key, $post, $data, $score ); ?>
+				</div>
+
+			<?php } ?>
+
+		</div>
+
+	</div>
+
 <?php } else if ( isset($_GET['audit']) ) {
 
 	// Get the Audit
@@ -174,21 +174,29 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 
 	foreach ( $conditions as $key => $condition ) {
 
-		if ( isset($_GET[$condition['filter']['name']]) ) {
+		if ( isset($condition['filter']['name']) && isset($_GET[$condition['filter']['name']]) ) {
 			$current_filters .= '&' . $condition['filter']['name'] . '=' . $_GET[$condition['filter']['name']];
 		}
 	}
 
 	foreach ( $attributes as $key => $attribute ) {
 
-		if ( isset($_GET[$attribute['filter']['name']]) ) {
+		if ( isset($attribute['filter']['name']) && isset($_GET[$attribute['filter']['name']]) ) {
 			$current_filters .= '&' . $attribute['filter']['name'] . '=' . $_GET[$attribute['filter']['name']];
 		}
 	}
 
-	?>
+	$post_type_labels = array();
 
-	<h1><?php _e('Single Audit', 'msa'); ?>
+	foreach( $audit['args']['post_types'] as $post_type ) {
+
+		$labels = get_post_type_labels(get_post_type_object($post_type));
+
+		$post_type_labels[] = $labels->name;
+
+	} ?>
+
+	<h1><?php _e('Audit Details', 'msa'); ?>
 		<a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits'; ?>" class="page-title-action"><?php _e('All Audits', 'msa'); ?></a>
 	</h1>
 
@@ -215,6 +223,10 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 					<tr>
 						<td class="msa-header-audit-attribute"><?php _e('Post Date Range:', 'msa'); ?></td>
 						<td><?php echo date('m/d/Y', strtotime($form_fields['after-date'])) . ' - ' . date('m/d/Y', strtotime($form_fields['before-date'])); ?></td>
+					</tr>
+					<tr>
+						<td class="msa-header-audit-attribute"><?php _e('Contains:', 'msa'); ?></td>
+						<td><?php echo $audit['num_posts'] . ' ' . implode(', ', $post_type_labels); ?></td>
 					</tr>
 				</tbody>
 			</table>
@@ -268,88 +280,116 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 		$all_posts_table->display(); ?>
 	</form>
 
-<?php } else { ?>
+<?php } else {
+
+	$audit_model = new MSA_Audits_Model();
+
+    ?>
 
 	<h1><?php _e('All Audits', 'msa'); ?>
-		<a href="#" class="page-title-action msa-add-new-audit"><?php _e('Add New', 'msa'); ?></a>
+		<a href="#" class="page-title-action msa-add-new-audit" <?php if ( false !== ( $in_progress = get_transient('msa_running_audit') ) ) { ?> onclick="alert('<?php _e('Cannot create a new audit while another audit is in progress.'); ?>');" <?php } ?>><?php _e('Add New', 'msa'); ?></a>
 	</h1>
 
 	<div class="msa-create-audit-wrap">
-		<form method="post" class="msa-create-audit-form">
 
-			<table class="form-table">
-				<tbody>
+		<?php if ( false === ( $in_progress = get_transient('msa_running_audit') ) ) { ?>
 
-					<?php do_action('msa_all_audits_before_create_new_settings'); ?>
+			<form method="post" class="msa-create-audit-form">
 
-					<!-- Audit Name -->
+				<table class="form-table">
+					<tbody>
 
-					<tr>
-						<th scope="row"><label for="msa-audit-name"><?php _e("Audit Name", 'msa'); ?></label></th>
-						<td>
-							<input id="msa-audit-name" name="name" value="<?php _e('My Audit', 'msa'); ?>" />
-						</td>
-					</tr>
+						<?php do_action('msa_all_audits_before_create_new_settings'); ?>
 
-					<!-- After Date -->
+						<!-- Audit Name -->
 
-					<tr>
-						<th scope="row"><label for="msa-audit-after-date"><?php _e("After Date", 'msa'); ?></label></th>
-						<td>
-							<input id="msa-audit-after-date" name="after-date" class="msa-datepicker" value="<?php echo date("m/d/Y", strtotime("-1 years")); ?>" />
-							<p class="description"><?php _e('Perform the audit on posts published after this date.', 'msa'); ?></p>
-						</td>
-					</tr>
+						<tr>
+							<th scope="row"><label for="msa-audit-name"><?php _e("Audit Name", 'msa'); ?></label></th>
+							<td>
+								<input id="msa-audit-name" name="name" value="<?php _e('My Audit', 'msa'); ?>" />
+							</td>
+						</tr>
 
-					<!-- Before Date -->
+						<!-- Post Range -->
 
-					<tr>
-						<th scope="row"><label for="msa-audit-before-date"><?php _e("Before Date", 'msa'); ?></label></th>
-						<td>
-							<input id="msa-audit-before-date" name="before-date" class="msa-datepicker" value="<?php echo date("m/d/Y", strtotime("today")); ?>"/>
-							<p class="description"><?php _e('Perform the audit on posts published before this date.', 'msa'); ?></p>
-						</td>
-					</tr>
+						<tr>
+							<th scope="row"><label for="msa-audit-date-range"><?php _e("Post Date Range", 'msa'); ?></label></th>
+							<td>
+								<input id="msa-audit-date-range" name="date-range" class="msa-datepicker" data-start-date="<?php echo date("m/d/Y", strtotime("-1 years")); ?>" data-end-date="<?php echo date("m/d/Y", strtotime("today")); ?>"/>
+								<p class="description"><?php _e('Perform the audit on posts published between these dates.', 'msa'); ?></p>
+							</td>
+						</tr>
 
-					<!-- Post Types -->
+						<!-- Before Date -->
 
-					<tr>
-						<th scope="row"><label for="msa-audit-post-types"><?php _e("Post Types", 'msa'); ?></label></th>
-						<td>
-							<select id="msa-audit-post-types" name="post-types[]" multiple>
-								<?php foreach( get_post_types() as $post_type) { ?>
-									<option value="<?php echo $post_type; ?>" <?php selected($post_type, 'post', true); ?>><?php echo $post_type; ?></option>
-								<?php } ?>
-							</select>
-							<p class="description"><?php _e('Perform the audit on posts of these post types.', 'msa'); ?></p>
-						</td>
-					</tr>
+	<!--
+						<tr>
+							<th scope="row"><label for="msa-audit-before-date"><?php _e("Before Date", 'msa'); ?></label></th>
+							<td>
+								<input id="msa-audit-before-date" name="before-date" class="msa-datepicker" value="<?php echo date("m/d/Y", strtotime("today")); ?>"/>
+								<p class="description"><?php _e('Perform the audit on posts published before this date.', 'msa'); ?></p>
+							</td>
+						</tr>
+	-->
 
-					<!-- Maximum Posts -->
+						<!-- Post Types -->
 
-					<tr>
-						<th scope="row"><label for="msa-audit-max-posts"><?php _e("Maximum Posts", 'msa'); ?></label></th>
-						<td>
-							<select id="msa-audit-max-posts" name="max-posts">
-								<?php for ($i = 50; $i <= 2000; $i+= 50) { ?>
-									<option value="<?php echo $i; ?>" <?php selected($i, 50, true); ?>><?php _e($i, 'msa'); ?></option>
-								<?php } ?>
-							</select>
-							<p class="description"><?php _e('The maximum number of posts that will be audited.', 'msa'); ?></p>
-						</td>
-					</tr>
+						<tr>
+							<th scope="row"><label for="msa-audit-post-types"><?php _e("Post Types", 'msa'); ?></label></th>
+							<td>
+								<select id="msa-audit-post-types" name="post-types[]" multiple>
+									<?php foreach( get_post_types() as $post_type) { ?>
+										<option value="<?php echo $post_type; ?>" <?php selected($post_type, 'post', true); ?>><?php echo $post_type; ?></option>
+									<?php } ?>
+								</select>
+								<p class="description"><?php _e('Perform the audit on posts of these post types.', 'msa'); ?></p>
+							</td>
+						</tr>
 
-					<?php do_action('msa_all_audits_after_create_new_settings'); ?>
+						<!-- Maximum Posts -->
 
-				</tbody>
-			</table>
+						<tr>
+							<th scope="row"><label for="msa-audit-max-posts"><?php _e("Maximum Posts", 'msa'); ?></label></th>
+							<td>
+								<select id="msa-audit-max-posts" name="max-posts">
+									<option value="-1" selected="selected"><?php _e('All Posts in Date Range', 'msa'); ?></option>
+									<?php for ($i = 50; $i <= 3000; $i+= 50) { ?>
+										<option value="<?php echo $i; ?>"><?php _e($i, 'msa'); ?></option>
+									<?php } ?>
+								</select>
+								<p class="description"><?php _e('The maximum number of posts that will be audited.', 'msa'); ?></p>
+							</td>
+						</tr>
 
-			<?php submit_button(__('Create Audit', 'msa')); ?>
+						<?php do_action('msa_all_audits_after_create_new_settings'); ?>
 
-			<?php wp_nonce_field('msa-add-audit'); ?>
+					</tbody>
+				</table>
 
-		</form>
+				<?php submit_button(__('Create Audit', 'msa')); ?>
+
+				<?php wp_nonce_field('msa-add-audit'); ?>
+
+			</form>
+
+		<?php } ?>
 	</div>
+
+	<ul class="subsubsub">
+
+		<li class="all">
+			<a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits'; ?>" class="<?php echo !isset($_GET['audit_status']) || ( isset($_GET['audit_status']) && $_GET['audit_status'] == 'all' ) ? 'current' : ''; ?>"><?php _e('All', 'msa'); ?> <span class="count">(<?php echo count($audit_model->get_data()); ?>)</span></a> |
+		</li>
+
+		<li class="completed">
+			<a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits&audit_status=completed'; ?>" class="<?php echo isset($_GET['audit_status']) && $_GET['audit_status'] == 'completed' ? 'current' : ''; ?>"><?php _e('Completed', 'msa'); ?> <span class="count">(<?php echo count($audit_model->get_data(array('status' => 'completed'))); ?>)</span></a> |
+		</li>
+
+		<li class="in-progress">
+			<a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits&audit_status=in-progress'; ?>" class="<?php echo isset($_GET['audit_status']) && $_GET['audit_status'] == 'in-progress' ? 'current' : ''; ?>"><?php _e('In Progress', 'msa'); ?> <span class="count">(<?php echo count($audit_model->get_data(array('status' => 'in-progress'))); ?>)</span></a>
+		</li>
+
+	</ul>
 
 	<form method="post">
 		<input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>" />

@@ -42,6 +42,10 @@ function msa_settings_tab_settings_save($data) {
 		$settings = array();
 	}
 
+	//$settings['use_slow_conditions'] = isset($data['msa-use-slow-conditions']) && $data['msa-use-slow-conditions'] ? true : false;
+
+	$settings['notification_emails'] = isset($data['msa-notification-emails']) ? sanitize_text_field($data['msa-notification-emails']) : '';
+
 	// Save the data
 
 	update_option('msa_settings', $settings);
@@ -64,15 +68,25 @@ function msa_settings_tab_settings_content($content) {
 		$settings = array();
 	}
 
-	$output = '<h3 class="msa-settings-heading">' . __('User Access', 'msa') . '</h3>';
+/*
+	<tr>
+		<th scope="row"><label for="msa-use-slow-conditions">' . __('Use Slow Conditions', 'msa') . '</label></th>
+		<td>
+			<input type="checkbox" class="msa-use-slow-conditions" id="msa-use-slow-conditions" name="msa-use-slow-conditions" ' . ( isset($settings['use_slow_conditions']) && $settings['use_slow_conditions'] ? 'checked="checked"' : '' ) . '>
+			<p class="description">' . __('Do you want to use conditions that take a long time to compute, like checking for broken links and broken images?') . '</p>
+		</td>
+	</tr>
+*/
+
+	$output = '<h3 class="msa-settings-heading">' . __('Settings', 'msa') . '</h3>';
 	$output .= '<table class="form-table">
 		<tbody>
 
 			<tr>
-				<th scope="row"><label for="msa-user-access">' . __('User Access', 'msa') . '</label></th>
+				<th scope="row"><label for="msa-notification-emails">' . __('Notification Emails', 'msa') . '</label></th>
 				<td>
-					<input type="text" class="regular-text msa-user-access" id="msa-user-access" name="msa-user-access" value="' . (isset($settings['user_access']) ? $settings['user_access'] : '') . '">
-					<p class="description">' . __('What Users have access to the Audit Data.') . '</p>
+					<input type="text" class="regular-text msa-notification-emails" id="msa-notification-emails" name="msa-notification-emails" value="' . ( isset($settings['notification_emails']) ? $settings['notification_emails'] : get_option('admin_email') ) . '">
+					<p class="description">' . __('Add any email address you want us to notify for audit events, like the completion of an audit.  Separate each email with a comma.') . '</p>
 				</td>
 			</tr>
 
@@ -107,6 +121,15 @@ function msa_create_initial_settings_tabs() {
 		'id'		=> 'extensions',
 		'current'	=> false,
 		'tab'		=> __('Extensions', 'msa'),
+		'content'	=> '',
+	));
+
+	// System Info
+
+	msa_register_settings_tabs('system_info', array(
+		'id'		=> 'system_info',
+		'current'	=> false,
+		'tab'		=> __('System Info', 'msa'),
 		'content'	=> '',
 	));
 

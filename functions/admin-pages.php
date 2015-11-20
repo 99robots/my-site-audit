@@ -44,7 +44,7 @@ function msa_menu() {
     	'edit_posts',
     	'msa-dashboard',
     	'msa_dashboard',
-    	MY_SITE_AUDIT_PLUGIN_URL . 'images/logo.png" style="width:20px;padding-top: 6px;'
+    	'dashicons-analytics'
     );
 
     // Dashboard
@@ -146,16 +146,24 @@ function msa_all_audits_scripts() {
 
 	// Style
 
-	wp_enqueue_style('msa-all-audits-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/all-audits.css');
-	wp_enqueue_style('msa-common-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/css/common.css');
+	wp_enqueue_style('msa-all-audits-css', 					MY_SITE_AUDIT_PLUGIN_URL . '/css/all-audits.css');
+	wp_enqueue_style('msa-common-css', 						MY_SITE_AUDIT_PLUGIN_URL . '/css/common.css');
 
-	wp_enqueue_style('msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css');
-	wp_enqueue_style('msa-jquery-ui-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/includes/jquery-datepicker/jquery-ui.min.css');
-	wp_enqueue_style('msa-jquery-ui-theme-css', 	MY_SITE_AUDIT_PLUGIN_URL . '/includes/jquery-datepicker/jquery-ui.theme.min.css');
+	wp_enqueue_style('msa-fontawesome-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css');
+	wp_enqueue_style('msa-jquery-ui-css', 					MY_SITE_AUDIT_PLUGIN_URL . '/includes/jquery-datepicker/jquery-ui.min.css');
+	wp_enqueue_style('msa-jquery-ui-theme-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/includes/jquery-datepicker/jquery-ui.theme.min.css');
+	wp_enqueue_style('msa-jquery-daterange-picker-css', 	MY_SITE_AUDIT_PLUGIN_URL . '/includes/jquery-daterange-picker/jquery.comiseo.daterangepicker.css');
 	wp_enqueue_style('media-views');
 
 
 	// Scripts
+
+	wp_enqueue_script('jquery');
+	wp_enqueue_script('jquery-ui-core');
+	wp_enqueue_script('jquery-ui-datepicker');
+
+	wp_enqueue_script('msa-jquery-daterange-picker-js', 	MY_SITE_AUDIT_PLUGIN_URL . '/includes/jquery-daterange-picker/jquery.comiseo.daterangepicker.js', array('jquery', 'jquery-ui-core', 'jquery-ui-datepicker', 'jquery-ui-button', 'jquery-ui-tabs', 'jquery-ui-menu', 'jquery-ui-widget', 'msa-moment-js'));
+	wp_enqueue_script('msa-moment-js', 						MY_SITE_AUDIT_PLUGIN_URL . '/includes/moment/moment.min.js');
 
 	wp_enqueue_script('msa-all-audits-js', 			MY_SITE_AUDIT_PLUGIN_URL . '/js/all-audits.js');
 	wp_localize_script('msa-all-audits-js', 'msa_all_audits_data', array(
@@ -172,13 +180,14 @@ function msa_all_audits_scripts() {
 
 	wp_enqueue_script('msa-single-audit-js', 			MY_SITE_AUDIT_PLUGIN_URL . '/js/single-audit.js');
 	wp_localize_script('msa-single-audit-js', 'msa_single_audit_data', array(
-		'audit_page'		=> get_admin_url() . 'admin.php?page=msa-all-audits',
-		'show_columns'		=> $show_columns,
+		'audit_page'			=> get_admin_url() . 'admin.php?page=msa-all-audits',
+		'show_columns'			=> $show_columns,
+		'attribute_title'		=> __('Attributes', 'msa'),
+		'conditions'			=> msa_get_conditions(),
+		'condition_categories'	=> msa_get_condition_categories(),
 	));
 
-	wp_enqueue_script('jquery');
-	wp_enqueue_script('jquery-ui-core');
-	wp_enqueue_script('jquery-ui-datepicker');
+	wp_enqueue_script('msa-single-post-js', 			MY_SITE_AUDIT_PLUGIN_URL . '/js/single-post.js');
 
 }
 
@@ -193,6 +202,7 @@ function msa_settings_scripts() {
 
 	// Style
 
+	wp_enqueue_style('msa-common-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/css/common.css');
 	wp_enqueue_style('msa-settings-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/settings.css');
 
 	wp_enqueue_style('msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css');
@@ -200,6 +210,19 @@ function msa_settings_scripts() {
 	// Script
 
 	wp_enqueue_script('msa-settings-js', 			MY_SITE_AUDIT_PLUGIN_URL . '/js/settings.js');
+	wp_enqueue_script('msa-licensing-js', 			MY_SITE_AUDIT_PLUGIN_URL . '/js/licensing.js', array('jquery'));
+    wp_localize_script('msa-licensing-js', 			'msa_licensing_data', array(
+	    'site_url'				=> get_site_url(),
+		'activate_text'			=> __('Activate', 'msa'),
+		'deactivate_text'		=> __('Deactivate', 'msa'),
+		'no_license_key'		=> __('Please add or activate your License Key to get automatic updates.  Without a valid license key you will not receive regular updates. You can find your license key', 'msa') . ' <a href="https://mysiteaudit.com/dashboard" target="_blank">here</a>',
+		'expired'				=> __('EXPIRED LICENSE KEY: This license key has expired.  Please renew your license key', 'msa') . ' <a href="https://mysiteaudit.com/dashboard" target="_blank">here</a>',
+		'inactive'				=> __('INACTIVE LICENSE KEY: The license key is not active for this site.  Please activate it by clicking the Activate button to the right.', 'msa'),
+		'activation_error'		=> __('INVALID LICENSE KEY: The license key is not valid please try again. You can find your license key', 'msa') . ' <a href="https://mysiteaudit.com/dashboard" target="_blank">here</a>.',
+		'activation_valid'		=> __('SUCCESS: Your license key is valid.', 'msa'),
+		'deactivation_valid'	=> __('SUCCESS: This site has been deactivated.', 'msa'),
+		'deactivation_error'	=> __('DEACTIVATION FAILED: This site could not be deactivated.', 'msa'),
+	));
 
 }
 
@@ -214,9 +237,9 @@ function msa_extensions_scripts() {
 
 	// Style
 
-	wp_enqueue_style('msa-extensions-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/extensions.css');
+	wp_enqueue_style('msa-extensions-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/css/extensions.css');
 
-	wp_enqueue_style('msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css');
+	wp_enqueue_style('msa-fontawesome-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css');
 
 }
 
@@ -260,10 +283,32 @@ function msa_all_audits_load() {
 
 		// Screen Options
 
+		$option = 'per_page';
+		$args = array(
+		     'label' 	=> 'Posts',
+		     'default' 	=> 50,
+		     'option' 	=> 'posts_per_page'
+		);
+		add_screen_option( $option, $args );
+
 		add_filter( 'manage_my-site-audit_page_msa-all-audits_columns', 'msa_all_audits_add_column' );
 
 	}
 }
+
+/**
+ * Set the per page value
+ *
+ * @access public
+ * @param mixed $status
+ * @param mixed $option
+ * @param mixed $value
+ * @return void
+ */
+function msa_set_per_page_value($status, $option, $value) {
+	return $value;
+}
+add_filter('set-screen-option', 'msa_set_per_page_value', 10, 3);
 
 /**
  * Add all the screen option columns
@@ -274,12 +319,19 @@ function msa_all_audits_load() {
  */
 function msa_all_audits_add_column( $columns ) {
 
-	// Condition
+	// Condition Categories
 
-	$conditions = msa_get_conditions();
+	$condition_categories = msa_get_condition_categories();
 
-	foreach ( $conditions as $key => $condition ) {
-		$columns[$key] = $condition['name'];
+	foreach ( $condition_categories as $key => $condition_category ) {
+
+		// Conditions
+
+		$conditions = msa_get_conditions_from_category($key);
+
+		foreach ( $conditions as $key => $condition ) {
+			$columns[$key] = $condition['name'];
+		}
 	}
 
 	// Attributes
@@ -287,7 +339,10 @@ function msa_all_audits_add_column( $columns ) {
 	$attributes = msa_get_attributes();
 
 	foreach ( $attributes as $slug => $attribute ) {
-		$columns[$slug] = $attribute['name'];
+
+		if ( isset($attribute['name']) ) {
+			$columns[$slug] = $attribute['name'];
+		}
 	}
 
 	return $columns;

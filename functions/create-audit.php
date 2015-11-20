@@ -28,85 +28,78 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * Create an Audit
+ * Run an audit
  *
  * @access public
- * @param mixed $audit
  * @return void
  */
-function msa_async_create_audit($audit_data) {
+function msa_run_audit() {
 
-	// Create our Audit and Audit Post Model objects
+	// Create an audit if we have one in the queue
 
-	$audit_model = new MSA_Audits_Model();
-	$audit_posts_model = new MSA_Audit_Posts_Model();
+	$next_audit = msa_get_next_audit_to_run();
 
-	// Get all the data from the user
-
-	$audit = array();
-
-	$audit['name'] = $audit_data['name'];
-	$audit['score'] = 0;
-	$audit['date'] = date('Y-m-d H:i:s');
-	$audit['user'] = get_current_user_id();
-	$audit['args']['conditions'] = json_encode(msa_get_conditions());
-
-	$audit['args']['before_date'] = $audit_data['after-date'];
-	$audit['args']['before_date'] = $audit_data['before-date'];
-	$audit['args']['post_types'] = $audit_data['post-types'];
-	$audit['args']['max_posts'] = $audit_data['max-posts'];
-
-	// Get all the posts that we are going to perform an audit on
-
-	$args = array(
-		'public' 			=> true,
-		'date_query' 		=> array(
-			array(
-				'after'     => $audit_data['after-date'],
-				'before'    => $audit_data['before-date'],
-				'inclusive' => true,
-			),
-		),
-		'post_type'			=> $audit_data['post-types'],
-		'posts_per_page'	=> $audit_data['max-posts'],
-	);
-
-	$posts = get_posts($args);
-
-	$audit['num_posts'] = count($posts);
-
-	// Only perform the audit if there are posts to perform the audit on
-
-	if ( count($posts) > 0 ) {
-
-		$audit_id = $audit_model->add_data($audit);
-
-		if ( $audit_id ) {
-
-			$audit_score = 0;
-
-			foreach ( $posts as $post ) {
-
-				$data = msa_get_post_audit_data($post);
-
-				// Add a new record in the audit posts table
-
-				$audit_posts_model->add_data(array(
-					'audit_id' 	=> $audit_id,
-					'post'		=> $post,
-					'data'		=> $data,
-				));
-
-				$audit_score += $score['score'];
-			}
-
-			$audit_score = round($audit_score / count($posts), 10);
-			$audit['score'] = round($audit_score, 10);
-			$audit_model->update_data($audit_id, $audit);
-		}
+	if ( isset( $next_audit ) && is_array( $next_audit ) ) {
+		wp_schedule_single_event(time(), 'msa_run_audit_background', array($next_audit));
+		set_transient( 'msa_schedule_audit', true );
+		msa_clear_audit_queue();
 	}
+
 }
-//add_action( 'msa_async_create_audit_event', 'msa_async_create_audit', 10, 1 );
+add_action('init', 'msa_run_audit');
+
+/**
+ * Set the current create audit data
+ *
+ * @access public
+ * @return void
+ */
+function msa_add_audit_to_queue($data) {
+
+	// Check if we are already performing an audit
+
+	if ( false !== ( $current_audit = get_transient('msa_run_audit') ) || false !== ( $can_run = get_transient('msa_running_audit') ) ) {
+		//error_log('Cannot start new audit because an audit is already in progress');
+		return null;
+	}
+
+	// Add this audit to the queue
+
+	set_transient( 'msa_run_audit', $data );
+
+	return true;
+}
+
+/**
+ * Get the next audit to run
+ *
+ * @access public
+ * @return void
+ */
+function msa_clear_audit_queue() {
+
+	$result = delete_transient('msa_run_audit');
+
+	return $result;
+
+}
+
+/**
+ * Get the next audit to run
+ *
+ * @access public
+ * @return void
+ */
+function msa_get_next_audit_to_run() {
+
+	// Check if we are already performing an audit
+
+	if ( false !== ( $current_audit = get_transient('msa_run_audit') ) && false === ( $can_run = get_transient('msa_running_audit') ) ) {
+		return $current_audit;
+	}
+
+	return null;
+}
 
 /**
  * Create a new post for an audit
@@ -207,9 +200,12 @@ function msa_get_post_ids() {
 	$audit['score'] = 0;
 	$audit['date'] = date('Y-m-d H:i:s');
 	$audit['user'] = get_current_user_id();
-	$audit['args']['form_fields'] = json_encode($data);
 	$audit['args']['post_types'] = $data['post-types'];
 	$audit['args']['conditions'] = json_encode(msa_get_conditions());
+	$data['after-date'] = $data['after-date'] != '' ? strip_tags($data['after-date']) : date("m/d/Y", strtotime("-1 years"));
+	$data['before-date'] = $data['before-date'] != '' ? strip_tags($data['before-date']) : date("m/d/Y", strtotime("today"));
+
+	$audit['args']['form_fields'] = json_encode($data);
 
 	// Get all the posts that we are going to perform an audit on
 
@@ -217,8 +213,8 @@ function msa_get_post_ids() {
 		'public' 			=> true,
 		'date_query' 		=> array(
 			array(
-				'after'     => strip_tags($data['after-date']),
-				'before'    => strip_tags($data['before-date']),
+				'after'     => $data['after-date'],
+				'before'    => $data['before-date'],
 				'inclusive' => true,
 			),
 		),

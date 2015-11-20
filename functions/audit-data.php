@@ -51,7 +51,7 @@ function msa_calculate_score($post, $data) {
 			if ( $condition['min'] != 0 ) {
 				$value = min( $data[$key] / $condition['min'], 1 );
 			} else {
-				$value = 0;
+				$value = 1;
 			}
 		}
 
@@ -95,7 +95,7 @@ function msa_calculate_score($post, $data) {
 		$score_data[$key] = msa_get_condition_catergory_score($key, $score_data);
 	}
 
-	$score = round($score / $weight, 2);
+	$score = $weight != 0 ? round( $score / $weight , 2) : 0;
 
 	return array(
 		'score'	=> $score,
@@ -114,7 +114,7 @@ function msa_get_post_audit_data($post) {
 
 	// Close the session to prevent lock-ups.
 
-	session_write_close();
+	//session_write_close();
 
 	$data = array();
 
@@ -283,6 +283,18 @@ function msa_get_post_audit_data($post) {
  */
 function msa_is_link_broken($url) {
 
+	return false;
+
+	// Check if user wants to perform long task
+
+	if ( false === ( $settings = get_option('msa_settings') ) ) {
+		$settings = array();
+	}
+
+	if ( !isset($settings['use_slow_conditions']) || ( isset($settings['use_slow_conditions']) && !$settings['use_slow_conditions'] ) ) {
+		return false;
+	}
+
 	// Check if this is hash link
 
 	if ( substr($url, 0, 1) == '#' ) {
@@ -302,9 +314,9 @@ function msa_is_link_broken($url) {
 		    CURLOPT_FOLLOWLOCATION => true,
 		    CURLOPT_ENCODING       => "",
 		    CURLOPT_AUTOREFERER    => true,
-		    CURLOPT_CONNECTTIMEOUT => 120,
-		    CURLOPT_TIMEOUT        => 120,
-		    CURLOPT_MAXREDIRS      => 10,
+		    CURLOPT_CONNECTTIMEOUT => 3,
+		    CURLOPT_TIMEOUT        => 3,
+		    CURLOPT_MAXREDIRS      => 1,
 		);
 
 		curl_setopt_array( $ch, $options );
