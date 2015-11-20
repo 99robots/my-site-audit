@@ -8,7 +8,7 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-The ultimate way to audit your site's content to drive more traffic to your site and enhance your user engagement.
+My Site Audit is the ultimate way to audit your site's content, drive more traffic to your site, and enhance your user engagement.
 
 == Description ==
 
