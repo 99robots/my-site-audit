@@ -14,7 +14,7 @@ My Site Audit is the ultimate way to audit your site's content, drive more traff
 
 == Installation ==
 
-This section describes how to install the plugin and get it working.
+This section describes how to install the plugin and get it working. You can download the zip file and install it into your plugins directory.
 
 e.g.
 
