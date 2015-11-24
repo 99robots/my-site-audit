@@ -73,18 +73,6 @@ function msa_admin_notices() {
 
 	}
 
-	// Memory Limit
-
-	if ( defined('WP_MEMORY_LIMIT') && (int) WP_MEMORY_LIMIT < 96 ) {
-
-		?>
-	    <div class="error">
-	        <p><?php _e( 'My Site Audit requires a minimum memory limit of 96 MB. Please ', 'msa' ); ?> <a href="http://codex.wordpress.org/Editing_wp-config.php#Increasing_memory_allocated_to_PHP"><?php _e('increase your memory limit.', 'msa'); ?></a></p>
-	    </div>
-	    <?php
-
-	}
-
 	// WP Cron
 
 	if ( defined('DISABLE_WP_CRON') && DISABLE_WP_CRON ) {
@@ -95,6 +83,6 @@ function msa_admin_notices() {
 	    <?php
 	}
 
-
+	do_action('msa_show_admin_notices');
 }
 add_action( 'admin_notices', 'msa_admin_notices' );

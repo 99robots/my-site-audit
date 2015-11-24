@@ -97,6 +97,7 @@ function msa_display_condition_category_data($category, $post, $data, $score) {
 								<div class="msa-modal-container">
 									<div class="msa-modal-title">
 										<h3>' . $condition['name'] . '</h3>
+										<a class="msa-modal-close">' . __('Close', 'msa') . '</a>
 									</div>
 									<div class="msa-modal-content">' . $condition['description'] . '</div>' .
 									$learn_more .
@@ -108,9 +109,9 @@ function msa_display_condition_category_data($category, $post, $data, $score) {
 					$output .= '<tr class="msa-post-status msa-post-status-' . msa_get_score_status($post_score[$key]) . '">
 						<td class="msa-condition-score">' . $score . '</td>
 						<td class="msa-condition-weight">' . $weight . '</td>
-						<td class="msa-condition-name">' . $name . $more_info . '</td>
+						<td class="msa-condition-name">' . $name . '</td>
 						<td class="msa-condition-goal">' . $goal . '</td>
-						<td class="msa-condition-value">' . $value . '</td>
+						<td class="msa-condition-value">' . $value . $more_info . '</td>
 					</tr>';
 
 					$overall_score += $post_score[$key] * $condition['weight'];

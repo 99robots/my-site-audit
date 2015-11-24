@@ -33,7 +33,7 @@ require_once('header.php');
 $panels = msa_get_dashboard_panels(); ?>
 
 <h1><?php _e('Dashboard', 'msa'); ?>
-	<a href="<?php echo get_site_url() . ''; ?>" class="page-title-action"><?php _e('Getting Started', 'msa'); ?></a>
+	<a href="<?php echo get_admin_url() . 'index.php?page=msa-getting-started'; ?>" class="page-title-action"><?php _e('Getting Started', 'msa'); ?></a>
 </h1>
 
 <div id="dashboard-widgets" class="metabox-holder">

@@ -50,4 +50,8 @@ jQuery(document).ready(function($){
 
 	});
 
+	$('.msa-modal-close').click(function(){
+		$(this).parent().parent().parent().hide();
+	});
+
 });

@@ -141,7 +141,7 @@ function msa_save_more_audits_extension($audits) {
 
 		$audits[] = array(
 			'extension'			=> true,
-			'extension-link' 	=> MY_SITE_AUDIT_EXT_URL,
+			'extension-link' 	=> 'https://mysiteaudit.com/?post_type=download&p=74&utm_source=plugin&utm_campaign=extension',
 			'score'				=> 1,
 			'name'				=> __('Want to Save more Audits? Get the Extension!', 'msa'),
 			'date'				=> date('Y-m-d H:i:s'),

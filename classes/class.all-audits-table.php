@@ -139,6 +139,7 @@ class MSA_All_Audits_Table extends WP_List_Table {
 
 		$columns['score']             = __('Score', 'msa');
 		$columns['name']              = __('Name', 'msa');
+		$columns['status']            = __('Status', 'msa');
 		$columns['date']              = __('Created On', 'msa');
 		$columns['user']              = __('Created By', 'msa');
 		$columns['num_posts']         = __('Number of Posts', 'msa');
@@ -211,6 +212,10 @@ class MSA_All_Audits_Table extends WP_List_Table {
 					$output = __('<span class="msa-spinner" style="padding-left:0;"><img src="' . get_site_url() . '/wp-admin/images/spinner-2x.gif"/></span>', 'msa');
 				}
 
+			break;
+
+			case 'Status':
+				$output = ucfirst(str_replace('-', ' ', $item[$column_name])) ;
 			break;
 
 			case 'date':
@@ -378,7 +383,7 @@ class MSA_All_Audits_Table extends WP_List_Table {
 	 * @return array List of CSS classes for the table tag.
 	 */
 	protected function get_table_classes() {
-		return array( 'widefat', 'striped', $this->_args['plural'] );
+		return array( 'widefat', 'msa-all-audits', 'striped', $this->_args['plural'] );
 	}
 }
 

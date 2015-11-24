@@ -122,6 +122,8 @@ function msa_welcome_getting_started_page() {
 
 		<?php msa_welcome_page_tabs(); ?>
 
+		<h3><?php _e('Overview'); ?></h3>
+
 		<div class="feature-section">
 
 			<div class="feature-section-media">
@@ -130,13 +132,13 @@ function msa_welcome_getting_started_page() {
 
 			<div class="feature-section-content">
 
-				<h3><?php _e('Overview'); ?></h3>
-
 				<p><?php _e('We are very excited to announce the release of My Site Audit.  This plugin was built to make auditing your content extremely easy and fast.  Within minutes you will be able to create an audit of all the posts on your site.'); ?></p>
 
 			</div>
 
 		</div>
+
+		<h3><?php _e('Quick Setup'); ?></h3>
 
 		<div class="feature-section">
 
@@ -145,8 +147,6 @@ function msa_welcome_getting_started_page() {
 			</div>
 
 			<div class="feature-section-content">
-
-				<h3><?php _e('Quick Setup'); ?></h3>
 
 				<p><?php _e('Creating an audit is as simple as 1..2..3'); ?></p>
 
@@ -166,6 +166,8 @@ function msa_welcome_getting_started_page() {
 
 		</div>
 
+		<h3><?php _e('Sort and Filter'); ?></h3>
+
 		<div class="feature-section">
 
 			<div class="feature-section-media">
@@ -173,8 +175,6 @@ function msa_welcome_getting_started_page() {
 			</div>
 
 			<div class="feature-section-content">
-
-				<h3><?php _e('Sort and Filter'); ?></h3>
 
 				<p><?php _e('My Site Audit give you the power to sort and filter for posts based on many different criteria.'); ?></p>
 
@@ -190,6 +190,8 @@ function msa_welcome_getting_started_page() {
 
 		</div>
 
+		<h3><?php _e('Improve your Content'); ?></h3>
+
 		<div class="feature-section">
 
 			<div class="feature-section-media">
@@ -197,8 +199,6 @@ function msa_welcome_getting_started_page() {
 			</div>
 
 			<div class="feature-section-content">
-
-				<h3><?php _e('Improve your Content'); ?></h3>
 
 				<p><?php _e('My Site Audit was built to help you improve your content and therefore drive more traffic to your site.'); ?></p>
 
@@ -371,6 +371,31 @@ function msa_hide_welcome_dashboard_pages() {
 			right: 0;
 			width: 100px;
 			font-size: 100px;
+		}
+
+		.about-wrap .feature-section-content,
+		.about-wrap .feature-section-media {
+			width: 50%;
+			box-sizing: border-box;
+		}
+
+		.about-wrap .feature-section {
+			margin-top: 20px;
+		}
+
+		.about-wrap .feature-section-content {
+			float: left;
+			padding-right: 50px;
+		}
+
+		.about-wrap .feature-section-media {
+			float: right;
+			text-align: right;
+			margin-bottom: 20px;
+		}
+
+		.about-wrap .feature-section-media img {
+			border: 1px solid #ddd;
 		}
 	</style>
 	<?php

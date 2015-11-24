@@ -211,7 +211,13 @@ class MSA_All_Posts_Table extends WP_List_Table {
 		$attributes = msa_get_attributes();
 
 		foreach ( $attributes as $key => $attribute ) {
+
+			if ( isset( $attribute['sort'] ) && !$attribute['sort'] ) {
+				continue;
+			}
+
 			$sortable_columns[$key] = array($key, false);
+
 		}
 
 		return $sortable_columns;
@@ -442,7 +448,7 @@ class MSA_All_Posts_Table extends WP_List_Table {
 							$value = '';
 						}
 
-						$attribute['filter']['options'] = apply_filters('msa_filter_attribute_' . $key, $attribute['filter']['options'])?>
+						$attribute['filter']['options'] = apply_filters('msa_filter_attribute_' . $key, $attribute['filter']['options'], $key)?>
 
 						<div class="msa-filter-container msa-filter-attributes-container filter-<?php echo $key; ?>">
 							<!-- <label class="msa-filter-label"><?php echo $attribute['filter']['label']; ?></label> -->

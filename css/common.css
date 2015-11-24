@@ -63,6 +63,20 @@
 	border-bottom: 1px solid #ddd;
 }
 
+.msa-modal-title h3 {
+	display: inline-block;
+}
+
+.msa-modal-close {
+	float: right;
+	padding: 17px 0px;
+	text-decoration: underline;
+}
+
+.msa-modal-close:hover {
+	cursor: pointer;
+}
+
 .msa-modal-content {
 	padding: 20px;
 }

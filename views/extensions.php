@@ -29,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 require_once('header.php');
 
-$extensions = msa_get_extensions();
+$extensions = array(); // msa_get_extensions();
 
 // Get all the remote extensions
 
@@ -52,6 +52,9 @@ $extensions = array_merge($remote_extensions, $extensions); ?>
 			<div class="postbox">
 				<h3 class="hndle" style="cursor: auto;"><span><?php echo $extension['title']; ?></span></h3>
 				<div class="inside">
+					<img src="<?php echo MY_SITE_AUDIT_PLUGIN_URL . 'images/' . (isset($extension['image']) && $extension['image'] != '' ? $extension['image'] : 'coming-soon.png'); ?>"/>
+					<a href="<?php echo (isset($extension['link']) && $extension['link'] != '' ? $extension['link'] : MY_SITE_AUDIT_EXT_URL ); ?>" target="_blank"><?php _e('Learn More'); ?></a>
+					<!-- <p><?php echo $extension['description']; ?></p> -->
 					<?php echo apply_filters('msa_extension_content_' . $key, $extension['content']); ?>
 				</div>
 			</div>

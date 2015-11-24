@@ -40,7 +40,7 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 	$data = $audit_post['data']['values'];
 	$score = $audit_post['data']['score']; ?>
 
-	<h1><?php _e('Post Audit Detials', 'msa'); ?>
+	<h1><?php _e('Post Audit Details', 'msa'); ?>
 		<a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $_GET['audit']; ?>" class="page-title-action"><?php _e('All Posts', 'msa'); ?></a>
 	</h1>
 
@@ -353,7 +353,7 @@ if ( isset($_GET['post']) && isset($_GET['audit']) ) {
 							<td>
 								<select id="msa-audit-max-posts" name="max-posts">
 									<?php echo apply_filters('msa_create_audit_maximum_posts_select', ''); ?>
-									<?php for ($i = 50; $i <= 500; $i+= 50) { ?>
+									<?php for ($i = 50; $i <= apply_filters('msa_create_audit_maximum_posts', 250); $i+= 50) { ?>
 										<option value="<?php echo $i; ?>"><?php _e($i, 'msa'); ?></option>
 									<?php } ?>
 								</select>

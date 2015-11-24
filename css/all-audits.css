@@ -164,8 +164,16 @@
 	padding-right: 10px;
 }
 
+.msa-all-audits .manage-column.column-score {
+	width: 80px;
+}
+
 .manage-column.column-score {
 	width: 20%;
+}
+
+.status.column-status {
+	text-transform: capitalize;
 }
 
 .msa-filter-container {
@@ -441,14 +449,14 @@ th#links.manage-column.column-links {
 	width: 100px;
 }
 
-.msa-condition-name {
+.msa-condition-value {
 	position: relative;
 }
 
 .msa-condition-more-info {
 	position: absolute;
 	top: 0px;
-	right: 0px;
+	right: 2px;
 }
 
 /* Links */
