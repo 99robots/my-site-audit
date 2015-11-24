@@ -3,7 +3,7 @@
 Plugin Name: My Site Audit
 Plugin URI: https://mysiteaudit.com
 Description: The ultimate way to audit your site's content to drive more traffic to your site and enhance your user engagement.
-version: 1.0.0
+version: 1.0.1
 Author: 99 Robots
 Author URI: https://99robots.com
 License: GPL2
@@ -141,7 +141,7 @@ final class My_Site_Audit {
 		// Plugin version
 
 		if ( ! defined( 'MY_SITE_AUDIT_VERSION' ) ) {
-			define( 'MY_SITE_AUDIT_VERSION', '1.0.0' );
+			define( 'MY_SITE_AUDIT_VERSION', '1.0.1' );
 		}
 
 		// Plugin Folder Path
