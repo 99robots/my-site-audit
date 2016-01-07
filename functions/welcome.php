@@ -263,7 +263,7 @@ function msa_welcome_credits_page() {
 
 		<?php msa_welcome_page_tabs(); ?>
 
-		<p class="about-description"><?php _e( 'My Site Audit is created by the great people at 99 Robots.  We are looking for contributors all the time so please', 'msa' ); ?> <a href="https://99robots.com/contact/" target="_blank"><?php _e('Contact Us', 'msa'); ?></a> <?php _e( 'if you want to become a contributor.', 'msa' ); ?></p>
+		<p class="about-description"><?php _e( 'My Site Audit is created by the great people at 99 Robots.  We are looking for contributors all the time so please', 'msa' ); ?> <a href="https://mysiteaudit.com/contact/" target="_blank"><?php _e('Contact Us', 'msa'); ?></a> <?php _e( 'if you want to become a contributor.', 'msa' ); ?></p>
 
 		<?php echo msa_display_contributors(); ?>
 

@@ -258,7 +258,7 @@ class MSA_All_Audits_Table extends WP_List_Table {
 	 */
 	public function column_name($item) {
 
-		if ( $item['status'] == 'in-progress' ) {
+		if ( isset($item['status']) && $item['status'] == 'in-progress' ) {
 			return apply_filters('msa_all_audits_table_column_name_extension', $item['name']);
 		}
 

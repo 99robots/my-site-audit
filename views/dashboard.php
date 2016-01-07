@@ -58,7 +58,7 @@ $panels = msa_get_dashboard_panels(); ?>
 
 				<div class="postbox" id="<?php echo $key; ?>">
 					<div class="handlediv" title="Click to toggle"><br></div>
-					<h3 class="hndle ui-sortable-handle"><span><?php echo $panel['title']; ?></span></h3>
+					<h2 class="hndle ui-sortable-handle"><span><?php echo $panel['title']; ?></span></h2>
 					<div class="inside">
 						<?php echo apply_filters('msa_dashboard_panel_content_' . $key,  $panel['content']); ?>
 					</div>

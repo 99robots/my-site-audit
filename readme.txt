@@ -3,8 +3,8 @@ Contributors: 99robots, kjbenk, charliepatel
 Donate link: https://mysiteaudit.com
 Tags: content audit, content, audit, seo, site, site audit
 Requires at least: 4.0.0
-Tested up to: 4.3.1
-Stable tag: 1.0.1
+Tested up to: 4.4
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,11 @@ e.g.
 
 
 == Changelog ==
+
+= 1.0.2 = 2016-1-7
+* IMPROVED: Image parsing to determine the number of images per post
+* FIXED: Hiding and showing of condition columns on Single Audit page was not compatible with WordPress 4.4
+* FIXED: Dashboard Panel styling was not compatible with WordPress 4.4
 
 = 1.0.0 = 2015-11-24
 * Initial Release :)

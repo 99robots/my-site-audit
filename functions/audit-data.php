@@ -203,7 +203,8 @@ function msa_get_post_audit_data($post) {
 	$data['broken_images_data'] = array();
 	$data['image_count'] = substr_count($post->post_content, '<img');
 
-	preg_match_all('|<img(?:.*)/>|Ui', $post->post_content, $img_matches, PREG_SET_ORDER);
+	//preg_match_all('|<img(?:.*)/>|Ui', $post->post_content, $img_matches, PREG_SET_ORDER);
+	preg_match_all('/(<img[^>]+>)/i', $post->post_content, $img_matches, PREG_SET_ORDER);
 
 	foreach ( $img_matches as $match ) {
 
@@ -398,7 +399,8 @@ function msa_show_links( $data, $key ) {
  */
 function msa_show_images($content) {
 
-	preg_match_all('|<img(?:.*)/>|Ui', $content, $matches, PREG_SET_ORDER);
+	//preg_match_all('|<img(?:.*)/>|Ui', $content, $matches, PREG_SET_ORDER);
+	preg_match_all('/(<img[^>]+>)/i', $content, $matches, PREG_SET_ORDER);
 
 	$images = 0;
 
@@ -413,12 +415,22 @@ function msa_show_images($content) {
 
 		$link = array();
 		preg_match( '/src="([^"]*)"/i', $match[0], $link );
-		$link = $link[1];
+
+		if ( isset( $link[1] ) ) {
+			$link = $link[1];
+		} else {
+			$link = '';
+		}
 
 		// Check for an alt tag
 
 		preg_match( '/alt="([^"]*)"/i', $match[0], $alt );
-		$alt = $alt[1];
+
+		if ( isset( $alt[1] ) ) {
+			$alt = $alt[1];
+		} else {
+			$alt = '';
+		}
 
 		$class = '';
 
@@ -455,7 +467,8 @@ function msa_show_images($content) {
  */
 function msa_show_images_without_alt($content) {
 
-	preg_match_all('|<img(?:.*)/>|Ui', $content, $matches, PREG_SET_ORDER);
+	//preg_match_all('|<img(?:.*)/>|Ui', $content, $matches, PREG_SET_ORDER);
+	preg_match_all('/(<img[^>]+>)/i', $content, $matches, PREG_SET_ORDER);
 
 	$images = 0;
 
@@ -469,12 +482,22 @@ function msa_show_images_without_alt($content) {
 
 		$link = array();
 		preg_match( '/src="([^"]*)"/i', $match[0], $link );
-		$link = $link[1];
+
+		if ( isset( $link[1] ) ) {
+			$link = $link[1];
+		} else {
+			$link = '';
+		}
 
 		// Check for an alt tag
 
 		preg_match( '/alt="([^"]*)"/i', $match[0], $alt );
-		$alt = $alt[1];
+
+		if ( isset( $alt[1] ) ) {
+			$alt = $alt[1];
+		} else {
+			$alt = '';
+		}
 
 		if ( empty($alt) || $alt == '' ) {
 			$output .= '<div class="attachment">

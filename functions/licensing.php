@@ -27,24 +27,6 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-if ( !class_exists('EDD_SL_Plugin_Updater') ) {
-	include_once( MY_SITE_AUDIT_PLUGIN_DIR . '/includes/edd-software-licensing-updates/EDD_SL_Plugin_Updater.php' );
-}
-
-$msa_extensions = msa_get_extensions();
-
-foreach ( $msa_extensions as $key => $msa_extension ) {
-
-	$edd_updater = new EDD_SL_Plugin_Updater( MY_SITE_AUDIT_STORE_URL , __FILE__, array(
-			'version' 	=> MY_SITE_AUDIT_VERSION,
-			'license' 	=> msa_get_license_key($key),
-			'item_name' => MY_SITE_AUDIT_ITEM_NAME,
-			'author' 	=> '99 Robots',
-		)
-	);
-
-}
-
 /**
  * Save all the extension license keys
  *
@@ -178,7 +160,7 @@ function msa_license_action() {
 	// make sure the response came back okay
 
 	if ( is_wp_error( $response ) ) {
-		echo $response;
+		echo $response->get_error_message();
 		die();
 	}
 
@@ -274,7 +256,7 @@ function msa_get_license_key($extension = null) {
 	}
 
 	if ( isset($extension) ) {
-		return isset($license_key[$extension]) ? $license_key[$extension] : '';
+		return isset($license_keys[$extension]['license_key']) ? $license_keys[$extension]['license_key'] : '';
 	}
 
 	return $license_keys;

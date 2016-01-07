@@ -39,7 +39,7 @@ jQuery(document).ready(function($) {
 	$('<h5>' + msa_single_audit_data.attribute_title + '</h5>').insertBefore('form .metabox-prefs');
 
 	$.each(msa_single_audit_data.conditions, function(index, value){
-		$('label[for="' + index + '-hide"]').appendTo('.msa-condition-category-column-' + value.category);
+		$('input#' + index + '-hide').parent().appendTo('.msa-condition-category-column-' + value.category);
 	});
 
 	// Add Filters

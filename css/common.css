@@ -175,6 +175,23 @@
 	vertical-align: middle;
 }
 
+.msa-system-status-table {
+	padding-right: 20px;
+}
+
+.msa-system-status-table td:first-of-type {
+	border-left: 3px solid;
+	width: 33%;
+}
+
+td.msa-system-status-row.ok {
+	border-color: #7ad03a;
+}
+
+td.msa-system-status-row.bad {
+	border-color: #dd3d36;
+}
+
 /* =====================================================
  *
  * Status Colors

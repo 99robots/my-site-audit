@@ -78,7 +78,7 @@ function msa_admin_notices() {
 	if ( defined('DISABLE_WP_CRON') && DISABLE_WP_CRON ) {
 		?>
 	    <div class="error">
-	        <p><?php _e('WP Cron is <span style="color:red;font-weight:bold;">DISABLED</span>! My Site Audit needs WP Cron to be enabled in order to create an audit. Please read our', 'msa'); ?> <a href="https://99robots.com/?post_type=doc&p=9799" target="_blank"><?php _e('documentation page', 'msa'); ?></a> <?php _e('about how to enable WP Cron.', 'msa'); ?></p>
+	        <p><?php _e('WP Cron is <span style="color:red;font-weight:bold;">DISABLED</span>! My Site Audit needs WP Cron to be enabled in order to create an audit. Please read our', 'msa'); ?> <a href="https://mysiteaudit.com/docs/how-to-enable-wp-cron/" target="_blank"><?php _e('documentation page', 'msa'); ?></a> <?php _e('about how to enable WP Cron.', 'msa'); ?></p>
 	    </div>
 	    <?php
 	}
