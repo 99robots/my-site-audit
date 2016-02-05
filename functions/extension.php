@@ -48,7 +48,7 @@ function msa_get_remote_extensions() {
 
 	$remote_extensions = array();
 
-	$response = wp_remote_get( 'https://mysiteaudit.com/extensions.json' );
+	$response = wp_remote_get( 'https://99robots.com/msa-extensions.json' );
 
 	if ( is_array($response) ) {
 		$remote_extensions = json_decode($response['body'], true);

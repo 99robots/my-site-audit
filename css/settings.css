@@ -100,3 +100,22 @@
 .msa-vertical-tabs-content-current {
 	display: block;
 }
+
+/* =====================================================
+ *
+ * Licensing
+ *
+ ==================================================== */
+
+p.msa-activation-message {
+	color: inherit;
+}
+
+p.msa-license-valid {
+	color: green;
+}
+
+p.msa-license-invalid,
+p.msa-license-expired {
+	color: red;
+}

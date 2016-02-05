@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: My Site Audit
-Plugin URI: https://mysiteaudit.com
+Plugin URI: https://99robots.com/products/my-site-audit
 Description: The ultimate way to audit your site's content to drive more traffic to your site and enhance your user engagement.
-version: 1.0.2
+version: 1.0.3
 Author: 99 Robots
 Author URI: https://99robots.com
 License: GPL2
@@ -111,13 +111,13 @@ final class My_Site_Audit {
 		// Store URL
 
 		if ( !defined('MY_SITE_AUDIT_STORE_URL') ) {
-			define('MY_SITE_AUDIT_STORE_URL', 'https://mysiteaudit.com');
+			define('MY_SITE_AUDIT_STORE_URL', 'https://99robots.com');
 		}
 
 		// Extensions URL
 
 		if ( !defined('MY_SITE_AUDIT_EXT_URL') ) {
-			define('MY_SITE_AUDIT_EXT_URL', 'https://mysiteaudit.com/extensions?&utm_source=plugin_pages');
+			define('MY_SITE_AUDIT_EXT_URL', 'https://99robots.com/products/category/my-site-audit/?&utm_source=plugin_pages');
 		}
 
 		// Minimum PHP version
@@ -141,7 +141,7 @@ final class My_Site_Audit {
 		// Plugin version
 
 		if ( ! defined( 'MY_SITE_AUDIT_VERSION' ) ) {
-			define( 'MY_SITE_AUDIT_VERSION', '1.0.2' );
+			define( 'MY_SITE_AUDIT_VERSION', '1.0.3' );
 		}
 
 		// Plugin Folder Path

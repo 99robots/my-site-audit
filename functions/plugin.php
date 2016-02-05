@@ -69,7 +69,7 @@ function msa_plugin_row_meta( $input, $file ) {
 			'utm_source'   => 'plugins-page',
 			'utm_medium'   => 'plugin-row',
 			'utm_campaign' => 'admin',
-		), 'https://mysiteaudit.com/extensions' )
+		), MY_SITE_AUDIT_EXT_URL )
 	);
 
 	$links = array(

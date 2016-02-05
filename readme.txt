@@ -1,10 +1,10 @@
 === My Site Audit ===
 Contributors: 99robots, kjbenk, charliepatel
-Donate link: https://mysiteaudit.com
+Donate link: https://99robots.com
 Tags: content audit, content, audit, seo, site, site audit
 Requires at least: 4.0.0
-Tested up to: 4.4
-Stable tag: 1.0.2
+Tested up to: 4.4.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,7 +22,7 @@ My Site Audit is the ultimate way to audit your site's content, drive more traff
 * Set a maximum number of posts to audit
 * Sort and Filter Posts based on any attribute
 
-Visit our [website](https://mysiteaudit.com?utm_source=readme) for more information about how to use My Site Audit to improve your content.
+Visit our [website](https://99robots.com?utm_source=readme) for more information about how to use My Site Audit to improve your content.
 
 **Follow this plugin on [GitHub](https://github.com/99robots/my-site-audit)**
 
@@ -46,6 +46,9 @@ e.g.
 
 
 == Changelog ==
+
+= 1.0.3 =
+* UPDATED: Store URL to support extensions
 
 = 1.0.2 = 2016-1-7
 * IMPROVED: Image parsing to determine the number of images per post

@@ -120,7 +120,7 @@ function msa_add_new_audit_check($data) {
 	$audit_model = new MSA_Audits_Model();
 	$audits = $audit_model->get_data();
 
-	if ( count($audits) >= MY_SITE_AUDIT_MAX_AUDITS ) {
+	if ( count($audits) >= msa_get_max_audits() ) {
 		return false;
 	}
 
@@ -137,11 +137,11 @@ add_filter('msa_can_add_new_audit', 'msa_add_new_audit_check', 10, 1);
  */
 function msa_save_more_audits_extension($audits) {
 
-	if ( count($audits) >= MY_SITE_AUDIT_MAX_AUDITS ) {
+	if ( count($audits) >= msa_get_max_audits() ) {
 
 		$audits[] = array(
 			'extension'			=> true,
-			'extension-link' 	=> 'https://mysiteaudit.com/?post_type=download&p=74&utm_source=plugin&utm_campaign=extension',
+			'extension-link' 	=> 'https://99robots.com/products/msa-conditions-control?utm_source=plugin&utm_campaign=extension',
 			'score'				=> 1,
 			'name'				=> __('Want to Save more Audits? Get the Extension!', 'msa'),
 			'date'				=> date('Y-m-d H:i:s'),
@@ -154,3 +154,13 @@ function msa_save_more_audits_extension($audits) {
 
 }
 add_filter('msa_all_audits_table_items', 'msa_save_more_audits_extension', 10, 1);
+
+/**
+ * Get the maximum number of audits a user is allowed to have
+ *
+ * @access public
+ * @return void
+ */
+function msa_get_max_audits() {
+	return apply_filters('msa_get_max_audits', MY_SITE_AUDIT_MAX_AUDITS);
+}

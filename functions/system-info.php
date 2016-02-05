@@ -53,7 +53,7 @@ function msa_settings_tab_system_info_content($content) {
 
 		$system_status_table .= '<tr>
 			<td class="msa-system-status-row bad"><strong>' . __('PHP Version', 'msa') . '</strong></td>
-			<td>' . __('The required minimum version of PHP is <strong>v' . MY_SITE_AUDIT_MIN_PHP_VERSION . '</strong> and your version is <strong>v' . phpversion() . '</strong>. Your version of PHP is outdated and we strongly recommend that you <a href="https://mysiteaudit.com/docs/how-to-update-your-php-version/?utm_source=plugin&utm_medium_system_info" target="_blank">update</a> your version of PHP to at least <strong>v' . MY_SITE_AUDIT_MIN_PHP_VERSION . '</strong>.', 'msa') . '</td>
+			<td>' . __('The required minimum version of PHP is <strong>v' . MY_SITE_AUDIT_MIN_PHP_VERSION . '</strong> and your version is <strong>v' . phpversion() . '</strong>. Your version of PHP is outdated and we strongly recommend that you <a href="https://99robots.com/docs/how-to-update-your-php-version/?utm_source=plugin&utm_medium_system_info" target="_blank">update</a> your version of PHP to at least <strong>v' . MY_SITE_AUDIT_MIN_PHP_VERSION . '</strong>.', 'msa') . '</td>
 	    </tr>';
 	    $bad++;
 
@@ -71,7 +71,7 @@ function msa_settings_tab_system_info_content($content) {
 
 		$system_status_table .= '<tr>
 			<td class="msa-system-status-row bad"><strong>' . __('WP Cron', 'msa') . '</strong></td>
-			<td>' . __('WP Cron is <span style="color:red;font-weight:bold;">DISABLED</span>! My Site Audit needs WP Cron to be enabled in order to create an audit. Please read our', 'msa'); ?> <a href="https://mysiteaudit.com/docs/how-to-enable-wp-cron/" target="_blank"><?php _e('documentation page', 'msa'); ?></a> <?php _e('about how to enable WP Cron.', 'msa') . '</td>
+			<td>' . __('WP Cron is <span style="color:red;font-weight:bold;">DISABLED</span>! My Site Audit needs WP Cron to be enabled in order to create an audit. Please read our', 'msa'); ?> <a href="https://99robots.com/docs/how-to-enable-wp-cron/" target="_blank"><?php _e('documentation page', 'msa'); ?></a> <?php _e('about how to enable WP Cron.', 'msa') . '</td>
 	    </tr>';
 	    $bad++;
 

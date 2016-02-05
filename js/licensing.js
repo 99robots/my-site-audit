@@ -91,22 +91,22 @@ jQuery(document).ready(function($){
 				if ( response == 'valid' ) {
 
 					element.parent().append(license_deactivate_button);
-					element.parent().append('<p class="description msa-activation-message">' + msa_licensing_data.activation_valid + '</p>');
+					element.parent().append('<p class="description msa-activation-message msa-license-' + response + '">' + msa_licensing_data.activation_valid + '</p>');
 
 				}  else if ( response == 'expired' ) {
 
 					element.parent().append(license_activate_button);
-					element.parent().append('<p class="description msa-activation-message">' + msa_licensing_data.expired + '</p>');
+					element.parent().append('<p class="description msa-activation-message msa-license-' + response + '">' + msa_licensing_data.expired + '</p>');
 
 				} else if ( response == 'inactive' ) {
 
 					element.parent().append(license_activate_button);
-					element.parent().append('<p class="description msa-activation-message">' + msa_licensing_data.inactive + '</p>');
+					element.parent().append('<p class="description msa-activation-message msa-license-' + response + '">' + msa_licensing_data.inactive + '</p>');
 
 				} else {
 
 					element.parent().append(license_activate_button);
-					element.parent().append('<p class="description msa-activation-message">' + msa_licensing_data.activation_error + '</p>');
+					element.parent().append('<p class="description msa-activation-message msa-license-' + response + '">' + msa_licensing_data.activation_error + '</p>');
 
 				}
 
@@ -132,9 +132,9 @@ jQuery(document).ready(function($){
 
 		element.parent().append(spinner);
 
-		$('.msa-activation-message').remove();
-		$('.msa-activate-license').remove();
-		$('.msa-deactivate-license').remove();
+		element.parent().find('.msa-activation-message').remove();
+		element.parent().find('.msa-activate-license').remove();
+		element.parent().find('.msa-deactivate-license').remove();
 
 		var data = {
 			'action': 'msa_license_action',
@@ -150,12 +150,12 @@ jQuery(document).ready(function($){
 			if ( response == 'valid' ) {
 
 				element.parent().append(license_deactivate_button);
-				element.parent().append('<p class="description msa-activation-message">' + msa_licensing_data.activation_valid + '</p>');
+				element.parent().append('<p class="description msa-activation-message msa-license-' + response + '">' + msa_licensing_data.activation_valid + '</p>');
 
 			} else {
 
 				element.parent().append(license_activate_button);
-				element.parent().append('<p class="description msa-activation-message">' + msa_licensing_data.activation_error + '</p>');
+				element.parent().append('<p class="description msa-activation-message msa-license-' + response + '">' + msa_licensing_data.activation_error + '</p>');
 
 			}
 
@@ -175,9 +175,9 @@ jQuery(document).ready(function($){
 
 		element.parent().append(spinner);
 
-		$('.msa-activation-message').remove();
-		$('.msa-activate-license').remove();
-		$('.msa-deactivate-license').remove();
+		element.parent().find('.msa-activation-message').remove();
+		element.parent().find('.msa-activate-license').remove();
+		element.parent().find('.msa-deactivate-license').remove();
 
 		var data = {
 			'action': 'msa_license_action',
