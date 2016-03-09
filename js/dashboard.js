@@ -59,6 +59,7 @@ jQuery(document).ready(function($){
 
 	    $.post(ajaxurl, {
 				'action': 'msa_save_dashboard_panel_order',
+				'save_dashboard_panel_order_nonce': msa_dashboard_data.save_dashboard_panel_order_nonce,
 				'left_order': left_order,
 				'right_order': right_order,
 			}, function(response) {

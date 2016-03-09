@@ -25,7 +25,9 @@
 
 // Exit if accessed directly
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Save the dashboard panels order
@@ -37,29 +39,32 @@ function msa_save_dashboard_panel_order() {
 
 	// Check if we have the right data
 
-	if ( !isset($_POST['left_order']) ) {
-		echo __('Unable to find the left order.', 'msa');
+	check_ajax_referer( 'save_dashboard_panel_order_nonce', 'save_dashboard_panel_order_nonce' );
+
+	if ( ! isset( $_POST['left_order'] ) ) { // Input var okay.
+		echo esc_attr__( 'Unable to find the left order.', 'msa' );
 		die();
 	}
 
-	if ( !isset($_POST['right_order']) ) {
-		echo __('Unable to find the right order', 'msa');
+	if ( ! isset( $_POST['right_order'] ) ) { // Input var okay.
+		echo esc_attr__( 'Unable to find the right order', 'msa' );
 		die();
 	}
 
-	$dashboard_panel_order = get_option('msa_dashboard_panel_order_' . get_current_user_id());
+	$left_order = sanitize_text_field( wp_unslash( $_POST['left_order'] ) ); // Input var okay.
+	$right_order = sanitize_text_field( wp_unslash( $_POST['right_order'] ) ); // Input var okay.
 
-	$dashboard_panel_order['left'] = $_POST['left_order'] == 'empty' ? array() : $_POST['left_order'];
-	$dashboard_panel_order['right'] = $_POST['right_order'] == 'empty' ? array() : $_POST['right_order'];
+	$dashboard_panel_order = get_option( 'msa_dashboard_panel_order_' . get_current_user_id() );
 
-	update_option('msa_dashboard_panel_order', $dashboard_panel_order);
+	$dashboard_panel_order['left'] = 'empty' === $left_order ? array() : $left_order;
+	$dashboard_panel_order['right'] = 'empty' === $right_order ? array() : $right_order;
 
-	echo __('Order Saved', 'msa');
+	update_option( 'msa_dashboard_panel_order', $dashboard_panel_order );
+
+	echo esc_attr__( 'Order Saved', 'msa' );
 	die();
-
-
 }
-add_action('wp_ajax_msa_save_dashboard_panel_order', 'msa_save_dashboard_panel_order' );
+add_action( 'wp_ajax_msa_save_dashboard_panel_order', 'msa_save_dashboard_panel_order' );
 
 /**
  * The Last Audit Panel Content
@@ -74,15 +79,15 @@ function msa_dashboard_panel_last_audit_content() {
 	$audit_model = new MSA_Audits_Model();
 	$audit = $audit_model->get_latest();
 
-	if ( isset($audit) ) {
+	if ( isset( $audit ) ) {
 
 		// msa-post-status-bg msa-post-status-bg-' . msa_get_score_status($audit['score']) . '
 
 		$output = '<div class="msa-left-column">
 			<div class="msa-left-column-content">
-				<div class="msa-circle msa-circle-border msa-post-status-border-' . msa_get_score_status($audit['score']) . '">
+				<div class="msa-circle msa-circle-border msa-post-status-border-' . msa_get_score_status( $audit['score'] ) . '">
 				     <div class="msa-circle-inner">
-				         <div class="msa-score-text msa-post-status-text-' . msa_get_score_status($audit['score']) . '">' . round(100 * $audit['score']) . '%' . '</div>
+				         <div class="msa-score-text msa-post-status-text-' . msa_get_score_status( $audit['score'] ) . '">' . round( 100 * $audit['score'] ) . '%' . '</div>
 				     </div>
 				</div>
 			</div>
@@ -93,12 +98,12 @@ function msa_dashboard_panel_last_audit_content() {
 				<table class="wp-list-table widefat striped">
 					<tbody>';
 
-					$user = get_userdata($audit['user']);
+					$user = get_userdata( $audit['user'] );
 
-					$output .= '<tr><td>' . __('Name', 'msa') . '</td> <td><a href="' . get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit['id'] . '">' . $audit['name'] . '</a></td></tr>';
-					$output .= '<tr><td>' . __('Created On', 'msa') . '</td> <td>' . date('M d Y, h:i:s', strtotime($audit['date'])) . '</td></tr>';
-					$output .= '<tr><td>' . __('Number of Posts', 'msa') . '</td> <td>' . $audit['num_posts'] . '</td></tr>';
-					$output .= '<tr><td>' . __('Created By', 'msa') . '</td> <td>' . $user->display_name . '</td></tr>';
+					$output .= '<tr><td>' . __( 'Name', 'msa' ) . '</td> <td><a href="' . get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit['id'] . '">' . $audit['name'] . '</a></td></tr>';
+					$output .= '<tr><td>' . __( 'Created On', 'msa' ) . '</td> <td>' . date( 'M d Y, h:i:s', strtotime( $audit['date'] ) ) . '</td></tr>';
+					$output .= '<tr><td>' . __( 'Number of Posts', 'msa' ) . '</td> <td>' . $audit['num_posts'] . '</td></tr>';
+					$output .= '<tr><td>' . __( 'Created By', 'msa' ) . '</td> <td>' . $user->display_name . '</td></tr>';
 
 				$output .= '</tbody>
 				</table>
@@ -106,16 +111,12 @@ function msa_dashboard_panel_last_audit_content() {
 		</div>';
 
 	} else {
-
-		$output = '<p>' . __('You do not have any audits yet.', 'msa') . ' <a href="' . get_admin_url() . 'admin.php?page=msa-all-audits">' . __('Create one now!', 'msa') . '</a></p>';
-
+		$output = '<p>' . __( 'You do not have any audits yet.', 'msa' ) . ' <a href="' . get_admin_url() . 'admin.php?page=msa-all-audits">' . __( 'Create one now!', 'msa' ) . '</a></p>';
 	}
 
 	return $output;
-
 }
-
-add_filter('msa_dashboard_panel_content_last_audit', 'msa_dashboard_panel_last_audit_content');
+add_filter( 'msa_dashboard_panel_content_last_audit', 'msa_dashboard_panel_last_audit_content' );
 
 /**
  * Create initial dashboard panels
@@ -129,11 +130,11 @@ function msa_create_initial_dashboard_panels() {
 
 	msa_register_dashboard_panel('last_audit', array(
 		'post_box' 	=> 0,
-		'title'		=> __('Last Audit', 'msa'),
+		'title'		=> __( 'Last Audit', 'msa' ),
 		'content'	=> '',
 	));
 
-	do_action('msa_register_dashboard_panels');
+	do_action( 'msa_register_dashboard_panels' );
 }
 
 /**
@@ -152,7 +153,7 @@ function msa_get_dashboard_panels() {
 
 	// If the dashboard panel order is not set then set it to default
 
-	if ( false === ( $dashboard_panel_order = get_option('msa_dashboard_panel_order_' . get_current_user_id() ) ) ) {
+	if ( false === ( $dashboard_panel_order = get_option( 'msa_dashboard_panel_order_' . get_current_user_id() ) ) ) {
 
 		$dashboard_panel_order = array(
 			'left' 	=> array(),
@@ -161,38 +162,37 @@ function msa_get_dashboard_panels() {
 
 		foreach ( $msa_dashboard_panels as $key => $msa_dashboard_panel ) {
 
-			if ( $msa_dashboard_panel['post_box'] == 0 && !in_array($key, $dashboard_panel_order['left']) ) {
+			if ( 0 === $msa_dashboard_panel['post_box'] && ! in_array( $key, $dashboard_panel_order['left'], true ) ) {
 				$dashboard_panel_order['left'][] = $key;
 			}
 
-			if ( $msa_dashboard_panel['post_box'] == 1 ) {
+			if ( 1 === $msa_dashboard_panel['post_box'] ) {
 				$dashboard_panel_order['right'][] = $key;
 			}
 		}
 
-		update_option('msa_dashboard_panel_order_' . get_current_user_id(), $dashboard_panel_order);
+		update_option( 'msa_dashboard_panel_order_' . get_current_user_id(), $dashboard_panel_order );
 	}
 
 	// Add panels
 
 	foreach ( $msa_dashboard_panels as $key => $msa_dashboard_panel ) {
 
-		if ( !in_array($key, $dashboard_panel_order['left']) && !in_array($key, $dashboard_panel_order['right']) ) {
+		if ( ! in_array( $key, $dashboard_panel_order['left'], true ) && ! in_array( $key, $dashboard_panel_order['right'], true ) ) {
 
-			if ( $msa_dashboard_panel['post_box'] == 0 ) {
+			if ( 0 === $msa_dashboard_panel['post_box'] ) {
 				$dashboard_panel_order['left'][] = $key;
 			}
 
-			if ( $msa_dashboard_panel['post_box'] == 1 ) {
+			if ( 1 === $msa_dashboard_panel['post_box'] ) {
 				$dashboard_panel_order['right'][] = $key;
 			}
-
 		}
 
-		update_option('msa_dashboard_panel_order_' . get_current_user_id(), $dashboard_panel_order);
+		update_option( 'msa_dashboard_panel_order_' . get_current_user_id(), $dashboard_panel_order );
 	}
 
-	return apply_filters('msa_get_dashboard_panels', $msa_dashboard_panels);
+	return apply_filters( 'msa_get_dashboard_panels', $msa_dashboard_panels );
 }
 
 /**
@@ -203,7 +203,7 @@ function msa_get_dashboard_panels() {
  * @param array $args (default: array())
  * @return void
  */
-function msa_register_dashboard_panel($panel, $args = array()) {
+function msa_register_dashboard_panel( $panel, $args = array() ) {
 
 	global $msa_dashboard_panels;
 
@@ -214,14 +214,14 @@ function msa_register_dashboard_panel($panel, $args = array()) {
 	// Default panel
 
 	$default = array(
-		'title'			=> __('Title', 'msa'),
+		'title' => __( 'Title', 'msa' ),
 	);
 
-	$args = array_merge($default, $args);
+	$args = array_merge( $default, $args );
 
 	// Add the panel to the global dashboard panels array
 
-	$msa_dashboard_panels[ $panel ] = apply_filters('msa_register_dashboard_panel_args', $args);
+	$msa_dashboard_panels[ $panel ] = apply_filters( 'msa_register_dashboard_panel_args', $args );
 
 	/**
 	* Fires after a dashboard panel is registered.
@@ -229,7 +229,7 @@ function msa_register_dashboard_panel($panel, $args = array()) {
 	* @param string $panel 	  Dashboard Panel.
 	* @param array $args      Arguments used to register the dashboard panel.
 	*/
-	do_action('msa_registed_dashboard_panel', $panel, $args);
+	do_action( 'msa_registed_dashboard_panel', $panel, $args );
 
 	return $args;
 }

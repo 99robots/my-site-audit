@@ -25,7 +25,9 @@
 
 // Exit if accessed directly
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Get the status of a score
@@ -34,19 +36,18 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @param mixed $score
  * @return void
  */
-function msa_get_score_status($score) {
+function msa_get_score_status( $score ) {
 
 	$score_statuses = msa_get_score_statuses();
 
 	foreach ( $score_statuses as $key => $score_status ) {
 
-		if ( round($score, 4) >= $score_status['low'] && round($score, 4) <= $score_status['high'] ) {
+		if ( round( $score, 4 ) >= $score_status['low'] && round( $score, 4 ) <= $score_status['high'] ) {
 			return $key;
 		}
 	}
 
 	return null;
-
 }
 
 /**
@@ -56,7 +57,7 @@ function msa_get_score_status($score) {
  * @param mixed $score
  * @return void
  */
-function msa_get_letter_grade($score) {
+function msa_get_letter_grade( $score ) {
 
 	if ( $score >= .96667 ) {
 		$grade = 'A+';
@@ -87,7 +88,6 @@ function msa_get_letter_grade($score) {
 	}
 
 	return $grade;
-
 }
 
 /**
@@ -98,10 +98,10 @@ function msa_get_letter_grade($score) {
  * @param mixed $status
  * @return void
  */
-function msa_get_post_count_by_status($posts, $status) {
+function msa_get_post_count_by_status( $posts, $status ) {
 
 	$score_statuses = msa_get_score_statuses();
-	$score_status = $score_statuses[$status];
+	$score_status = $score_statuses[ $status ];
 
 	$count = 0;
 
@@ -128,7 +128,7 @@ function msa_create_initial_score_statuses() {
 	// Bad
 
 	msa_register_score_status('bad', array(
-		'name' 			=> __('Bad', 'msa'),
+		'name' 			=> __( 'Bad', 'msa' ),
 		'low'			=> 0,
 		'high'			=> 0.1999,
 	));
@@ -136,40 +136,36 @@ function msa_create_initial_score_statuses() {
 	// Poor
 
 	msa_register_score_status('poor', array(
-		'name' 			=> __('Poor', 'msa'),
+		'name' 			=> __( 'Poor', 'msa' ),
 		'low'			=> 0.2,
 		'high'			=> 0.3999,
 	));
 
-
 	// Ok
 
 	msa_register_score_status('ok', array(
-		'name' 			=> __('Ok', 'msa'),
+		'name' 			=> __( 'Ok', 'msa' ),
 		'low'			=> 0.4,
 		'high'			=> 0.5999,
 	));
 
-
 	// Good
 
 	msa_register_score_status('good', array(
-		'name' 			=> __('Good', 'msa'),
+		'name' 			=> __( 'Good', 'msa' ),
 		'low'			=> 0.6,
 		'high'			=> 0.7999,
 	));
 
-
 	// Great
 
 	msa_register_score_status('great', array(
-		'name' 			=> __('Great', 'msa'),
+		'name' 			=> __( 'Great', 'msa' ),
 		'low'			=> 0.8,
 		'high'			=> 1,
 	));
 
-
-	do_action('msa_register_score_status');
+	do_action( 'msa_register_score_status' );
 }
 
 /**
@@ -186,7 +182,7 @@ function msa_get_score_statuses() {
 		$msa_score_statuses = array();
 	}
 
-	return apply_filters('msa_get_score_statuses', $msa_score_statuses);
+	return apply_filters( 'msa_get_score_statuses', $msa_score_statuses );
 }
 
 /**
@@ -208,16 +204,16 @@ function msa_register_score_status( $score_status, $args = array() ) {
 	// Default score status
 
 	$default = array(
-		'name'			=> __('Bad', 'msa'),
+		'name'			=> __( 'Bad', 'msa' ),
 		'high'			=> 0.1667,
 		'low'			=> 0,
 	);
 
-	$args = array_merge($default, $args);
+	$args = array_merge( $default, $args );
 
 	// Add the score status to the global score statuses array
 
-	$msa_score_statuses[ $score_status ] = apply_filters('msa_register_score_status_args', $args);
+	$msa_score_statuses[ $score_status ] = apply_filters( 'msa_register_score_status_args', $args );
 
 	/**
 	* Fires after a score status is registered.
@@ -225,7 +221,7 @@ function msa_register_score_status( $score_status, $args = array() ) {
 	* @param string $score_status Score Status.
 	* @param array $args      Arguments used to register the score status.
 	*/
-	do_action('msa_registed_score_status', $score_status, $args);
+	do_action( 'msa_registed_score_status', $score_status, $args );
 
 	return $args;
 }

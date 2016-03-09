@@ -26,10 +26,12 @@
 
 // Exit if accessed directly
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-if ( false === ( $settings = get_option('msa_settings') ) ) {
+if ( false === ( $settings = get_option( 'msa_settings' ) ) ) {
 	$settings = array();
 }
 
-include_once(MY_SITE_AUDIT_PLUGIN_DIR . 'views/dashboard.php');
+include_once( MY_SITE_AUDIT_PLUGIN_DIR . 'views/dashboard.php' );

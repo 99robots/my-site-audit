@@ -25,13 +25,15 @@
 
 // Exit if accessed directly
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-require_once('header.php');
+require_once( 'header.php' );
 
 $settings_tabs = msa_get_settings_tabs(); ?>
 
-<h1><?php _e("Settings", 'msa'); ?></h1>
+<h1><?php esc_attr_e( 'Settings', 'msa' ); ?></h1>
 
 <form method="post" class="msa-form">
 
@@ -41,8 +43,8 @@ $settings_tabs = msa_get_settings_tabs(); ?>
 
 			<?php foreach ( $settings_tabs as $key => $settings_tab ) { ?>
 
-			<li class="msa-vertical-tabs-item <?php echo (isset($settings_tab['current']) && $settings_tab['current'] ? 'msa-vertical-tabs-current' : ''); ?>">
-				<a href="#<?php echo $key; ?>"><?php echo $settings_tab['tab']; ?></a>
+			<li class="msa-vertical-tabs-item <?php esc_attr_e( isset( $settings_tab['current'] ) && $settings_tab['current'] ? 'msa-vertical-tabs-current' : '' ); ?>">
+				<a href="#<?php esc_attr_e( $key ); ?>"><?php esc_attr_e( $settings_tab['tab'] ); ?></a>
 			</li>
 
 			<?php } ?>
@@ -55,18 +57,18 @@ $settings_tabs = msa_get_settings_tabs(); ?>
 
 		<?php foreach ( $settings_tabs as $key => $settings_tab ) { ?>
 
-			<div id="<?php echo $key; ?>" class="msa-vertical-tabs-content-item <?php echo (isset($settings_tab['current']) && $settings_tab['current'] ? 'msa-vertical-tabs-content-current' : ''); ?>">
-				<?php echo apply_filters('msa_settings_tab_content_' . $key, $settings_tab['content']); ?>
+			<div id="<?php esc_attr_e( $key ); ?>" class="msa-vertical-tabs-content-item <?php esc_attr_e( isset( $settings_tab['current'] ) && $settings_tab['current'] ? 'msa-vertical-tabs-content-current' : '' ); ?>">
+				<?php echo ( apply_filters( 'msa_settings_tab_content_' . $key, $settings_tab['content'] ) ); ?>
 			</div>
 
 		<?php } ?>
 
 		<?php submit_button(); ?>
 
-		<?php wp_nonce_field('msa-settings'); ?>
+		<?php wp_nonce_field( 'msa-settings' ); ?>
 
 	</div>
 
 </form>
 
-<?php require_once('footer.php'); ?>
+<?php require_once( 'footer.php' );

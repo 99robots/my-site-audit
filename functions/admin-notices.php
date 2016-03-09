@@ -25,7 +25,9 @@
 
 // Exit if accessed directly
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Show the notice for an audit in progress
@@ -37,52 +39,46 @@ function msa_admin_notices() {
 
 	// Unable to create audit
 
-	if ( false !== ( $no_audit = get_transient('msa_unable_to_create_audit') ) ) {
-
+	if ( false !== ( $no_audit = get_transient( 'msa_unable_to_create_audit' ) ) ) {
 		?>
-	    <div class="error">
-	        <p><?php echo $no_audit; ?></p>
-	    </div>
-	    <?php
+		<div class="error">
+			<p><?php esc_attr_e( $no_audit ); ?></p>
+		</div>
+		<?php
 
-		delete_transient('msa_unable_to_create_audit');
-
+		delete_transient( 'msa_unable_to_create_audit' );
 	}
 
 	// Schedule Audit Notice
 
-	if ( false !== ( $scheduled_audit = get_transient('msa_schedule_audit') ) ) {
-
+	if ( false !== ( $scheduled_audit = get_transient( 'msa_schedule_audit' ) ) ) {
 		?>
-	    <div class="updated">
-	        <p><?php _e( 'My Site Audit: An Audit has been scheduled to run.', 'msa' ); ?></p>
-	    </div>
-	    <?php
-
+		<div class="updated">
+			<p><?php esc_attr_e( 'My Site Audit: An Audit has been scheduled to run.', 'msa' ); ?></p>
+		</div>
+		<?php
 	}
 
 	// Running Audit
 
-	if ( false !== ( $in_progress = get_transient('msa_running_audit') ) ) {
-
+	if ( false !== ( $in_progress = get_transient( 'msa_running_audit' ) ) ) {
 		?>
-	    <div class="updated">
-	        <p><?php _e( 'An Audit is currently being created.  We will email you once its completed and you can refresh this page to check as well.', 'msa' ); ?> <a class="button button-default" href="<?php echo wp_nonce_url(get_admin_url() . 'admin.php?page=msa-all-audits&action=force_stop_audit', 'msa-force-stop-audit'); ?>"><?php _e('Force Stop', 'msa'); ?></a></p>
-	    </div>
-	    <?php
-
+		<div class="updated">
+			<p><?php esc_attr_e( 'An Audit is currently being created.  We will email you once its completed and you can refresh this page to check as well.', 'msa' ); ?> <a class="button button-default" href="<?php echo esc_attr_e( wp_nonce_url( get_admin_url() . 'admin.php?page=msa-all-audits&action=force_stop_audit', 'msa-force-stop-audit' ) ); ?>"><?php esc_attr_e( 'Force Stop', 'msa' ); ?></a></p>
+		</div>
+		<?php
 	}
 
 	// WP Cron
 
-	if ( defined('DISABLE_WP_CRON') && DISABLE_WP_CRON ) {
+	if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
 		?>
-	    <div class="error">
-	        <p><?php _e('WP Cron is <span style="color:red;font-weight:bold;">DISABLED</span>! My Site Audit needs WP Cron to be enabled in order to create an audit. Please read our', 'msa'); ?> <a href="https://99robots.com/docs/how-to-enable-wp-cron/" target="_blank"><?php _e('documentation page', 'msa'); ?></a> <?php _e('about how to enable WP Cron.', 'msa'); ?></p>
-	    </div>
-	    <?php
+		<div class="error">
+			<p><?php esc_attr_e( 'WP Cron is <span style="color:red;font-weight:bold;">DISABLED</span>! My Site Audit needs WP Cron to be enabled in order to create an audit. Please read our', 'msa' ); ?> <a href="https://99robots.com/docs/how-to-enable-wp-cron/" target="_blank"><?php esc_attr_e( 'documentation page', 'msa' ); ?></a> <?php esc_attr_e( 'about how to enable WP Cron.', 'msa' ); ?></p>
+		</div>
+		<?php
 	}
 
-	do_action('msa_show_admin_notices');
+	do_action( 'msa_show_admin_notices' );
 }
 add_action( 'admin_notices', 'msa_admin_notices' );

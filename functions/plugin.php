@@ -25,7 +25,9 @@
 
 // Exit if accessed directly
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Add the actions rows for the all plugins page
@@ -37,11 +39,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 function msa_plugin_action_links( $links, $file ) {
 
-	$settings_link = '<a href="' . admin_url('admin.php?page=msa-settings') . '">' . esc_html__( 'General Settings', 'msa' ) . '</a>';
+	$settings_link = '<a href="' . admin_url( 'admin.php?page=msa-settings' ) . '">' . esc_html__( 'General Settings', 'msa' ) . '</a>';
 
 	// Remove the action if we are on our own page
 
-	if ( $file == 'my-site-audit/my-site-audit.php' ) {
+	if ( 'my-site-audit/my-site-audit.php' === $file ) {
 		array_unshift( $links, $settings_link );
 	}
 
@@ -61,16 +63,15 @@ function msa_plugin_row_meta( $input, $file ) {
 
 	// Remove the action if we are on our own page
 
-	if ( $file != 'my-site-audit/my-site-audit.php' ) {
+	if ( 'my-site-audit/my-site-audit.php' === $file ) {
 		return $input;
 	}
 
 	$msa_link = esc_url( add_query_arg( array(
-			'utm_source'   => 'plugins-page',
-			'utm_medium'   => 'plugin-row',
-			'utm_campaign' => 'admin',
-		), MY_SITE_AUDIT_EXT_URL )
-	);
+		'utm_source'   => 'plugins-page',
+		'utm_medium'   => 'plugin-row',
+		'utm_campaign' => 'admin',
+	), MY_SITE_AUDIT_EXT_URL ) );
 
 	$links = array(
 		'<a href="' . admin_url( 'index.php?page=msa-getting-started' ) . '">' . esc_html__( 'Getting Started', 'msa' ) . '</a>',

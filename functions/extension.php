@@ -25,7 +25,9 @@
 
 // Exit if accessed directly
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Create the initial settings extensions
@@ -34,8 +36,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @return void
  */
 function msa_create_initial_extensions() {
-
-	do_action('msa_register_extension');
+	do_action( 'msa_register_extension' );
 }
 
 /**
@@ -47,15 +48,13 @@ function msa_create_initial_extensions() {
 function msa_get_remote_extensions() {
 
 	$remote_extensions = array();
+	$response = vip_safe_wp_remote_get( 'https://99robots.com/msa-extensions.json' );
 
-	$response = wp_remote_get( 'https://99robots.com/msa-extensions.json' );
-
-	if ( is_array($response) ) {
-		$remote_extensions = json_decode($response['body'], true);
+	if ( is_array( $response ) ) {
+		$remote_extensions = json_decode( $response['body'], true );
 	}
 
 	return $remote_extensions;
-
 }
 
 /**
@@ -72,8 +71,7 @@ function msa_get_extensions() {
 		$msa_extensions = array();
 	}
 
-	return apply_filters('msa_get_extensions', $msa_extensions);
-
+	return apply_filters( 'msa_get_extensions', $msa_extensions );
 }
 
 /**
@@ -84,7 +82,7 @@ function msa_get_extensions() {
  * @param array $args (default: array())
  * @return void
  */
-function msa_register_extension($extension, $args = array()) {
+function msa_register_extension( $extension, $args = array() ) {
 
 	global $msa_extensions;
 
@@ -95,14 +93,14 @@ function msa_register_extension($extension, $args = array()) {
 	// Default extension
 
 	$default = array(
-		'title'			=> __('Extension', 'msa'),
+		'title' => __( 'Extension', 'msa' ),
 	);
 
-	$args = array_merge($default, $args);
+	$args = array_merge( $default, $args );
 
 	// Add the extension to the global extensions array
 
-	$msa_extensions[ $extension ] = apply_filters('msa_register_extension_args', $args);
+	$msa_extensions[ $extension ] = apply_filters( 'msa_register_extension_args', $args );
 
 	/**
 	* Fires after a dashboard extension is registered.
@@ -110,8 +108,7 @@ function msa_register_extension($extension, $args = array()) {
 	* @param string $extension 	  Extension.
 	* @param array $args      Arguments used to register the extension.
 	*/
-	do_action('msa_registed_extension', $extension, $args);
+	do_action( 'msa_registed_extension', $extension, $args );
 
 	return $args;
-
 }

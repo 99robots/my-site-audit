@@ -25,7 +25,9 @@
 
 // Exit if accessed directly
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Add a meta box to the post screen
@@ -37,11 +39,11 @@ function msa_add_meta_box() {
 
 	add_meta_box(
 		'msa-meta-box',
-		__('My Site Audit', 'msa' ),
+		__( 'My Site Audit', 'msa' ),
 		'msa_meta_box_callback'
 	);
 }
-add_action('add_meta_boxes', 'msa_add_meta_box');
+add_action( 'add_meta_boxes', 'msa_add_meta_box' );
 
 /**
  * Prints the box content.
@@ -59,11 +61,16 @@ function msa_meta_box_callback( $post ) {
 
 	// Check to see if we have an audit
 
-	if ( isset($audit) ) {
+	if ( isset( $audit ) ) {
 
-		$audit = $audit_model->get_data_from_id($audit['id']);
+		$post_id = -1;
+		if ( isset( $_GET['post'] ) ) {  // Input var okay.
+			$post_id = sanitize_text_field( wp_unslash( $_GET['post'] ) ); // Input var okay.
+		}
+
+		$audit = $audit_model->get_data_from_id( $audit['id'] );
 		$audit_posts_model 	= new MSA_Audit_Posts_Model();
-		$audit_post = $audit_posts_model->get_data_from_id($audit['id'], $_GET['post']);
+		$audit_post = $audit_posts_model->get_data_from_id( $audit['id'], $post_id );
 
 		if ( $audit_post ) {
 
@@ -73,35 +80,35 @@ function msa_meta_box_callback( $post ) {
 
 			$condition_categories = msa_get_condition_categories();
 
-			$user = get_userdata($audit['user']);
+			$user = get_userdata( $audit['user'] );
 
-			do_action('msa_before_post_meta_box', $audit['id'], $_GET['post']);
+			do_action( 'msa_before_post_meta_box', $audit['id'], $post_id );
 
 			?><div class="msa-post-meta-container msa-post-meta-audit-meta-attributes">
-				<p class="msa-post-meta-attribute"><?php _e('Score: ', 'msa'); ?></p>
-				<p class="msa-post-meta-attribute"><?php _e('From Audit: ', 'msa'); ?></p>
-				<p class="msa-post-meta-attribute"><?php _e('Created On: ', 'msa'); ?></p>
-				<p class="msa-post-meta-attribute"><?php _e('Created By: ', 'msa'); ?></p>
+				<p class="msa-post-meta-attribute"><?php esc_attr_e( 'Score: ', 'msa' ); ?></p>
+				<p class="msa-post-meta-attribute"><?php esc_attr_e( 'From Audit: ', 'msa' ); ?></p>
+				<p class="msa-post-meta-attribute"><?php esc_attr_e( 'Created On: ', 'msa' ); ?></p>
+				<p class="msa-post-meta-attribute"><?php esc_attr_e( 'Created By: ', 'msa' ); ?></p>
 			</div>
 
 			<div class="msa-post-meta-container msa-post-meta-audit-meta-values">
-				<p class="msa-post-meta-value msa-post-status-bg msa-post-status-bg-<?php echo msa_get_score_status($score['score']); ?>"><?php echo round($score['score'] * 100, 2); ?>%</p>
-				<p class="msa-post-meta-value"><a href="<?php echo get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit['id']; ?>" target="_blank"><?php echo $audit['name']; ?></a></p>
-				<p class="msa-post-meta-value"><?php echo date('M j, Y', strtotime($audit['date'])); ?></p>
-				<p class="msa-post-meta-value"><?php echo $user->display_name; ?></p>
+				<p class="msa-post-meta-value msa-post-status-bg msa-post-status-bg-<?php ecs_attr_e( msa_get_score_status( $score['score'] ) ); ?>"><?php ecs_attr_e( round( $score['score'] * 100, 2 ) ); ?>%</p>
+				<p class="msa-post-meta-value"><a href="<?php ecs_attr_e( get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit['id'] ); ?>" target="_blank"><?php ecs_attr_e( $audit['name'] ); ?></a></p>
+				<p class="msa-post-meta-value"><?php ecs_attr_e( date( 'M j, Y', strtotime( $audit['date'] ) ) ); ?></p>
+				<p class="msa-post-meta-value"><?php ecs_attr_e( $user->display_name ); ?></p>
 			</div><?php
 
 			foreach ( $condition_categories as $key => $condition_category ) {
-				?><div class="postbox" id="<?php echo $key; ?>" style="pointer-events: none;">
-					<?php echo apply_filters('msa_condition_category_content', $key, $post, $data, $score ); ?>
+				?><div class="postbox" id="<?php ecs_attr_e( $key ); ?>" style="pointer-events: none;">
+					<?php ecs_attr_e( apply_filters( 'msa_condition_category_content', $key, $post, $data, $score ) ); ?>
 				</div><?php
 			}
 
-			do_action('msa_after_post_meta_box', $audit['id'], $_GET['post']);
+			do_action( 'msa_after_post_meta_box', $audit['id'], $post_id );
 		}
 	}
 
-	wp_enqueue_style('msa-all-audits-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/all-audits.css');
-	wp_enqueue_style('msa-post-meta-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/post-meta.css');
-	wp_enqueue_style('msa-common-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/css/common.css');
+	wp_enqueue_style( 'msa-all-audits-css',	MY_SITE_AUDIT_PLUGIN_URL . '/css/all-audits.css' );
+	wp_enqueue_style( 'msa-post-meta-css',	MY_SITE_AUDIT_PLUGIN_URL . '/css/post-meta.css' );
+	wp_enqueue_style( 'msa-common-css',		MY_SITE_AUDIT_PLUGIN_URL . '/css/common.css' );
 }

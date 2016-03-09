@@ -25,58 +25,59 @@
 
 // Exit if accessed directly
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-if ( !class_exists('MSA_Audits_Model') ) :
+if ( ! class_exists( 'MSA_Audits_Model' ) ) :
 
-class MSA_Audits_Model {
+	class MSA_Audits_Model {
 
-	/**
-	 * table_name
-	 *
-	 * (default value: 'msa_audits')
-	 *
-	 * @var string
-	 * @access public
-	 */
-	public $table_name = 'msa_audits';
+		/**
+		 * table_name
+		 *
+		 * (default value: 'msa_audits')
+		 *
+		 * @var string
+		 * @access public
+		 */
+		public $table_name = 'msa_audits';
 
-	/**
-	 * data_format
-	 *
-	 * (default value: 'Y-m-d H:i:s')
-	 *
-	 * @var string
-	 * @access public
-	 */
-	public $data_format = 'Y-m-d H:i:s';
+		/**
+		 * data_format
+		 *
+		 * (default value: 'Y-m-d H:i:s')
+		 *
+		 * @var string
+		 * @access public
+		 */
+		public $data_format = 'Y-m-d H:i:s';
 
-	/**
-	 * The default audit
-	 *
-	 * @access public
-	 * @return void
-	 */
-	function default_data() {
-		return array(
-			'name'					=> __('My Audit', 'msa'),
-			'date'					=> '',
-			'score'					=> '',
-			'args'					=> array()
-		);
-	}
+		/**
+		 * The default audit
+		 *
+		 * @access public
+		 * @return void
+		 */
+		function default_data() {
+			return array(
+				'name'  => __( 'My Audit', 'msa' ),
+				'date'  => '',
+				'score' => '',
+				'args'  => array(),
+			);
+		}
 
-	/**
-	 * Create a table for the audits
-	 *
-	 * @access public
-	 * @return void
-	 */
-	function create_table() {
+		/**
+		 * Create a table for the audits
+		 *
+		 * @access public
+		 * @return void
+		 */
+		function create_table() {
+			global $wpdb;
 
-		global $wpdb;
-
-		$result = $wpdb->query("CREATE TABLE IF NOT EXISTS `" . $this->get_table_name() . "` (
+			$sql = 'CREATE TABLE IF NOT EXISTS ' . $this->get_table_name() . " (
 				`id` int(11) NOT NULL AUTO_INCREMENT,
 				`name` varchar(60) NOT NULL DEFAULT '',
 				`date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -86,279 +87,277 @@ class MSA_Audits_Model {
 				`num_posts` int(11),
 				`args` longtext,
 				PRIMARY KEY (`id`)
-			) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;");
+			) " . $wpdb->get_charset_collate();
 
-		return $result;
-	}
-
-	/**
-	 * Add a new audit
-	 *
-	 * @access public
-	 * @param array $data (default: array())
-	 * @return void
-	 */
-	function add_data( $data = array() ) {
-
-		$data = $this->validate_data($data);
-
-		global $wpdb;
-
-		$result = $wpdb->query( $wpdb->prepare("INSERT INTO `" . $this->get_table_name() . "` (
-				`name`,
-				`date`,
-				`score`,
-				`status`,
-				`user`,
-				`num_posts`,
-				`args`
-			) VALUES (%s, %s, %f, %s, %d, %d, %s)",
-				$data['name'],
-				date($this->data_format, strtotime($data['date'])),
-				$data['score'],
-				$data['status'],
-				$data['user'],
-				$data['num_posts'],
-				json_encode($data['args'])
-		) );
-
-		// Return the recently created id for this entry
-
-		return $wpdb->insert_id;
-
-	}
-
-	/**
-	 * Update Audit
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param	data to be updated
-	 * @return	false if error, otherwise nothing
-	 */
-	function update_data( $id = null, $data = array() ) {
-
-		$data = $this->validate_data($data);
-
-		if ( !isset($id) || empty($id) ) {
-			return false;
+			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+			dbDelta( $sql );
 		}
 
-		global $wpdb;
+		/**
+		 * Add a new audit
+		 *
+		 * @access public
+		 * @param array $data (default: array())
+		 * @return void
+		 */
+		function add_data( $data = array() ) {
+			$data = $this->validate_data( $data );
 
-		$result = $wpdb->query( $wpdb->prepare(
-			"UPDATE `" . $this->get_table_name() . "` SET
-				`name` = %s,
-				`date` = %s,
-				`score` = %f,
-				`status` = %s,
-				`user` = %d,
-				`num_posts` = %d,
-				`args` = %s
-			WHERE id = %d",
-				$data['name'],
-				date($this->data_format, strtotime($data['date'])),
-				$data['score'],
-				$data['status'],
-				$data['user'],
-				$data['num_posts'],
-				json_encode($data['args']),
-				$id
-		) );
+			global $wpdb;
 
-		return $result;
-	}
+			$wpdb->insert(
+				$this->get_table_name(),
+				array(
+					'name'      => $data['name'],
+					'date'      => date( $this->data_format, strtotime( $data['date'] ) ),
+					'score'     => $data['score'],
+					'status'    => $data['status'],
+					'user'      => $data['user'],
+					'num_posts' => $data['num_posts'],
+					'args'      => json_encode( $data['args'] ),
+				)
+			);
 
-	/**
-	 * Get audits
-	 *
-	 * @access public
-	 * @param array $args (default: array())
-	 * @return void
-	 */
-	function get_data($args = array()) {
+			// Return the recently created id for this entry
 
-		global $wpdb;
+			return $wpdb->insert_id;
 
-		// Create the WHERE clause
-
-		$where = ' WHERE 1=1 ';
-
-		// Search
-
-		$search = '';
-
-		if ( isset($args['s']) ) {
-
-			$s = $wpdb->esc_like($args['s']);
-			$s = '%' . $s . '%';
-			$search = $wpdb->prepare(" AND `name` LIKE %s", $s);
 		}
 
-		// Status
+		/**
+		 * Update Audit
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param	data to be updated
+		 * @return	false if error, otherwise nothing
+		 */
+		function update_data( $id = null, $data = array() ) {
+			$data = $this->validate_data( $data );
 
-		$status = '';
+			if ( ! isset( $id ) || empty( $id ) ) {
+				return false;
+			}
 
-		if ( isset($args['status']) && $args['status'] != 'all') {
-			$status = $wpdb->prepare(' AND `status` = %s', $args['status']);
+			global $wpdb;
+
+			wp_cache_delete( 'msa_audits_get_data' );
+
+			$wpdb->update(
+				$this->get_table_name(),
+				array(
+					'name'      => $data['name'],
+					'date'      => date( $this->data_format, strtotime( $data['date'] ) ),
+					'score'     => $data['score'],
+					'status'    => $data['status'],
+					'user'      => $data['user'],
+					'num_posts' => $data['num_posts'],
+					'args'      => json_encode( $data['args'] ),
+				),
+				array( 'id' => $id ),
+				array(
+					'%s',
+					'%s',
+					'%f',
+					'%s',
+					'%d',
+					'%d',
+					'%s',
+				)
+			);
+
+			return $result;
 		}
 
-		$where .= $search . $status;
+		/**
+		 * Get audits
+		 *
+		 * @access public
+		 * @param array $args (default: array())
+		 * @return void
+		 */
+		function get_data( $args = array() ) {
+			global $wpdb;
 
-		$data = $wpdb->get_results("SELECT * FROM `" . $this->get_table_name() . "` " . $where . " ORDER BY `id` DESC;",  'ARRAY_A');
+			// Create the WHERE clause
 
-		return $this->parse_data($data);
-	}
+			$where = ' WHERE 1=1 ';
 
-	/**
-	 * Get audit from id
-	 *
-	 * @access public
-	 * @param mixed $id
-	 * @return void
-	 */
-	function get_data_from_id($id) {
+			// Search
 
-		global $wpdb;
+			$search = '';
 
-		$data = $wpdb->get_results( $wpdb->prepare("SELECT * FROM `" . $this->get_table_name() . "` WHERE `id` = %d", $id), 'ARRAY_A');
+			if ( isset( $args['s'] ) ) {
+				$s = $wpdb->esc_like( $args['s'] );
+				$s = '%' . $s . '%';
+				$search = $wpdb->prepare( ' AND `name` LIKE %s', $s );
+			}
 
-		$parsed_data = $this->parse_data($data);
+			// Status
 
-		if ( isset( $parsed_data[0] ) ) {
-			return $parsed_data[0];
+			$status = '';
+
+			if ( isset( $args['status'] ) && 'all' !== $args['status'] ) {
+				$status = $wpdb->prepare( ' AND `status` = %s', $args['status'] );
+			}
+
+			$where .= $search . $status;
+
+			wp_cache_get( 'msa_audits_get_data' );
+			$data = $wpdb->get_results( 'SELECT * FROM `' . $this->get_table_name() . '` ' . $where . ' ORDER BY `id` DESC;', 'ARRAY_A' );
+			wp_cache_set( 'msa_audits_get_data', $data );
+
+			return $this->parse_data( $data );
 		}
 
-		return null;
-	}
+		/**
+		 * Get audit from id
+		 *
+		 * @access public
+		 * @param mixed $id
+		 * @return void
+		 */
+		function get_data_from_id( $id ) {
+			global $wpdb;
 
-	/**
-	 * Get the latest audit
-	 *
-	 * @access public
-	 * @return void
-	 */
-	function get_latest() {
+			if ( false === ( $data = wp_cache_get( 'msa_audits_get_data_' . $id ) ) ) {
+				$data = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM `' . $this->get_table_name() . '` WHERE `id` = %d', $id ), 'ARRAY_A' );
+				wp_cache_set( 'msa_audits_get_data_' . $id, $data );
+			}
 
-		global $wpdb;
+			$parsed_data = $this->parse_data( $data );
 
-		$data = $wpdb->get_results("SELECT * FROM  `" . $this->get_table_name() . "` WHERE `status` = 'completed' ORDER BY `id` DESC LIMIT 1", 'ARRAY_A');
+			if ( isset( $parsed_data[0] ) ) {
+				return $parsed_data[0];
+			}
 
-		$parsed_data = $this->parse_data($data);
-
-		if ( isset($parsed_data[0]) ) {
-			return $parsed_data[0];
+			return null;
 		}
 
-		return null;
+		/**
+		 * Get the latest audit
+		 *
+		 * @access public
+		 * @return void
+		 */
+		function get_latest() {
+			global $wpdb;
 
-	}
+			if ( false === ( $data = wp_cache_get( 'msa_audits_get_latest' ) ) ) {
+				$data = $wpdb->get_results( 'SELECT * FROM `' . $this->get_table_name() . '` WHERE `status` = "completed" ORDER BY `id` DESC LIMIT 1', 'ARRAY_A' );
+				wp_cache_set( 'msa_audits_get_latest', $data );
+			}
 
-	/**
-	 * Delete some data
-	 *
-	 * @access public
-	 * @param mixed $id
-	 * @return void
-	 */
-	function delete_data( $id ) {
+			$parsed_data = $this->parse_data( $data );
 
-		global $wpdb;
+			if ( isset( $parsed_data[0] ) ) {
+				return $parsed_data[0];
+			}
 
-		$result = $wpdb->query( $wpdb->prepare("DELETE FROM `" . $this->get_table_name() . "` WHERE `id` = %d", $id ) );
-
-		// Delete all the posts in the Audit Posts Table
-
-		$audit_posts_model = new MSA_Audit_Posts_Model();
-		$audit_posts_model->delete_data($id);
-
-		return $result;
-
-	}
-
-	/**
-	 * Delete the table
-	 *
-	 * @access public
-	 * @return void
-	 */
-	function delete_table() {
-
-		global $wpdb;
-
-		$result = $wpdb->query("DROP TABLE `" . $this->get_table_name() . "`");
-
-		return $result;
-
-	}
-
-	/**
-	 * Validate that the data is in the correct format
-	 *
-	 * @access public
-	 * @param mixed $data
-	 * @return void
-	 */
-	function validate_data( $data ){
-		return array_merge($this->default_data(), $data);
-	}
-
-	/**
-	 * Parse the returned data
-	 *
-	 * @access public
-	 * @param mixed $data
-	 * @return void
-	 */
-	function parse_data( $data ) {
-
-		$parsed_data = array();
-
-		foreach ($data as $row) {
-
-			$entry = array();
-
-			$entry["id"]           			= $row["id"];
-			$entry["name"]         			= $row["name"];
-			$entry["date"]        			= $row["date"];
-			$entry["score"]        			= $row["score"];
-			$entry["status"]        		= $row["status"];
-			$entry["user"]        			= $row["user"];
-			$entry["num_posts"]        		= $row["num_posts"];
-			$entry['args']         			= json_decode($row['args'], true);
-
-			$parsed_data[] = $entry;
+			return null;
 		}
 
-		return $parsed_data;
+		/**
+		 * Delete some data
+		 *
+		 * @access public
+		 * @param mixed $id
+		 * @return void
+		 */
+		function delete_data( $id ) {
 
+			global $wpdb;
+			//$sql = $wpdb->prepare( 'DELETE FROM `' . $this->get_table_name() . '` WHERE `id` = %d', $id );
+
+			$wpdb->delete(
+				$this->get_table_name(),
+				array( 'id' => $id )
+			);
+
+			// Delete all the posts in the Audit Posts Table
+
+			$audit_posts_model = new MSA_Audit_Posts_Model();
+			$audit_posts_model->delete_data( $id );
+		}
+
+		/**
+		 * Delete the table
+		 *
+		 * @access public
+		 * @return void
+		 */
+		function delete_table() {
+			global $wpdb;
+			$sql = 'DROP TABLE `' . $this->get_table_name() . '`';
+
+			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+			dbDelta( $sql );
+		}
+
+		/**
+		 * Validate that the data is in the correct format
+		 *
+		 * @access public
+		 * @param mixed $data
+		 * @return void
+		 */
+		function validate_data( $data ) {
+			return array_merge( $this->default_data(), $data );
+		}
+
+		/**
+		 * Parse the returned data
+		 *
+		 * @access public
+		 * @param mixed $data
+		 * @return void
+		 */
+		function parse_data( $data ) {
+
+			$parsed_data = array();
+
+			foreach ( $data as $row ) {
+
+				$entry = array();
+
+				$entry['id']           			= $row['id'];
+				$entry['name']         			= $row['name'];
+				$entry['date']        			= $row['date'];
+				$entry['score']        			= $row['score'];
+				$entry['status']        		= $row['status'];
+				$entry['user']        			= $row['user'];
+				$entry['num_posts']        		= $row['num_posts'];
+				$entry['args']         			= json_decode( $row['args'], true );
+
+				$parsed_data[] = $entry;
+			}
+
+			return $parsed_data;
+
+		}
+
+		/**
+		 * Clean the data given to us
+		 *
+		 * @access public
+		 * @param mixed $data
+		 * @return void
+		 */
+		function clean_data( $data ) {
+			return stripcslashes( sanitize_text_field( $data ) );
+		}
+
+		/**
+		 * Returns the proper table name for Multisies
+		 *
+		 * @access public
+		 * @param mixed $table_name
+		 * @return void
+		 */
+		function get_table_name() {
+			global $wpdb;
+			return $wpdb->prefix . $this->table_name;
+		}
 	}
-
-	/**
-	 * Clean the data given to us
-	 *
-	 * @access public
-	 * @param mixed $data
-	 * @return void
-	 */
-	function clean_data($data) {
-		return stripcslashes(sanitize_text_field($data));
-	}
-
-	/**
-	 * Returns the proper table name for Multisies
-	 *
-	 * @access public
-	 * @param mixed $table_name
-	 * @return void
-	 */
-	function get_table_name() {
-
-		global $wpdb;
-
-		return $wpdb->prefix . $this->table_name;
-	}
-
-}
 
 endif;

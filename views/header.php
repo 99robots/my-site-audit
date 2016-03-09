@@ -26,11 +26,12 @@
 
 // Exit if accessed directly
 
-if ( ! defined( 'ABSPATH' ) ) exit; ?>
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+} ?>
 
 <div class="wrap"><!-- Wrap -->
 
 	<div><!-- Header -->
 
 	</div><!-- /Header -->
-

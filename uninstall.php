@@ -25,14 +25,17 @@
 
 // Exit if accessed directly
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 // if uninstall not called from WordPress exit
 
-if ( !defined( 'WP_UNINSTALL_PLUGIN' ) )
-	exit ();
+if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+	exit();
+}
 
-do_action('msa_uninstall');
+do_action( 'msa_uninstall' );
 
 // Delete all existence of this plugin
 
@@ -55,49 +58,44 @@ global $wpdb;
 
 // Single Site
 
-if ( function_exists('is_multisite') && !is_multisite() ) {
+if ( function_exists( 'is_multisite' ) && ! is_multisite() ) {
 
 	// Version
 
-	delete_option('msa_version');
-	delete_option('msa_version_upgraded_from');
+	delete_option( 'msa_version' );
+	delete_option( 'msa_version_upgraded_from' );
 
 	// Dashboard Panels Order
 
-    $wpdb->query("DELETE FROM `" . $wpdb->prefix . "options` WHERE `option_name` LIKE '%msa_dashboard_panel_order_%'");
+	$wpdb->query( 'DELETE FROM `' . $wpdb->prefix . "options` WHERE `option_name` LIKE '%msa_dashboard_panel_order_%'" );
 
-    // Show Columns
+	// Show Columns
 
-    $wpdb->query("DELETE FROM `" . $wpdb->prefix . "options` WHERE `option_name` LIKE '%msa_show_columns_%'");
-
-}
-
-// Multisite
-
-else {
+	$wpdb->query( 'DELETE FROM `' . $wpdb->prefix . "options` WHERE `option_name` LIKE '%msa_show_columns_%'" );
+} else {
 
 	// Version
 
-	delete_site_option('msa_version');
+	delete_site_option( 'msa_version' );
 
 	// Delete data from each blog
 
-    $blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+	$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
 
-    foreach ( $blog_ids as $blog_id ) {
+	foreach ( $blog_ids as $blog_id ) {
 
-        switch_to_blog( $blog_id );
+		switch_to_blog( $blog_id );
 
-		delete_option('msa_version_upgraded_from');
+		delete_option( 'msa_version_upgraded_from' );
 
-        // Dashboard Panels Order
+		// Dashboard Panels Order
 
-        $wpdb->query("DELETE FROM `" . $wpdb->prefix . "options` WHERE `option_name` LIKE '%msa_dashboard_panel_order_%'");
+		$wpdb->query( 'DELETE FROM `' . $wpdb->prefix . "options` WHERE `option_name` LIKE '%msa_dashboard_panel_order_%'" );
 
-        // Show Columns
+		// Show Columns
 
-        $wpdb->query("DELETE FROM `" . $wpdb->prefix . "options` WHERE `option_name` LIKE '%msa_show_columns_%'");
+		$wpdb->query( 'DELETE FROM `' . $wpdb->prefix . "options` WHERE `option_name` LIKE '%msa_show_columns_%'" );
 
-        restore_current_blog();
-    }
+		restore_current_blog();
+	}
 }

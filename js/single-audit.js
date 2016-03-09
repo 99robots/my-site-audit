@@ -116,6 +116,7 @@ jQuery(document).ready(function($) {
 		$.post(ajaxurl, {
 				'action': 'msa_show_column',
 				'action_needed': action,
+				'show_column_nonce': msa_single_audit_data.show_column_nonce,
 				'column': column,
 			}, function(response) {
 			console.log(response);

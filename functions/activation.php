@@ -24,7 +24,9 @@
 
 // Exit if accessed directly
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * The plugin is activated
@@ -36,10 +38,10 @@ function msa_activation() {
 
 	// Add the version number to the database
 
-	if ( function_exists('is_multisite') && is_multisite() ) {
-		update_site_option('msa_version', MY_SITE_AUDIT_VERSION);
+	if ( function_exists( 'is_multisite' ) && is_multisite() ) {
+		update_site_option( 'msa_version', MY_SITE_AUDIT_VERSION );
 	} else {
-		update_option('msa_version', MY_SITE_AUDIT_VERSION);
+		update_option( 'msa_version', MY_SITE_AUDIT_VERSION );
 	}
 
 	// Create the audits table
@@ -60,7 +62,7 @@ function msa_activation() {
 
 	update_option( 'msa_version_upgraded_from', MY_SITE_AUDIT_VERSION );
 
-	delete_transient('msa_running_audit');
+	delete_transient( 'msa_running_audit' );
 
 }
 
