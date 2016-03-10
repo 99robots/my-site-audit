@@ -1,29 +1,10 @@
 <?php
-/* ===================================================================
+/**
+ * The class that is responsible for diplaying all of the posts within an Audit
+ * using the WP_List_Table.
  *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 10/23/15
- * Package: Controller/All Posts Table
- * File: all-posts-table.php
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-// Exit if accessed directly
+ * @package Classes / Audit Posts Table
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -35,6 +16,9 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 
 if ( ! class_exists( 'MSA_All_Posts_Table' ) ) :
 
+	/**
+	 * The Audit Posts Table class
+	 */
 	class MSA_All_Posts_Table extends WP_List_Table {
 
 		/**
@@ -77,8 +61,7 @@ if ( ! class_exists( 'MSA_All_Posts_Table' ) ) :
 
 			$this->_column_headers = array( $columns, $hidden, $sortable );
 
-			// Get the audit data
-
+			// Get the audit data.
 			$audit_posts_model 	= new MSA_Audit_Posts_Model();
 			$per_page     		= $this->get_items_per_page( 'posts_per_page', 50 );
 			$current_page 		= $this->get_pagenum();
@@ -87,21 +70,17 @@ if ( ! class_exists( 'MSA_All_Posts_Table' ) ) :
 				'current_page'	=> $current_page,
 			);
 
-			/* =========================================================================
-			 *
+			/**
 			 * Search term
-			 *
-			 ========================================================================= */
+			 */
 
 			if ( isset( $_POST['s'] ) && check_admin_referer( 'msa-all-audit-posts-table' ) ) { // Input var okay.
 				$args['s'] = sanitize_text_field( wp_unslash( $_POST['s'] ) ); // Input var okay.
 			}
 
-			/* =========================================================================
-			 *
+			/**
 			 * Get Posts
-			 *
-			 ========================================================================= */
+			 */
 
 			$audit = -1;
 			if ( isset( $_GET['audit'] ) ) { // Input var okay.
@@ -114,19 +93,15 @@ if ( ! class_exists( 'MSA_All_Posts_Table' ) ) :
 				$this->items[] = array( 'score' => $post['score'], 'post' => $post['post'], 'data' => $post['data'] );
 			}
 
-			/* =========================================================================
-			 *
+			/**
 			 * Filter Posts
-			 *
-			 ========================================================================= */
+			 */
 
 			$this->items = msa_filter_posts( $this->items );
 
-			/* =========================================================================
-			 *
+			/**
 			 * Sort Posts
-			 *
-			 ========================================================================= */
+			 */
 
 			if ( count( $this->items ) > 0 ) {
 				usort( $this->items, array( &$this, 'usort_reorder' ) );
@@ -135,8 +110,8 @@ if ( ! class_exists( 'MSA_All_Posts_Table' ) ) :
 			$total_items = count( $this->items );
 
 			$this->set_pagination_args( array(
-				'total_items' => $total_items, 	// We have to calculate the total number of items
-				'per_page'    => $per_page, 	// We have to determine how many items to show on a page
+				'total_items' => $total_items, 	// We have to calculate the total number of items.
+				'per_page'    => $per_page, 	// We have to determine how many items to show on a page.
 			) );
 
 			if ( is_array( $this->items ) && count( $this->items ) > 0 ) {
@@ -148,29 +123,19 @@ if ( ! class_exists( 'MSA_All_Posts_Table' ) ) :
 		 * Get all the columns that we want to display
 		 *
 		 * @access public
-		 * @return void
 		 */
 		function get_columns() {
-
 			$columns['score'] = __( 'Score', 'msa' );
-
-			// Condition Categories
-
 			$condition_categories = msa_get_condition_categories();
 
 			foreach ( $condition_categories as $key => $condition_category ) {
 				$columns[ $key ] = $condition_category['name'];
-
-				// Conditions
-
 				$conditions = msa_get_conditions_from_category( $key );
 
 				foreach ( $conditions as $key => $condition ) {
 					$columns[ $key ] = $condition['name'];
 				}
 			}
-
-			// Attributes
 
 			$attributes = msa_get_attributes();
 
@@ -185,26 +150,18 @@ if ( ! class_exists( 'MSA_All_Posts_Table' ) ) :
 		 * Get the sortable columns for the table
 		 *
 		 * @access public
-		 * @return void
 		 */
 		function get_sortable_columns() {
-
 			$sortable_columns['score'] = array( 'score', false );
-
-			// Condition Categories
-
 			$condition_categories = msa_get_condition_categories();
 
 			foreach ( $condition_categories as $key => $condition_category ) {
 				$sortable_columns[ $key ] = array( $key, false );
 			}
 
-			// Conditions
-
 			$conditions = msa_get_conditions();
 
 			foreach ( $conditions as $key => $condition ) {
-
 				if ( 'score' === $key ) {
 					$sortable_columns[ $key ] = array( $key, true );
 				} else {
@@ -212,18 +169,13 @@ if ( ! class_exists( 'MSA_All_Posts_Table' ) ) :
 				}
 			}
 
-			// Attributes
-
 			$attributes = msa_get_attributes();
 
 			foreach ( $attributes as $key => $attribute ) {
-
 				if ( isset( $attribute['sort'] ) && ! $attribute['sort'] ) {
 					continue;
 				}
-
 				$sortable_columns[ $key ] = array( $key, false );
-
 			}
 
 			return $sortable_columns;
@@ -233,9 +185,8 @@ if ( ! class_exists( 'MSA_All_Posts_Table' ) ) :
 		 * Sort the data
 		 *
 		 * @access public
-		 * @param mixed $a
-		 * @param mixed $b
-		 * @return void
+		 * @param mixed $a The first element to sort.
+		 * @param mixed $b The second element to sort.
 		 */
 		function usort_reorder( $a, $b ) {
 
@@ -276,10 +227,10 @@ if ( ! class_exists( 'MSA_All_Posts_Table' ) ) :
 			$a_sort = apply_filters( 'msa_audit_posts_table_sort_data', $a_data, $a, $orderby );
 			$b_sort = apply_filters( 'msa_audit_posts_table_sort_data', $b_data, $b, $orderby );
 
-			// Determine sort order
+			// Determine sort order.
 			$result = ( $a_sort < $b_sort ) ? -1 : 1;
 
-			// Send final sort direction to usort
+			// Send final sort direction to usort.
 			return ( 'asc' === $order ) ? $result : -$result;
 		}
 
@@ -287,9 +238,8 @@ if ( ! class_exists( 'MSA_All_Posts_Table' ) ) :
 		 * Default Column Value
 		 *
 		 * @access public
-		 * @param mixed $item
-		 * @param mixed $column_name
-		 * @return void
+		 * @param mixed $item        The audit post.
+		 * @param mixed $column_name The column that is displayed.
 		 */
 		public function column_default( $item, $column_name ) {
 
@@ -301,16 +251,8 @@ if ( ! class_exists( 'MSA_All_Posts_Table' ) ) :
 			$score = $item['data']['score'];
 			$values = $item['data']['values'];
 
-			// Condition Categories
-
 			$condition_categories = msa_get_condition_categories();
-
-			// Conditions
-
 			$conditions = msa_get_conditions();
-
-			// Attributes
-
 			$attributes = msa_get_attributes();
 
 			switch ( $column_name ) {
@@ -340,11 +282,9 @@ if ( ! class_exists( 'MSA_All_Posts_Table' ) ) :
 					}
 
 				break;
-
 			}
 
-			// Invalid Data
-
+			// Invalid Data.
 			if ( 'missing_alt_tag' === $column_name ||
 				 'broken_images' === $column_name ||
 				 'broken_links' === $column_name ||
@@ -357,23 +297,18 @@ if ( ! class_exists( 'MSA_All_Posts_Table' ) ) :
 				}
 			}
 
-			// Check if this is a condition category
-
+			// Check if this is a condition category.
 			if ( isset( $condition_categories[ $column_name ] ) ) {
-				$data = '<span class="msa-post-status-text-' . msa_get_score_status( $score['data'][ $column_name ] ) . '">' . round( $score['data'][ $column_name ] * 100 ) . '%' . '</span>';
+				$data = '<span class="msa-post-status-text-' . msa_get_score_status( $score['data'][ $column_name ] ) . '">' . round( $score['data'][ $column_name ] * 100 ) . '%</span>';
 			}
 
 			return apply_filters( 'msa_all_posts_table_column_data', $data, $item, $column_name );
-
 		}
 
 		/**
 		 * Generates content for a single row of the table
 		 *
-		 * @since 3.1.0
-		 * @access public
-		 *
-		 * @param object $item The current item
+		 * @param object $item The current item.
 		 */
 		public function single_row( $item ) {
 
@@ -385,95 +320,79 @@ if ( ! class_exists( 'MSA_All_Posts_Table' ) ) :
 		/**
 		 * Extra controls to be displayed between bulk actions and pagination
 		 *
-		 * @since 3.1.0
 		 * @access protected
 		 *
-		 * @param string $which
+		 * @param mixed $which Which tablenav the top or bottom.
 		 */
 		protected function extra_tablenav( $which ) {
-
-			// Get all the registerd conditions
-
 			$conditions = msa_get_conditions();
-
-			// Get all the registerd attributes
-
 			$attributes = msa_get_attributes();
 
 			if ( 'top' === $which ) {
+				?><div class="alignleft actions bulkactions"><?php
 
-				?><div class="alignleft actions bulkactions">
+foreach ( $conditions as $key => $condition ) {
+	if ( isset( $condition['filter'] ) ) {
 
-					<?php
+		$value = '';
+		if ( isset( $_GET[ $condition['filter']['name'] ] ) ) { // Input var okay.
+			$value = sanitize_text_field( wp_unslash( $_GET[ $condition['filter']['name'] ] ) ); // Input var okay.
+		}
 
-					// Conditions
+		$options = '';
 
-					foreach ( $conditions as $key => $condition ) {
+		$condition = apply_filters( 'msa_audit_posts_filter_' . $key, $condition );
 
-						if ( isset( $condition['filter'] ) ) {
+		if ( 1 === $condition['comparison'] ) {
 
-							$value = '';
-							if ( isset( $_GET[ $condition['filter']['name'] ] ) ) { // Input var okay.
-								$value = sanitize_text_field( wp_unslash( $_GET[ $condition['filter']['name'] ] ) ); // Input var okay.
-							}
+			$options .= '<option value="less-' . $condition['min'] . '" ' . selected( 'less-' . $condition['min'], $value, false ) . '>' . __( 'Less than ', 'msa' ) . ' ' . $condition['min'] . ' ' . $condition['units'] . '</option>';
+			$options .= '<option value="more-' . $condition['min'] . '" ' . selected( 'more-' . $condition['min'], $value, false ) . '>' . __( 'More than ', 'msa' ) . ' ' . $condition['min'] . ' ' . $condition['units'] . '</option>';
 
-							// Options
+		} else if ( 2 === $condition['comparison'] ) {
 
-							$options = '';
+			$options .= '<option value="less-' . $condition['max'] . '" ' . selected( 'less-' . $condition['max'], $value, false ) . '>' . __( 'Less than ', 'msa' ) . ' ' . $condition['max'] . ' ' . $condition['units'] . '</option>';
+			$options .= '<option value="more-' . $condition['max'] . '" ' . selected( 'more-' . $condition['max'], $value, false ) . '>' . __( 'More than ', 'msa' ) . ' ' . $condition['max'] . ' ' . $condition['units'] . '</option>';
 
-							if ( 1 === $condition['comparison'] ) {
+		} else if ( 3 === $condition['comparison'] ) {
 
-								$options .= '<option value="less-' . $condition['min'] . '" ' . selected( 'less-' . $condition['min'], $value, false ) . '>' . __( 'Less than ', 'msa' ) . ' ' . $condition['min'] . ' ' . $condition['units'] . '</option>';
-								$options .= '<option value="more-' . $condition['min'] . '" ' . selected( 'more-' . $condition['min'], $value, false ) . '>' . __( 'More than ', 'msa' ) . ' ' . $condition['min'] . ' ' . $condition['units'] . '</option>';
+			$options .= '<option value="less-' . $condition['max'] . '" ' . selected( 'less-' . $condition['max'], $value, false ) . '>' . __( 'Less than ', 'msa' ) . ' ' . $condition['max'] . ' ' . $condition['units'] . '</option>';
+			$options .= '<option value="more-' . $condition['max'] . '" ' . selected( 'more-' . $condition['max'], $value, false ) . '>' . __( 'More than ', 'msa' ) . ' ' . $condition['max'] . ' ' . $condition['units'] . '</option>';
 
-							} else if ( 2 === $condition['comparison'] ) {
+		}
 
-								$options .= '<option value="less-' . $condition['max'] . '" ' . selected( 'less-' . $condition['max'], $value, false ) . '>' . __( 'Less than ', 'msa' ) . ' ' . $condition['max'] . ' ' . $condition['units'] . '</option>';
-								$options .= '<option value="more-' . $condition['max'] . '" ' . selected( 'more-' . $condition['max'], $value, false ) . '>' . __( 'More than ', 'msa' ) . ' ' . $condition['max'] . ' ' . $condition['units'] . '</option>';
+		?><div class="msa-filter-container msa-filter-conditions-container filter-<?php esc_attr_e( $key ); ?>">
+			<!-- <label class="msa-filter-label"><?php esc_attr_e( $condition['filter']['label'] ); ?></label> -->
+			<select class="msa-filter" name="<?php esc_attr_e( $condition['filter']['name'] ); ?>">
+				<option value="" <?php selected( '', $value, true ); ?>><?php esc_attr_e( 'All ' . $condition['filter']['label'], 'msa' ); ?></option>
+				<?php echo( $options ); // WPCS: XSS ok. ?>
+			</select>
+		</div> <?php
+	}
+}
 
-							} else if ( 3 === $condition['comparison'] ) {
+foreach ( $attributes as $key => $attribute ) {
 
-								$options .= '<option value="less-' . $condition['max'] . '" ' . selected( 'less-' . $condition['max'], $value, false ) . '>' . __( 'Less than ', 'msa' ) . ' ' . $condition['max'] . ' ' . $condition['units'] . '</option>';
-								$options .= '<option value="more-' . $condition['max'] . '" ' . selected( 'more-' . $condition['max'], $value, false ) . '>' . __( 'More than ', 'msa' ) . ' ' . $condition['max'] . ' ' . $condition['units'] . '</option>';
+	if ( isset( $attribute['filter'] ) ) {
 
-							} ?>
+		$value = '';
+		if ( isset( $_GET[ $attribute['filter']['name'] ] ) ) { // Input var okay.
+			$value = sanitize_text_field( wp_unslash( $_GET[ $attribute['filter']['name'] ] ) );  // Input var okay.
+		}
 
-							<div class="msa-filter-container msa-filter-conditions-container filter-<?php esc_attr_e( $key ); ?>">
-								<!-- <label class="msa-filter-label"><?php esc_attr_e( $condition['filter']['label'] ); ?></label> -->
-								<select class="msa-filter" name="<?php esc_attr_e( $condition['filter']['name'] ); ?>">
-									<option value="" <?php selected( '', $value, true ); ?>><?php esc_attr_e( 'All ' . $condition['filter']['label'], 'msa' ); ?></option>
-									<?php esc_attr_e( $options ); ?>
-								</select>
-							</div>
+		$attribute['filter']['options'] = apply_filters( 'msa_filter_attribute_' . $key, $attribute['filter']['options'], $key ); ?>
 
-						<?php }
-					}
+		<div class="msa-filter-container msa-filter-attributes-container filter-<?php esc_attr_e( $key ); ?>">
+			<!-- <label class="msa-filter-label"><?php esc_attr_e( $attribute['filter']['label'] ); ?></label> -->
+			<select class="msa-filter" name="<?php esc_attr_e( $attribute['filter']['name'] ); ?>">
+				<option value="" <?php selected( '', $value, true ); ?>><?php esc_attr_e( 'All ' . $attribute['filter']['label'], 'msa' ); ?></option>
+				<?php foreach ( $attribute['filter']['options'] as $option ) { ?>
+					<option value="<?php esc_attr_e( $option['value'] ); ?>" <?php selected( $option['value'], $value, true ); ?>><?php esc_attr_e( $option['name'] ); ?></option>
+				<?php } ?>
+			</select>
+		</div>
 
-					// Attributes
-
-					foreach ( $attributes as $key => $attribute ) {
-
-						if ( isset( $attribute['filter'] ) ) {
-
-							$value = '';
-							if ( isset( $_GET[ $attribute['filter']['name'] ] ) ) { // Input var okay.
-								$value = sanitize_text_field( wp_unslash( $_GET[ $attribute['filter']['name'] ] ) );  // Input var okay.
-							}
-
-							$attribute['filter']['options'] = apply_filters( 'msa_filter_attribute_' . $key, $attribute['filter']['options'], $key ); ?>
-
-							<div class="msa-filter-container msa-filter-attributes-container filter-<?php esc_attr_e( $key ); ?>">
-								<!-- <label class="msa-filter-label"><?php esc_attr_e( $attribute['filter']['label'] ); ?></label> -->
-								<select class="msa-filter" name="<?php esc_attr_e( $attribute['filter']['name'] ); ?>">
-									<option value="" <?php selected( '', $value, true ); ?>><?php esc_attr_e( 'All ' . $attribute['filter']['label'], 'msa' ); ?></option>
-									<?php foreach ( $attribute['filter']['options'] as $option ) { ?>
-										<option value="<?php esc_attr_e( $option['value'] ); ?>" <?php selected( $option['value'], $value, true ); ?>><?php esc_attr_e( $option['value'] ); ?></option>
-									<?php } ?>
-								</select>
-							</div>
-
-						<?php }
-					}
+	<?php }
+}
 
 				?><button class="msa-filter-button button"><?php esc_attr_e( 'Filter', 'msa' ); ?></button>
 				<button class="msa-clear-filters-button button"><?php esc_attr_e( 'Clear Filters', 'msa' ); ?></button>
@@ -481,8 +400,7 @@ if ( ! class_exists( 'MSA_All_Posts_Table' ) ) :
 
 			}
 
-			// Output stlying for the condition categories
-
+			// Output stlying for the condition categories.
 			$condition_categories = msa_get_condition_categories();
 
 			?><style>

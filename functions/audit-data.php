@@ -1,29 +1,10 @@
 <?php
-/* ===================================================================
+/**
+ * This file handles all of the actual auditing.  After the content is audited the
+ * data is then returned.
  *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 10/22/15
- * Package: Functions/Audit Data
- * File: audit-data.php
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-// Exit if accessed directly
+ * @package Functions / Audit Data
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -33,9 +14,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Calculate the score of a post
  *
  * @access public
- * @param mixed $post
- * @param mixed $data
- * @return void
+ * @param object $post  A WP_Post obejct.
+ * @param array  $data  The relevant audit data.
+ * @return array $array The score and audit data.
  */
 function msa_calculate_score( $post, $data ) {
 
@@ -46,8 +27,7 @@ function msa_calculate_score( $post, $data ) {
 
 	foreach ( $conditions as $key => $condition ) {
 
-		// Greater Than
-
+		// Greater Than.
 		if ( 1 === $condition['comparison'] && isset( $condition['min'] ) ) {
 			if ( 0 !== $condition['min'] ) {
 				$value = min( $data[ $key ] / $condition['min'], 1 );
@@ -56,8 +36,7 @@ function msa_calculate_score( $post, $data ) {
 			}
 		}
 
-		// Less Than
-
+		// Less Than.
 		if ( 2 === $condition['comparison'] && isset( $condition['max'] ) ) {
 			if ( 0 !== $condition['max'] ) {
 				$value = 1 - min( $data[ $key ] / $condition['max'], 1 );
@@ -66,8 +45,7 @@ function msa_calculate_score( $post, $data ) {
 			}
 		}
 
-		// Range
-
+		// Range.
 		if ( 3 === $condition['comparison'] && isset( $condition['max'] ) && isset( $condition['min'] ) ) {
 
 			$range = $condition['max'] - $condition['min'] + 2;
@@ -77,8 +55,7 @@ function msa_calculate_score( $post, $data ) {
 
 		}
 
-		// Convert to bool if needed
-
+		// Convert to bool if needed.
 		$value = 1 === $condition['value'] && 0 !== $value ? 1 : $value;
 
 		$score_data[ $key ] = $value;
@@ -87,8 +64,7 @@ function msa_calculate_score( $post, $data ) {
 
 	}
 
-	// Get the score data for condition categories
-
+	// Get the score data for condition categories.
 	$condition_categories = msa_get_condition_categories();
 
 	foreach ( $condition_categories as $key => $condition_category ) {
@@ -107,18 +83,16 @@ function msa_calculate_score( $post, $data ) {
  * Get all the audit data for a specific post
  *
  * @access public
- * @param mixed $post
- * @return void
+ * @param object $post A WP_Post object.
+ * @return array $data The audi data.
  */
 function msa_get_post_audit_data( $post ) {
 
 	$data = array();
 
-	/* ===========================================================================
-	 *
+	/**
 	 * Content
-	 *
-	 * ======================================================================== */
+	 */
 
 	$content   = preg_replace( '/&#?[a-z0-9]{2,8};/i', '', $post->post_content );
 	$content   = strip_tags( $content );
@@ -130,11 +104,9 @@ function msa_get_post_audit_data( $post ) {
 	$data['word_count']        = str_word_count( $content );
 	$data['comment_count']     = $post->comment_count;
 
-	/* ===========================================================================
-	 *
+	/**
 	 * Links
-	 *
-	 * ======================================================================== */
+	 */
 
 	preg_match_all( "/<a\s[^>]*href=(\"??)([^\" >]*?)\\1[^>]*>(.*)<\/a>/siU" , $post->post_content, $data['link_matches'], PREG_SET_ORDER );
 
@@ -153,8 +125,7 @@ function msa_get_post_audit_data( $post ) {
 			$url = wp_parse_url( $link[2] );
 			$site_url = wp_parse_url( get_site_url() );
 
-			// Internal Link - External Link
-
+			// Internal Link - External Link.
 			if ( '#' === substr( $link[2], 0 , 1 ) || ( isset( $site_url['host'] ) && isset( $url['host'] ) && $site_url['host'] === $url['host'] ) ) {
 				$data['internal_links_data'][] = array(
 					'url'		=> $link[2],
@@ -167,8 +138,7 @@ function msa_get_post_audit_data( $post ) {
 				$data['external_links']++;
 			}
 
-			// Check if link is broken
-
+			// Check if link is broken.
 			if ( msa_is_link_broken( $link[2] ) ) {
 				$data['broken_links_data'][] = array(
 					'url'		=> $link[2],
@@ -178,17 +148,14 @@ function msa_get_post_audit_data( $post ) {
 		}
 	}
 
-	// Set the broken links to a high number if there are no links
-
+	// Set the broken links to a high number if there are no links.
 	if ( 0 === $data['internal_links'] + $data['external_links'] ) {
 		$data['broken_links'] = 9999;
 	}
 
-	/* ===========================================================================
-	 *
+	/**
 	 * Images
-	 *
-	 * ======================================================================== */
+	 */
 
 	$data['missing_alt_tag'] = 0;
 	$data['broken_images'] = 0;
@@ -199,8 +166,7 @@ function msa_get_post_audit_data( $post ) {
 
 	foreach ( $img_matches as $match ) {
 
-		// Check for broken image
-
+		// Check for broken image.
 		preg_match( '/src="([^"]*)"/i', $match[0], $link );
 		$link = $link[1];
 
@@ -211,8 +177,7 @@ function msa_get_post_audit_data( $post ) {
 			$data['broken_images']++;
 		}
 
-		// Check for an alt tag
-
+		// Check for an alt tag.
 		preg_match( '/alt="([^"]*)"/i', $match[0], $alt );
 		$alt = $alt[1];
 
@@ -221,18 +186,15 @@ function msa_get_post_audit_data( $post ) {
 		}
 	}
 
-	// Set the missing alt tags to a fail if there are no images
-
+	// Set the missing alt tags to a fail if there are no images.
 	if ( 0 === $data['image_count'] ) {
-		$data['missing_alt_tag'] = 9999; // We will set this to some high number so that it fails the test
+		$data['missing_alt_tag'] = 9999; // We will set this to some high number so that it fails the test.
 		$data['broken_images'] = 9999;
 	}
 
-	/* ===========================================================================
-	 *
+	/**
 	 * Headings
-	 *
-	 * ======================================================================== */
+	 */
 
 	$data['h1_tag'] = substr_count( $post->post_content, '<h1' );
 
@@ -254,31 +216,27 @@ function msa_get_post_audit_data( $post ) {
 	preg_match_all( '/<h([1-6])/', $post->post_content, $matches );
 	$data['heading_count'] = count( $matches[0] );
 
-	// Set the invalid headins to a high number if there are no headings
-
+	// Set the invalid headins to a high number if there are no headings.
 	if ( 0 === $data['heading_count'] ) {
 		$data['invalid_headings'] = 9999;
 	}
 
-	// Return the data
-
+	// Return the data.
 	return apply_filters( 'msa_get_post_audit_data', $data, $post );
-
 }
 
 /**
  * Check if a link is broken
  *
  * @access public
- * @param mixed $url
- * @return void
+ * @param mixed $url       The URL to be checked.
+ * @return bool true|false Whether or not the URL is broken.
  */
 function msa_is_link_broken( $url ) {
 
 	return false;
 
-	// Check if user wants to perform long task
-
+	// Check if user wants to perform long task.
 	if ( false === ( $settings = get_option( 'msa_settings' ) ) ) {
 		$settings = array();
 	}
@@ -287,16 +245,15 @@ function msa_is_link_broken( $url ) {
 		return false;
 	}
 
-	// Check if this is hash link
-
+	// Check if this is hash link.
 	if ( '#' === substr( $url, 0, 1 ) ) {
 		return false;
 	}
 
-	// Check if this is valid URL before we begin the query
-
+	// Check if this is valid URL before we begin the query.
 	if ( is_string( $url ) && preg_match( '/^http(s)?:\/\/[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(\/.*)?$/i', $url ) ) {
 		// @todo add wp_remote_get support
+		return false;
 	} else {
 		return true;
 	}
@@ -312,9 +269,9 @@ function msa_is_link_broken( $url ) {
  * Show all the links
  *
  * @access public
- * @param mixed $data
- * @param mixed $key
- * @return void
+ * @param mixed $data     The audit data.
+ * @param mixed $key      The key to access specfic parts of the data.
+ * @return string $output The HTML of the links to be shown.
  */
 function msa_show_links( $data, $key ) {
 
@@ -324,16 +281,14 @@ function msa_show_links( $data, $key ) {
 		$matches = 0;
 		$output = '<ol class="msa-link-list msa-link-list-' . $key . '">';
 
-		// Get all the broken links
-
+		// Get all the broken links.
 		$broken_links = array();
 
 		foreach ( $data['broken_links_data'] as $broken_link ) {
 			$broken_links[] = $broken_link['url'];
 		}
 
-		// Valid links
-
+		// Valid links.
 		foreach ( $links as $link ) {
 
 			if ( ! in_array( $link['url'], $broken_links, true ) ) {
@@ -355,15 +310,14 @@ function msa_show_links( $data, $key ) {
 	}
 
 	return $output;
-
 }
 
 /**
  * Show the images for a post
  *
  * @access public
- * @param mixed $content
- * @return void
+ * @param mixed $content  The post content.
+ * @return string $output The HTML output of the images to be shown.
  */
 function msa_show_images( $content ) {
 
@@ -374,12 +328,10 @@ function msa_show_images( $content ) {
 	$output = __( 'Count: ' . count( $matches ), 'msa' );
 	$output .= '<div class="msa-images">';
 
-	// Has Alt tag
-
+	// Has Alt tag.
 	foreach ( $matches as $match ) {
 
-		// Get the scr URL
-
+		// Get the scr URL.
 		$link = array();
 		preg_match( '/src="([^"]*)"/i', $match[0], $link );
 
@@ -389,8 +341,7 @@ function msa_show_images( $content ) {
 			$link = '';
 		}
 
-		// Check for an alt tag
-
+		// Check for an alt tag.
 		preg_match( '/alt="([^"]*)"/i', $match[0], $alt );
 
 		if ( isset( $alt[1] ) ) {
@@ -428,8 +379,8 @@ function msa_show_images( $content ) {
  * Show the images without an alt tag
  *
  * @access public
- * @param mixed $content
- * @return void
+ * @param mixed $content  The post content.
+ * @return string $output The HTML output of the images to be shown.
  */
 function msa_show_images_without_alt( $content ) {
 
@@ -438,12 +389,10 @@ function msa_show_images_without_alt( $content ) {
 	$images = 0;
 	$output = '<div class="msa-images">';
 
-	// Does not have alt tag
-
+	// Does not have alt tag.
 	foreach ( $matches as $match ) {
 
-		// Get the scr URL
-
+		// Get the scr URL.
 		$link = array();
 		preg_match( '/src="([^"]*)"/i', $match[0], $link );
 
@@ -453,8 +402,7 @@ function msa_show_images_without_alt( $content ) {
 			$link = '';
 		}
 
-		// Check for an alt tag
-
+		// Check for an alt tag.
 		preg_match( '/alt="([^"]*)"/i', $match[0], $alt );
 
 		if ( isset( $alt[1] ) ) {
@@ -488,8 +436,9 @@ function msa_show_images_without_alt( $content ) {
  * Show the H1 Tags for a post
  *
  * @access public
- * @param mixed $content
- * @return void
+ * @param mixed $content  The post content.
+ * @param mixed $data     The audit data.
+ * @return string $output The HTML output of the headings to be shown.
  */
 function msa_show_h1_tags( $content, $data ) {
 
@@ -507,14 +456,12 @@ function msa_show_h1_tags( $content, $data ) {
 
 	foreach ( $matches as $match ) {
 
-		// Continue if the heading is invalid
-
+		// Continue if the heading is invalid.
 		if ( in_array( $match[0], $invalid_headings, true ) ) {
 			continue;
 		}
 
-		// H1
-
+		// H1.
 		if ( substr_count( $match[0], '<h1' ) > 0 ) {
 			$output .= '<div class="msa-headings-item">';
 				$output .= '<span class="msa-heading-h1">h1</span>';
@@ -530,15 +477,16 @@ function msa_show_h1_tags( $content, $data ) {
 		$output = __( 'No H1 Tags', 'msa' );
 	}
 
-	return '<div class="msa-headings"><p>' .  __( 'Count: ' . $headings, 'msa' ) . '</p>' . $output;;
+	return '<div class="msa-headings"><p>' .  __( 'Count: ' . $headings, 'msa' ) . '</p>' . $output;
 }
 
 /**
  * Show the headings for a post
  *
  * @access public
- * @param mixed $content
- * @return void
+ * @param mixed $content  The post content.
+ * @param mixed $data     The audit data.
+ * @return string $output The HTML output of the headings to be shown.
  */
 function msa_show_headings( $content, $data ) {
 
@@ -558,14 +506,12 @@ function msa_show_headings( $content, $data ) {
 
 		$output .= '<div class="msa-headings-item">';
 
-		// Continue if the heading is invalid
-
+		// Continue if the heading is invalid.
 		if ( in_array( $match[0], $invalid_headings, true ) ) {
 			$output .= '<div class="msa-headings-item msa-invalid-heading">';
 		}
 
-		// Headings
-
+		// Headings.
 		if ( substr_count( $match[0], '<h1' ) > 0 ) {
 			$output .= '<span class="msa-heading-h1">h1</span>';
 		} else if ( substr_count( $match[0], '<h2' ) > 0 ) {
@@ -591,15 +537,15 @@ function msa_show_headings( $content, $data ) {
 		$output = __( 'No Headings', 'msa' );
 	}
 
-	return '<div class="msa-headings"><p>' .  __( 'Count: ' . $headings, 'msa' ) . '</p>' . $output;;
+	return '<div class="msa-headings"><p>' .  __( 'Count: ' . $headings, 'msa' ) . '</p>' . $output;
 }
 
 /**
  * Show the headings for a post
  *
  * @access public
- * @param mixed $content
- * @return void
+ * @param mixed $invalid_headings An array of invalid headings to show.
+ * @return string $ouput          The HTML output of the invalid headings.
  */
 function msa_show_invalid_headings( $invalid_headings ) {
 
@@ -610,8 +556,7 @@ function msa_show_invalid_headings( $invalid_headings ) {
 
 		$output .= '<div class="msa-headings-item">';
 
-		// Headings
-
+		// Headings.
 		if ( substr_count( $match['html'], '<h1' ) > 0 ) {
 			$output .= '<span class="msa-heading msa-heading-h1">h1</span>';
 		} else if ( substr_count( $match['html'], '<h2' ) > 0 ) {
@@ -644,13 +589,12 @@ function msa_show_invalid_headings( $invalid_headings ) {
  * Filter the posts for the all posts table
  *
  * @access public
- * @param mixed $posts
- * @return void
+ * @param mixed $posts  The original array of WP_Post objects.
+ * @return mixed $posts The filtered array of WP_Post objects.
  */
 function msa_filter_posts( $posts ) {
 
-	// Score
-
+	// Score.
 	if ( isset( $_GET['score-low'] ) && '' !== $_GET['score-low'] && isset( $_GET['score-high'] ) && '' !== $_GET['score-high'] ) { // Input var okay.
 
 		$score_low = floatval( sanitize_text_field( wp_unslash( $_GET['score-low'] ) ) ); // Input var okay.
@@ -664,8 +608,7 @@ function msa_filter_posts( $posts ) {
 		}
 	}
 
-	// Conditions
-
+	// Conditions.
 	$conditions = msa_get_conditions();
 
 	foreach ( $conditions as $condition ) {
@@ -686,8 +629,7 @@ function msa_filter_posts( $posts ) {
 
 				$post_value = $item['data']['values'][ $name ];
 
-				// Compare
-
+				// Compare.
 				if ( 'more' === $compare  ) {
 					if ( isset( $post_value ) && $post_value < $value ) {
 						unset( $posts[ $key ] );
@@ -709,8 +651,7 @@ function msa_filter_posts( $posts ) {
 		}
 	}
 
-	// Attributes
-
+	// Attributes.
 	$attributes = msa_get_attributes();
 
 	foreach ( $attributes as $attribute ) {

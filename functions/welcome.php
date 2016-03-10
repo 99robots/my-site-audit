@@ -1,29 +1,9 @@
 <?php
-/* ===================================================================
+/**
+ * This file is responsible for the hidden Welcome page.
  *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 10/30/15
- * Package: Functions/Welcome
- * File: welcome.php
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-// Exit if accessed directly
+ * @package Functions / Welcome
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -37,8 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function msa_welcome_menus() {
 
-	// Getting Started Page
-
+	// Getting Started Page.
 	add_dashboard_page(
 		__( 'Getting Started with My Site Audit', 'msa' ),
 		__( 'Getting Started with My Site Audit', 'msa' ),
@@ -47,7 +26,8 @@ function msa_welcome_menus() {
 		'msa_welcome_getting_started_page'
 	);
 
-	/* // About Page
+	/*
+	// About Page
 
 	add_dashboard_page(
 		__( 'About My Site Audit', 'msa' ),
@@ -65,10 +45,10 @@ function msa_welcome_menus() {
 		'manage_options',
 		'msa-changelog',
 		'msa_welcome_changelog_page'
-	); */
+	);
+	*/
 
-	// Credits Page
-
+	// Credits Page.
 	add_dashboard_page(
 		__( 'Creators of My Site Audit', 'msa' ),
 		__( 'Creators of My Site Audit', 'msa' ),
@@ -260,7 +240,7 @@ function msa_welcome_credits_page() {
 
 		<p class="about-description"><?php esc_attr_e( 'My Site Audit is created by the great people at 99 Robots.  We are looking for contributors all the time so please', 'msa' ); ?> <a href="https://99robots.com/contact/" target="_blank"><?php esc_attr_e( 'Contact Us', 'msa' ); ?></a> <?php esc_attr_e( 'if you want to become a contributor.', 'msa' ); ?></p>
 
-		<?php esc_attr_e( msa_display_contributors() ); ?>
+		<?php echo msa_display_contributors(); // WPCS: XSS ok. ?>
 
 	</div><?php
 }
@@ -302,26 +282,22 @@ function msa_welcome_page_tabs() {
  */
 function msa_welcome_page_redirect() {
 
-	// Bail if no activation redirect
-
+	// Bail if no activation redirect.
 	if ( ! get_transient( '_msa_activation_redirect' ) ) {
 		return;
 	}
 
-	// Delete the redirect transient
-
+	// Delete the redirect transient.
 	delete_transient( '_msa_activation_redirect' );
 
-	// Bail if activating from network, or bulk
-
+	// Bail if activating from network, or bulk.
 	if ( is_network_admin() || isset( $_GET['activate-multi'] ) ) { // Input var okay.
 		return;
 	}
 
 	$upgrade = get_option( 'msa_version_upgraded_from' );
 
-	// First time install
-
+	// First time install.
 	if ( ! $upgrade ) {
 		wp_safe_redirect( admin_url( 'index.php?page=msa-getting-started' ) );
 		exit;
@@ -342,7 +318,11 @@ function msa_hide_welcome_dashboard_pages() {
 
 	remove_submenu_page( 'index.php', 'msa-about' );
 	remove_submenu_page( 'index.php', 'msa-getting-started' );
-	//remove_submenu_page( 'index.php', 'msa-changelog' );
+
+	/*
+	* remove_submenu_page( 'index.php', 'msa-changelog' );
+	*/
+
 	remove_submenu_page( 'index.php', 'msa-credits' );
 
 	?>
@@ -395,7 +375,7 @@ add_action( 'admin_head', 'msa_hide_welcome_dashboard_pages' );
  * Display a list of contributors
  *
  * @access public
- * @return void
+ * @return string $contributor_list The HTML output of the contributor list.
  */
 function msa_display_contributors() {
 
@@ -432,7 +412,7 @@ function msa_display_contributors() {
  * Get the list of contributors who have worked on My Site Audit
  *
  * @access public
- * @return void
+ * @return array $contributors The contributors.
  */
 function msa_get_contributors() {
 

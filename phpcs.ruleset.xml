@@ -2,10 +2,14 @@
 <ruleset name="My Site Audits">
 
 	<rule ref="WordPress-Core" />
+	<rule ref="WordPress-Docs" />
+	<rule ref="WordPress-Extra" />
 
 	<exclude-pattern>*/includes/*</exclude-pattern>
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
 	<exclude-pattern>*/images/*</exclude-pattern>
 	<exclude-pattern>*/assets/*</exclude-pattern>
+	<exclude-pattern>*/css/*</exclude-pattern>
+	<exclude-pattern>*/js/*</exclude-pattern>
 </ruleset>

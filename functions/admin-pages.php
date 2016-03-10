@@ -1,29 +1,10 @@
 <?php
-/* ===================================================================
+/**
+ * This file is responsible for creating the admin pages, and there are hooks for
+ * extensibility
  *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 10/22/15
- * Package: Functions/Admin-Pages
- * File: admin-pages.php
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-// Exit if accessed directly
+ * @package Functions / Admin Pages
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -38,8 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function msa_menu() {
 
-	// Dashboard
-
+	// Dashboard.
 	add_menu_page(
 		__( MY_SITE_AUDIT_ITEM_NAME, 'msa' ),
 		__( MY_SITE_AUDIT_ITEM_NAME, 'msa' ),
@@ -49,8 +29,7 @@ function msa_menu() {
 		'dashicons-analytics'
 	);
 
-	// Dashboard
-
+	// Dashboard.
 	$dashboard_page_load = add_submenu_page(
 		'msa-dashboard',
 		__( 'Dashboard', 'msa' ),
@@ -61,8 +40,7 @@ function msa_menu() {
 	);
 	add_action( "admin_print_scripts-$dashboard_page_load", 'msa_dashboard_scripts' );
 
-	// All Audits
-
+	// All Audits.
 	$all_audits_page_load = add_submenu_page(
 		'msa-dashboard',
 		__( 'All Audits', 'msa' ),
@@ -76,13 +54,10 @@ function msa_menu() {
 
 	/**
 	 * Allows other developers the ability to add thier own pages
-	 *
-	 * @param $parent-slug
 	 */
 	do_action( 'msa_before_admin_pages', 'msa-dashboard' );
 
-	// Settings
-
+	// Settings.
 	$settings_page_load = add_submenu_page(
 		'msa-dashboard',
 		__( 'Settings', 'msa' ),
@@ -93,8 +68,7 @@ function msa_menu() {
 	);
 	add_action( "admin_print_scripts-$settings_page_load" , 'msa_settings_scripts' );
 
-	// Extensions
-
+	// Extensions.
 	$extensions_page_load = add_submenu_page(
 		'msa-dashboard',
 		__( 'Extensions', 'msa' ),
@@ -107,8 +81,6 @@ function msa_menu() {
 
 	/**
 	 * Allows other developers the ability to add thier own pages
-	 *
-	 * @param $parent-slug
 	 */
 	do_action( 'msa_after_admin_pages', 'msa-dashboard' );
 }
@@ -125,13 +97,11 @@ function msa_dashboard_scripts() {
 
 	msa_include_default_styles();
 
-	// Style
-
+	// Style.
 	wp_enqueue_style( 'msa-dashboard-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/dashboard.css' );
 	wp_enqueue_style( 'msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css' );
 
-	// Scripts
-
+	// Scripts.
 	wp_enqueue_script( 'msa-dashboard-js', 			MY_SITE_AUDIT_PLUGIN_URL . '/js/dashboard.js' );
 	wp_localize_script( 'msa-dashboard-js', 'msa_dashboard_data', array(
 		'save_dashboard_panel_order_nonce'	=> wp_create_nonce( 'save_dashboard_panel_order_nonce' ),
@@ -151,8 +121,7 @@ function msa_all_audits_scripts() {
 
 	msa_include_default_styles();
 
-	// Style
-
+	// Style.
 	wp_enqueue_style( 'msa-all-audits-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/css/all-audits.css' );
 	wp_enqueue_style( 'msa-fontawesome-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css' );
 	wp_enqueue_style( 'msa-jquery-ui-css', 					MY_SITE_AUDIT_PLUGIN_URL . '/includes/jquery-datepicker/jquery-ui.min.css' );
@@ -160,8 +129,7 @@ function msa_all_audits_scripts() {
 	wp_enqueue_style( 'msa-jquery-daterange-picker-css', 	MY_SITE_AUDIT_PLUGIN_URL . '/includes/jquery-daterange-picker/jquery.comiseo.daterangepicker.css' );
 	wp_enqueue_style( 'media-views' );
 
-	// Scripts
-
+	// Scripts.
 	wp_enqueue_script( 'jquery' );
 	wp_enqueue_script( 'jquery-ui-core' );
 	wp_enqueue_script( 'jquery-ui-datepicker' );
@@ -210,13 +178,11 @@ function msa_settings_scripts() {
 
 	msa_include_default_styles();
 
-	// Style
-
+	// Style.
 	wp_enqueue_style( 'msa-settings-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/settings.css' );
 	wp_enqueue_style( 'msa-fontawesome-css', 		MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css' );
 
-	// Script
-
+	// Script.
 	wp_enqueue_script( 'msa-settings-js', 			MY_SITE_AUDIT_PLUGIN_URL . '/js/settings.js' );
 	wp_enqueue_script( 'msa-licensing-js', 			MY_SITE_AUDIT_PLUGIN_URL . '/js/licensing.js', array( 'jquery' ) );
 	wp_localize_script( 'msa-licensing-js', 			'msa_licensing_data', array(
@@ -245,8 +211,7 @@ function msa_extensions_scripts() {
 
 	msa_include_default_styles();
 
-	// Style
-
+	// Style.
 	wp_enqueue_style( 'msa-extensions-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/extensions.css' );
 	wp_enqueue_style( 'msa-fontawesome-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/includes/font-awesome/css/font-awesome.min.css' );
 
@@ -259,10 +224,8 @@ function msa_extensions_scripts() {
  * @return void
  */
 function msa_include_default_styles() {
-
 	wp_enqueue_style( 'msa-common-css', 			MY_SITE_AUDIT_PLUGIN_URL . '/css/common.css' );
 	wp_enqueue_style( 'msa-theme-css', 				MY_SITE_AUDIT_PLUGIN_URL . '/css/theme.css' );
-
 }
 
 /**
@@ -295,12 +258,10 @@ function msa_all_audits() {
  */
 function msa_all_audits_load() {
 
-	// Single Audit
-
+	// Single Audit.
 	if ( isset( $_GET['audit'] ) && ! isset( $_GET['post'] ) ) { // Input var okay.
 
-		// Screen Options
-
+		// Screen Options.
 		$option = 'per_page';
 		$args = array(
 			 'label' 	=> 'Posts',
@@ -318,10 +279,10 @@ function msa_all_audits_load() {
  * Set the per page value
  *
  * @access public
- * @param mixed $status
- * @param mixed $option
- * @param mixed $value
- * @return void
+ * @param mixed $status The Status.
+ * @param mixed $option The Option.
+ * @param mixed $value  The Value.
+ * @return mixed $value The Value.
  */
 function msa_set_per_page_value( $status, $option, $value ) {
 	return $value;
@@ -332,39 +293,35 @@ add_filter( 'set-screen-option', 'msa_set_per_page_value', 10, 3 );
  * Add all the screen option columns
  *
  * @access public
- * @param mixed $columns
- * @return void
+ * @param mixed $columns  The original columns.
+ * @return array $columns The modified columns.
  */
 function msa_all_audits_add_column( $columns ) {
 
-	// Condition Categories
+	/**
+	 * Conditions
+	 */
 
 	$condition_categories = msa_get_condition_categories();
-
 	foreach ( $condition_categories as $key => $condition_category ) {
-
-		// Conditions
-
 		$conditions = msa_get_conditions_from_category( $key );
-
 		foreach ( $conditions as $key => $condition ) {
 			$columns[ $key ] = $condition['name'];
 		}
 	}
 
-	// Attributes
+	/**
+	 * Attributes
+	 */
 
 	$attributes = msa_get_attributes();
-
 	foreach ( $attributes as $slug => $attribute ) {
-
 		if ( isset( $attribute['name'] ) ) {
 			$columns[ $slug ] = $attribute['name'];
 		}
 	}
 
 	return $columns;
-
 }
 
 /**

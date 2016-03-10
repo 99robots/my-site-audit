@@ -1,29 +1,9 @@
 <?php
-/* ===================================================================
+/**
+ * This file is responsible for showing the data on the All Audits Page.
  *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 10/26/15
- * Package: Views/All Audits
- * File: all-audits.php
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-// Exit if accessed directly
+ * @package Views / All Audits
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -107,7 +87,8 @@ if ( isset( $_GET['post'] ) && isset( $_GET['audit'] ) ) { // Input var okay.
 								</tr>
 								<tr>
 									<td><?php esc_attr_e( 'Author', 'msa' ); ?></td>
-									<td><?php $user = get_userdata( $post->post_author ); esc_attr_e( $user->display_name ); ?></td>
+									<td><?php $user = get_userdata( $post->post_author );
+									esc_attr_e( $user->display_name ); ?></td>
 								</tr>
 								<tr>
 									<td><?php esc_attr_e( 'Published Date', 'msa' ); ?></td>
@@ -148,7 +129,7 @@ if ( isset( $_GET['post'] ) && isset( $_GET['audit'] ) ) { // Input var okay.
 			foreach ( $condition_categories as $key => $condition_category ) { ?>
 
 				<div class="postbox" id="<?php esc_attr_e( $key ); ?>">
-					<?php echo ( apply_filters( 'msa_condition_category_content' , $key, $post, $data, $score ) ); ?>
+					<?php echo ( apply_filters( 'msa_condition_category_content' , $key, $post, $data, $score ) ); // WPCS: XSS ok. ?>
 				</div>
 
 			<?php } ?>
@@ -161,19 +142,16 @@ if ( isset( $_GET['post'] ) && isset( $_GET['audit'] ) ) { // Input var okay.
 
 	$audit_id = sanitize_text_field( wp_unslash( $_GET['audit'] ) ); // Input var okay.
 
-	// Get the Audit
-
+	// Get the Audit.
 	$audit_model = new MSA_Audits_Model();
 	$audit = $audit_model->get_data_from_id( $audit_id );
 	$form_fields = json_decode( $audit['args']['form_fields'], true );
 
-	// Get the posts for an audit
-
+	// Get the posts for an audit.
 	$audit_posts_model = new MSA_Audit_Posts_Model();
 	$posts = $audit_posts_model->get_data( $audit_id );
 
-	// Get all the current filters
-
+	// Get all the current filters.
 	$current_filters = '';
 
 	$conditions = msa_get_conditions();
@@ -257,7 +235,7 @@ if ( isset( $_GET['post'] ) && isset( $_GET['audit'] ) ) { // Input var okay.
 			$i++; ?>
 
 			<li class="<?php esc_attr_e( $key ); ?>">
-				<a class="msa-post-status-filter" href="<?php esc_attr_e( get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit_id ); ?>&score-low=<?php esc_attr_e( $score_status['low'] ); ?>&score-high=<?php esc_attr_e( $score_status['high'] ); esc_attr_e( $current_filters ); ?>"><?php esc_attr_e( $score_status['name'] ); ?>
+				<a class="msa-post-status-filter" href="<?php esc_attr_e( get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit_id ); ?>&score-low=<?php esc_attr_e( $score_status['low'] ); ?>&score-high=<?php esc_attr_e( $score_status['high'] ); ?><?php esc_attr_e( $current_filters ); ?>"><?php esc_attr_e( $score_status['name'] ); ?>
 					<span class="count">(<?php esc_attr_e( msa_get_post_count_by_status( $posts , $key ) ); ?>)</span>
 					<span class="msa-tooltips">
 						<i class="fa fa-info-circle"></i>
@@ -357,7 +335,8 @@ if ( isset( $_GET['post'] ) && isset( $_GET['audit'] ) ) { // Input var okay.
 							<td>
 								<select id="msa-audit-max-posts" name="max-posts">
 									<?php esc_attr_e( apply_filters( 'msa_create_audit_maximum_posts_select', '' ) ); ?>
-									<?php for ( $i = 50; $i <= apply_filters( 'msa_create_audit_maximum_posts', 250 ); $i += 50 ) { ?>
+									<?php $maximum_posts = apply_filters( 'msa_create_audit_maximum_posts', 250 );
+									for ( $i = 50; $i <= $maximum_posts; $i += 50 ) { ?>
 										<option value="<?php esc_attr_e( $i ); ?>"><?php esc_attr_e( $i, 'msa' ); ?></option>
 									<?php } ?>
 								</select>

@@ -1,46 +1,28 @@
 <?php
-/* ===================================================================
+/**
+ * This is the main controller for the All Audits, Single Audit and Single posts
+ * page.
  *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 10/26/15
- * Package: Controllers/All Audits
- * File: all-audits.php
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-// Exit if accessed directly
+ * @package Controllers / All Audits
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Create a new Audit
+/**
+ * Create a new Audit
+ */
 
 if ( isset( $_POST['submit'] ) && check_admin_referer( 'msa-add-audit' ) ) { // Input var okay.
 
-	// Check if they can add a new audit
-
+	// Check if they can add a new audit.
 	if ( apply_filters( 'msa_can_add_new_audit', true ) ) {
 
 		/**
-		 *
 		 * This is the main action for creating an audit
 		 *
+		 * @param mixed $_POST All of the audit attributes set by the user.
 		 */
 		do_action( 'msa_create_audit', $_POST ); // Input var okay.
 
@@ -63,7 +45,9 @@ if ( isset( $_POST['submit'] ) && check_admin_referer( 'msa-add-audit' ) ) { // 
 	msa_force_redirect( get_admin_url() . 'admin.php?page=msa-all-audits' );
 }
 
-// Delete an audit
+/**
+ *  Delete an audit
+ */
 
 if ( isset( $_GET['action'] ) && 'delete' === $_GET['action'] && check_admin_referer( 'msa-delete-audit' ) ) { // Input var okay.
 
@@ -78,7 +62,9 @@ if ( isset( $_GET['action'] ) && 'delete' === $_GET['action'] && check_admin_ref
 	msa_force_redirect( get_admin_url() . 'admin.php?page=msa-all-audits' );
 }
 
-// Force Stop an audit
+/**
+ *  Force Stop an audit
+ */
 
 if ( isset( $_GET['action'] ) && 'force_stop_audit' === $_GET['action'] && check_admin_referer( 'msa-force-stop-audit' ) ) { // Input var okay.
 

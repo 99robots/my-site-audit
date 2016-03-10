@@ -1,29 +1,9 @@
 <?php
-/* ===================================================================
+/**
+ *  The controller of the Settings Page.
  *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 10/22/15
- * Package: Controllers/Settings
- * File: settings.php
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-// Exit if accessed directly
+ * @package Controllers / Settings
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -33,12 +13,19 @@ if ( false === ( $settings = get_option( 'msa_settings' ) ) ) {
 	$settings = array();
 }
 
-// Save the settings
+/**
+ *  Save the settings
+ */
 
 if ( isset( $_POST['submit'] ) && check_admin_referer( 'msa-settings' ) ) { // Input var okay.
 
-	// Pass all the post variables to the save action
-
+	/**
+	 *
+	 * Pass all the post variables to the save action
+	 *
+	 * @param mixed $_POST All of the settings from the form including any custom
+	 *                     settings that were added by extensions.
+	 */
 	do_action( 'msa_save_settings', $_POST ); // Input var okay.
 }
 

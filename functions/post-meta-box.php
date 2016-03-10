@@ -1,29 +1,10 @@
 <?php
-/* ===================================================================
+/**
+ * This file is responsible for adding a post meta box on the eidt post page to show
+ * the latest audit score of that post.
  *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 10/22/15
- * Package: Functions/Post Meta Box
- * File: post-meta-box.php
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-// Exit if accessed directly
+ * @package Functions / Post Meta Box
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -49,18 +30,16 @@ add_action( 'add_meta_boxes', 'msa_add_meta_box' );
  * Prints the box content.
  *
  * @access public
- * @param mixed $post
+ * @param object $post A WP_Post obejct.
  * @return void
  */
 function msa_meta_box_callback( $post ) {
 
-	// Get the latest audit
-
+	// Get the latest audit.
 	$audit_model = new MSA_Audits_Model();
 	$audit = $audit_model->get_latest();
 
-	// Check to see if we have an audit
-
+	// Check to see if we have an audit.
 	if ( isset( $audit ) ) {
 
 		$post_id = -1;
@@ -92,15 +71,15 @@ function msa_meta_box_callback( $post ) {
 			</div>
 
 			<div class="msa-post-meta-container msa-post-meta-audit-meta-values">
-				<p class="msa-post-meta-value msa-post-status-bg msa-post-status-bg-<?php ecs_attr_e( msa_get_score_status( $score['score'] ) ); ?>"><?php ecs_attr_e( round( $score['score'] * 100, 2 ) ); ?>%</p>
-				<p class="msa-post-meta-value"><a href="<?php ecs_attr_e( get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit['id'] ); ?>" target="_blank"><?php ecs_attr_e( $audit['name'] ); ?></a></p>
-				<p class="msa-post-meta-value"><?php ecs_attr_e( date( 'M j, Y', strtotime( $audit['date'] ) ) ); ?></p>
-				<p class="msa-post-meta-value"><?php ecs_attr_e( $user->display_name ); ?></p>
+				<p class="msa-post-meta-value msa-post-status-bg msa-post-status-bg-<?php esc_attr_e( msa_get_score_status( $score['score'] ) ); ?>"><?php esc_attr_e( round( $score['score'] * 100, 2 ) ); ?>%</p>
+				<p class="msa-post-meta-value"><a href="<?php esc_attr_e( get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit['id'] ); ?>" target="_blank"><?php esc_attr_e( $audit['name'] ); ?></a></p>
+				<p class="msa-post-meta-value"><?php esc_attr_e( date( 'M j, Y', strtotime( $audit['date'] ) ) ); ?></p>
+				<p class="msa-post-meta-value"><?php esc_attr_e( $user->display_name ); ?></p>
 			</div><?php
 
 			foreach ( $condition_categories as $key => $condition_category ) {
-				?><div class="postbox" id="<?php ecs_attr_e( $key ); ?>" style="pointer-events: none;">
-					<?php ecs_attr_e( apply_filters( 'msa_condition_category_content', $key, $post, $data, $score ) ); ?>
+				?><div class="postbox" id="<?php esc_attr_e( $key ); ?>" style="pointer-events: none;">
+					<?php echo ( apply_filters( 'msa_condition_category_content', $key, $post, $data, $score ) ); // WPCS: XSS ok. ?>
 				</div><?php
 			}
 

@@ -1,29 +1,9 @@
 <?php
-/* ===================================================================
+/**
+ * This file is responsible for handling the output of the settings tab System Info.
  *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 11/16/15
- * Package: Functions/System Info
- * File: system-info.php
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-// Exit if accessed directly
+ * @package Functions / System Info
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -33,8 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * System Info Tab
  *
  * @access public
- * @param mixed $content
- * @return void
+ * @param mixed $content   The original HTML output.
+ * @return  mixed $content The new HTML output.
  */
 function msa_settings_tab_system_info_content( $content ) {
 
@@ -48,8 +28,7 @@ function msa_settings_tab_system_info_content( $content ) {
 		<table class="wp-list-table widefat fixed striped">
 			<tbody>';
 
-	// System Status
-
+	// System Status.
 	if ( version_compare( phpversion(), MY_SITE_AUDIT_MIN_PHP_VERSION ) < 1 ) {
 		$system_status_table .= '<tr>
 			<td class="msa-system-status-row bad"><strong>' . __( 'PHP Version', 'msa' ) . '</strong></td>
@@ -113,7 +92,7 @@ add_filter( 'msa_settings_tab_content_system_info', 'msa_settings_tab_system_inf
  * Get the information about this wordpress install
  *
  * @access public
- * @return void
+ * @return string $output The HTMl output.
  */
 function msa_get_system_info() {
 

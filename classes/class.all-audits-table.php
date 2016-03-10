@@ -1,29 +1,9 @@
 <?php
-/* ===================================================================
+/**
+ * This class manages the All Audits table using the WP_List_Table class.
  *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 10/26/15
- * Package: Controllers/All Audits Table
- * File: all-aduits-table.php
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-// Exit if accessed directly
+ * @package Classes / All Audit Table
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -35,6 +15,9 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 
 if ( ! class_exists( 'MSA_All_Audits_Table' ) ) :
 
+	/**
+	 * The All Audit Table class
+	 */
 	class MSA_All_Audits_Table extends WP_List_Table {
 
 		/**
@@ -81,11 +64,9 @@ if ( ! class_exists( 'MSA_All_Audits_Table' ) ) :
 			$current_page = $this->get_pagenum();
 			$args = array();
 
-			/* =========================================================================
-			 *
-			 * Search term
-			 *
-			 ========================================================================= */
+			/**
+			 * Search Term
+			 */
 
 			if ( isset( $_POST['s'] ) && check_admin_referer( 'msa-all-audits-table' ) ) { // Input var okay.
 
@@ -102,20 +83,16 @@ if ( ! class_exists( 'MSA_All_Audits_Table' ) ) :
 				}
 			}
 
-			/* =========================================================================
-			 *
+			/**
 			 * Get Audits
-			 *
-			 ========================================================================= */
+			 */
 
 			$audit_model = new MSA_Audits_Model();
 			$this->items = $audit_model->get_data( $args );
 
-			/* =========================================================================
-			 *
+			/**
 			 * Sort Posts
-			 *
-			 ========================================================================= */
+			 */
 
 			if ( count( $this->items ) > 0 ) {
 				usort( $this->items, array( &$this, 'usort_reorder' ) );
@@ -124,8 +101,8 @@ if ( ! class_exists( 'MSA_All_Audits_Table' ) ) :
 			$total_items = count( $this->items );
 
 			$this->set_pagination_args( array(
-				'total_items' => $total_items, 	// We have to calculate the total number of items
-				'per_page'    => $per_page, 	// We have to determine how many items to show on a page
+				'total_items' => $total_items, 	// We have to calculate the total number of items.
+				'per_page'    => $per_page, 	// We have to determine how many items to show on a page.
 			) );
 
 			$this->items = array_slice( $this->items,( ( $current_page - 1 ) * $per_page ), $per_page );
@@ -136,7 +113,6 @@ if ( ! class_exists( 'MSA_All_Audits_Table' ) ) :
 		 * Get all the columns that we want to display
 		 *
 		 * @access public
-		 * @return void
 		 */
 		function get_columns() {
 
@@ -156,7 +132,6 @@ if ( ! class_exists( 'MSA_All_Audits_Table' ) ) :
 		 * Get the sortable columns for the table
 		 *
 		 * @access public
-		 * @return void
 		 */
 		function get_sortable_columns() {
 
@@ -170,9 +145,8 @@ if ( ! class_exists( 'MSA_All_Audits_Table' ) ) :
 		 * Sort the data
 		 *
 		 * @access public
-		 * @param mixed $a
-		 * @param mixed $b
-		 * @return void
+		 * @param mixed $a The first element to sort.
+		 * @param mixed $b The second element to sort.
 		 */
 		function usort_reorder( $a, $b ) {
 
@@ -186,10 +160,10 @@ if ( ! class_exists( 'MSA_All_Audits_Table' ) ) :
 				$order = sanitize_text_field( wp_unslash( $_GET['order'] ) ); // Input var okay.
 			}
 
-			// Determine sort order
+			// Determine sort order.
 			$result = ( $a[ $orderby ] < $b[ $orderby ] ) ? -1 : 1;
 
-			// Send final sort direction to usort
+			// Send final sort direction to usort.
 			return ( 'asc' === $order ) ? $result : -$result;
 		}
 
@@ -197,9 +171,8 @@ if ( ! class_exists( 'MSA_All_Audits_Table' ) ) :
 		 * Default Column Value
 		 *
 		 * @access public
-		 * @param mixed $item
-		 * @param mixed $column_name
-		 * @return void
+		 * @param mixed $item        The audit.
+		 * @param mixed $column_name The column that is being displayed.
 		 */
 		public function column_default( $item, $column_name ) {
 
@@ -260,8 +233,7 @@ if ( ! class_exists( 'MSA_All_Audits_Table' ) ) :
 		 * Return the output for the Name column
 		 *
 		 * @access public
-		 * @param mixed $item
-		 * @return void
+		 * @param mixed $item The Audit.
 		 */
 		public function column_name( $item ) {
 
@@ -347,21 +319,17 @@ if ( ! class_exists( 'MSA_All_Audits_Table' ) ) :
 			}
 
 			return apply_filters( 'msa_all_audits_table_column_name_extension', '<a href="' . $item['extension-link'] . '" target="_blank">' . $item['name'] . '</a>' );
-
 		}
 
 		/**
 		 * Generates content for a single row of the table
 		 *
-		 * @since 3.1.0
 		 * @access public
-		 *
-		 * @param object $item The current item
+		 * @param array $item The Audit.
 		 */
 		public function single_row( $item ) {
 
-			// Check if this row is for an extension
-
+			// Check if this row is for an extension.
 			if ( isset( $item['extension'] ) && $item['extension'] ) {
 
 				echo '<tr class="msa-extension-row">';

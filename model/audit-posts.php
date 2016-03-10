@@ -1,29 +1,9 @@
 <?php
-/* ===================================================================
+/**
+ * Manages all the data within the {$wpdb->prefix}msa_audit_posts table
  *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 10/27/15
- * Package: Model/Audit Posts
- * File: audit-posts.php
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-// Exit if accessed directly
+ * @package Model / Audit Posts
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -31,10 +11,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'MSA_Audit_Posts_Model' ) ) :
 
+	/**
+	 * Responsible for managing audit post data
+	 */
 	class MSA_Audit_Posts_Model {
 
 		/**
-		 * table_name
+		 * Table name
 		 *
 		 * (default value: 'msa_audit_posts')
 		 *
@@ -44,7 +27,7 @@ if ( ! class_exists( 'MSA_Audit_Posts_Model' ) ) :
 		public $table_name = 'msa_audit_posts';
 
 		/**
-		 * data_format
+		 * Date Format
 		 *
 		 * (default value: 'Y-m-d H:i:s')
 		 *
@@ -101,8 +84,8 @@ if ( ! class_exists( 'MSA_Audit_Posts_Model' ) ) :
 		 * Add a new audit
 		 *
 		 * @access public
-		 * @param array $data (default: array())
-		 * @return void
+		 * @param array $data           The new audit data.
+		 * @return int $wpdb->insert_id The new audit id.
 		 */
 		function add_data( $data = array() ) {
 			global $wpdb;
@@ -135,11 +118,9 @@ if ( ! class_exists( 'MSA_Audit_Posts_Model' ) ) :
 					'post_type'             => $data['post']->post_type,
 					'post_mime_type'        => $data['post']->post_mime_type,
 					'comment_count'         => $data['post']->comment_count,
-					'data'                  => json_encode( $data['data'] ),
+					'data'                  => wp_json_encode( $data['data'] ),
 				)
 			);
-
-			// Return the recently created id for this entry
 
 			return $wpdb->insert_id;
 		}
@@ -147,10 +128,9 @@ if ( ! class_exists( 'MSA_Audit_Posts_Model' ) ) :
 		/**
 		 * Update Audit
 		 *
-		 * @since 1.0.0
-		 *
-		 * @param	data to be updated
-		 * @return	false if error, otherwise nothing
+		 * @param int   $id        The audit id.
+		 * @param array $data      The new audit data.
+		 * @return bool true|false The query result.
 		 */
 		function update_data( $id = null, $data = array() ) {
 			if ( ! isset( $id ) || empty( $id ) ) {
@@ -189,7 +169,7 @@ if ( ! class_exists( 'MSA_Audit_Posts_Model' ) ) :
 					'post_type'             => $data['post']->post_type,
 					'post_mime_type'        => $data['post']->post_mime_type,
 					'comment_count'         => $data['post']->comment_count,
-					'data'                  => json_encode( $data['data'] ),
+					'data'                  => wp_json_encode( $data['data'] ),
 				),
 				array( 'id' => $id ),
 				array(
@@ -228,16 +208,14 @@ if ( ! class_exists( 'MSA_Audit_Posts_Model' ) ) :
 		/**
 		 * Get all posts in an audit
 		 *
-		 * @access public
-		 * @param mixed $audit_id
-		 * @param array $args (default: array())
-		 * @return void
+		 * @param mixed $audit_id The Audit ID.
+		 * @param array $args     The args to filter out audits.
+		 * @return array $data    The filtered audits.
 		 */
 		function get_data( $audit_id, $args = array() ) {
 			global $wpdb;
 
-			// Search
-
+			// Search.
 			$search = '';
 
 			if ( isset( $args['s'] ) ) {
@@ -246,10 +224,7 @@ if ( ! class_exists( 'MSA_Audit_Posts_Model' ) ) :
 				$search = $wpdb->prepare( 'AND `post_title` LIKE %s', $s );
 			}
 
-			if ( false === ( $data = wp_cache_get( 'msa_get_audit_posts_' . $audit_id ) ) ) {
-				$data = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM `' . $this->get_table_name() . '` WHERE `audit_id` = %d ', $audit_id ) . $search, 'ARRAY_A' );
-				wp_cache_set( 'msa_get_audit_posts_' . $audit_id , $data );
-			}
+			$data = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM `' . $this->get_table_name() . '` WHERE `audit_id` = %d ', $audit_id ) . $search, 'ARRAY_A' ); // WPCS: unprepared SQL ok. // WPCS: cache ok.
 
 			return $this->parse_data( $data );
 		}
@@ -258,16 +233,16 @@ if ( ! class_exists( 'MSA_Audit_Posts_Model' ) ) :
 		 * Get post from audit
 		 *
 		 * @access public
-		 * @param mixed $audit_id
-		 * @param mixed $post_id
-		 * @param array $args (default: array())
-		 * @return void
+		 * @param mixed $audit_id     The audit id.
+		 * @param mixed $post_id      The post id.
+		 * @param array $args         The args.
+		 * @return array $parsed_data The audit.
 		 */
 		function get_data_from_id( $audit_id, $post_id, $args = array() ) {
 			global $wpdb;
 
 			if ( false === ( $data = wp_cache_get( 'msa_audit_posts_get_data_' . $audit_id . '_' . $post_id ) ) ) {
-				$data = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM `' . $this->get_table_name() . '` WHERE `audit_id` = %d AND `post_id` = %d', $audit_id, $post_id ), 'ARRAY_A' );
+				$data = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM `' . $this->get_table_name() . '` WHERE `audit_id` = %d AND `post_id` = %d', $audit_id, $post_id ), 'ARRAY_A' ); // WPCS: unprepared SQL ok.
 				wp_cache_set( 'msa_audi_posts_get_data_' . $audit_id . '_' . $post_id, $data );
 			}
 
@@ -279,28 +254,26 @@ if ( ! class_exists( 'MSA_Audit_Posts_Model' ) ) :
 		/**
 		 * Get an array of author ids from the audit
 		 *
-		 * @access public
-		 * @param mixed $audit_id
-		 * @param array $args (default: array())
-		 * @return void
+		 * @param mixed $audit_id  The audit id.
+		 * @param array $args      The args.
+		 * @return array $data     The authors within an audit.
 		 */
 		function get_authors_in_audit( $audit_id, $args = array() ) {
 			global $wpdb;
 
 			if ( false === ( $data = wp_cache_get( 'msa_audit_posts_get_authors_' . $audit_id ) ) ) {
-				$data = $wpdb->get_results( $wpdb->prepare( 'SELECT DISTINCT `post_author` FROM `' . $this->get_table_name() . '` WHERE `audit_id` = %d', $audit_id ), 'ARRAY_A' );
+				$data = $wpdb->get_results( $wpdb->prepare( 'SELECT DISTINCT `post_author` FROM `' . $this->get_table_name() . '` WHERE `audit_id` = %d', $audit_id ), 'ARRAY_A' ); // WPCS: unprepared SQL ok.
 				wp_cache_set( 'msa_audi_posts_get_authors_' . $audit_id , $data );
 			}
 
 			return $data;
-
 		}
 
 		/**
 		 * Delete all the posts within an audit data
 		 *
 		 * @access public
-		 * @param mixed $id
+		 * @param mixed $audit_id The audit id.
 		 * @return void
 		 */
 		function delete_data( $audit_id ) {
@@ -315,7 +288,8 @@ if ( ! class_exists( 'MSA_Audit_Posts_Model' ) ) :
 		 * Delete the post data
 		 *
 		 * @access public
-		 * @param mixed $id
+		 * @param mixed $audit_id The audit id.
+		 * @param mixed $post_id The post id.
 		 * @return void
 		 */
 		function delete_post_data( $audit_id, $post_id ) {
@@ -347,8 +321,8 @@ if ( ! class_exists( 'MSA_Audit_Posts_Model' ) ) :
 		 * Parse the returned data
 		 *
 		 * @access public
-		 * @param mixed $data
-		 * @return void
+		 * @param mixed $data  The data to be parsed from the database.
+		 * @return mixed $data The parsed data.
 		 */
 		function parse_data( $data ) {
 			$parsed_data = array();
@@ -397,9 +371,8 @@ if ( ! class_exists( 'MSA_Audit_Posts_Model' ) ) :
 		/**
 		 * Clean the data given to us
 		 *
-		 * @access public
-		 * @param mixed $data
-		 * @return void
+		 * @param mixed $data  The audit data to clean.
+		 * @return mixed $data The cleaned audit data.
 		 */
 		function clean_data( $data ) {
 			return stripcslashes( sanitize_text_field( $data ) );
@@ -408,9 +381,7 @@ if ( ! class_exists( 'MSA_Audit_Posts_Model' ) ) :
 		/**
 		 * Returns the proper table name for Multisies
 		 *
-		 * @access public
-		 * @param mixed $table_name
-		 * @return void
+		 * @return string $table_name The name of the database table.
 		 */
 		function get_table_name() {
 			global $wpdb;

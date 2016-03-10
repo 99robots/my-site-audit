@@ -1,34 +1,17 @@
 <?php
-/*
-Plugin Name: My Site Audit
-Plugin URI: https://99robots.com/products/my-site-audit
-Description: The ultimate way to audit your site's content to drive more traffic to your site and enhance your user engagement.
-version: 1.0.3
-Author: 99 Robots
-Author URI: https://99robots.com
-License: GPL2
-*/
+/**
+ * Plugin Name: My Site Audit
+ * Plugin URI: https://99robots.com/products/my-site-audit
+ * Description: The ultimate way to audit your site's content to drive more traffic to your site and enhance your user engagement.
+ * version: 1.0.3
+ * Author: 99 Robots
+ * Author URI: https://99robots.com
+ * License: GPL2
+ *
+ * @package Main File
+ */
 
-/* ===================================================================
- *
- * My Site Audit https://mysiteaudit.com
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-// Exit if accessed directly
-
+// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -54,12 +37,10 @@ if ( ! class_exists( 'My_Site_Audit' ) ) :
 		 *
 		 * @access public
 		 * @static
-		 * @return void
 		 */
 		public static function instance() {
 
-			// No object is created yet so lets create one
-
+			// No object is created yet so lets create one.
 			if ( ! isset( self::$instance ) && ! ( self::$instance instanceof My_Site_Audit ) ) {
 
 				self::$instance = new My_Site_Audit;
@@ -71,8 +52,7 @@ if ( ! class_exists( 'My_Site_Audit' ) ) :
 
 			}
 
-			// Return the My_Site_Audit object
-
+			// Return the My_Site_Audit object.
 			return self::$instance;
 		}
 
@@ -83,7 +63,7 @@ if ( ! class_exists( 'My_Site_Audit' ) ) :
 		 * @return void
 		 */
 		public function __clone() {
-			_doing_it_wrong( __FUNCTION__, __( 'You cannot __clone an instance of the My_Site_Audit class.', MY_SITE_AUDIT_TEXT_DOMAIN ), '1.6' );
+			_doing_it_wrong( __FUNCTION__, esc_attr__( 'You cannot __clone an instance of the My_Site_Audit class.', MY_SITE_AUDIT_TEXT_DOMAIN ), '1.6' );
 		}
 
 		/**
@@ -93,7 +73,7 @@ if ( ! class_exists( 'My_Site_Audit' ) ) :
 		 * @return void
 		 */
 		public function __wakeup() {
-			_doing_it_wrong( __FUNCTION__, __( 'You cannot __wakeup an instance of the My_Site_Audit class.', MY_SITE_AUDIT_TEXT_DOMAIN ), '1.6' );
+			_doing_it_wrong( __FUNCTION__, esc_attr__( 'You cannot __wakeup an instance of the My_Site_Audit class.', MY_SITE_AUDIT_TEXT_DOMAIN ), '1.6' );
 		}
 
 		/**
@@ -104,79 +84,103 @@ if ( ! class_exists( 'My_Site_Audit' ) ) :
 		 */
 		private function setup_constants() {
 
-			// Item Name
+			/**
+			 * Item Name
+			 */
 
 			if ( ! defined( 'MY_SITE_AUDIT_ITEM_NAME' ) ) {
 				define( 'MY_SITE_AUDIT_ITEM_NAME', 'My Site Audit' );
 			}
 
-			// Store URL
+			/**
+			 * Store URL
+			 */
 
 			if ( ! defined( 'MY_SITE_AUDIT_STORE_URL' ) ) {
 				define( 'MY_SITE_AUDIT_STORE_URL', 'https://99robots.com' );
 			}
 
-			// Extensions URL
+			/**
+			 * Extensions URL
+			 */
 
 			if ( ! defined( 'MY_SITE_AUDIT_EXT_URL' ) ) {
 				define( 'MY_SITE_AUDIT_EXT_URL' , 'https://99robots.com/products/category/my-site-audit/?&utm_source=plugin_pages' );
 			}
 
-			// Minimum PHP version
+			/**
+			 * Minimum PHP version
+			 */
 
 			if ( ! defined( 'MY_SITE_AUDIT_MIN_PHP_VERSION' ) ) {
 				define( 'MY_SITE_AUDIT_MIN_PHP_VERSION', '5.4.0' );
 			}
 
-			// Plugin prefix
+			/**
+			 * Plugin prefix
+			 */
 
 			if ( ! defined( 'MY_SITE_AUDIT_PREFIX' ) ) {
 				define( 'MY_SITE_AUDIT_PREFIX', 'msa-' );
 			}
 
-			// Plugin text domain
+			/**
+			 * Plugin text domain
+			 */
 
 			if ( ! defined( 'MY_SITE_AUDIT_TEXT_DOMAIN' ) ) {
 				define( 'MY_SITE_AUDIT_TEXT_DOMAIN', 'msa' );
 			}
 
-			// Plugin version
+			/**
+			 * Plugin version
+			 */
 
 			if ( ! defined( 'MY_SITE_AUDIT_VERSION' ) ) {
 				define( 'MY_SITE_AUDIT_VERSION', '1.0.3' );
 			}
 
-			// Plugin Folder Path
+			/**
+			 * Plugin Folder Path
+			 */
 
 			if ( ! defined( 'MY_SITE_AUDIT_PLUGIN_DIR' ) ) {
 				define( 'MY_SITE_AUDIT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 			}
 
-			// Plugin Folder URL
+			/**
+			 * Plugin Folder URL
+			 */
 
 			if ( ! defined( 'MY_SITE_AUDIT_PLUGIN_URL' ) ) {
 				define( 'MY_SITE_AUDIT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 			}
 
-			// Plugin Root File
+			/**
+			 * Plugin Root File
+			 */
 
 			if ( ! defined( 'MY_SITE_AUDIT_PLUGIN_FILE' ) ) {
 				define( 'MY_SITE_AUDIT_PLUGIN_FILE', __FILE__ );
 			}
 
-			// Max audits
+			/**
+			 * Max audits
+			 */
 
 			if ( ! defined( 'MY_SITE_AUDIT_MAX_AUDITS' ) ) {
 				define( 'MY_SITE_AUDIT_MAX_AUDITS', 1 );
 			}
 
-			// Make sure CAL_GREGORIAN is defined
+			/**
+			 * Make sure CAL_GREGORIAN is defined
+			 */
 
 			if ( ! defined( 'CAL_GREGORIAN' ) ) {
 				define( 'CAL_GREGORIAN', 1 );
 			}
 
-			//date_default_timezone_set( timezone_name_from_abbr( null, (int) get_option( 'gmt_offset' ) * 3600 , true ) );
+			/* date_default_timezone_set( timezone_name_from_abbr( null, (int) get_option( 'gmt_offset' ) * 3600 , true ) ); */
 		}
 
 		/**
@@ -188,19 +192,18 @@ if ( ! class_exists( 'My_Site_Audit' ) ) :
 		 */
 		function includes() {
 
-			// Load all the admin files
-
+			// Load all the admin files.
 			if ( is_admin() ) {
 
-				// Includes
+				/**
+				 * Includes
+				 */
 
-				// Model
-
+				// Model.
 				require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'model/audits.php' );
 				require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'model/audit-posts.php' );
 
-				// Functions
-
+				// Functions.
 				require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/activation.php' );
 				require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/admin-pages.php' );
 				require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/admin-notices.php' );
@@ -222,13 +225,11 @@ if ( ! class_exists( 'My_Site_Audit' ) ) :
 				require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/plugin.php' );
 				require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'functions/welcome.php' );
 
-				// Classes
-
+				// Classes.
 				require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'classes/class.all-posts-table.php' );
 				require_once( MY_SITE_AUDIT_PLUGIN_DIR . 'classes/class.all-audits-table.php' );
 
 			}
-
 		}
 
 		/**
@@ -239,7 +240,9 @@ if ( ! class_exists( 'My_Site_Audit' ) ) :
 		 */
 		public function init() {
 
-			// Registers
+			/**
+			 * Registers
+			 */
 
 			if ( function_exists( 'msa_create_initial_conditions' ) ) {
 				msa_create_initial_conditions();
@@ -269,7 +272,9 @@ if ( ! class_exists( 'My_Site_Audit' ) ) :
 				msa_create_initial_extensions();
 			}
 
-			// Deregisters
+			/**
+			 * Deregisters
+			 */
 
 			if ( function_exists( 'msa_deregister_condition' ) ) {
 
@@ -304,32 +309,28 @@ endif;
  * Example: <?php $msa = MSA(); ?>
  *
  * @access public
- * @return void
  */
 function my_site_audit_instance() {
 	return My_Site_Audit::instance();
 }
 
-// Get the class loaded up and running
-
+// Get the class loaded up and running.
 my_site_audit_instance();
 
 /**
  * Create an Audit
  *
  * @access public
- * @param mixed $audit
+ * @param  array $audit_data The attributes for an audit.
  * @return void
  */
 function msa_create_audit( $audit_data ) {
 
-	// Set the transient to say that we are running an audit
-
+	// Set the transient to say that we are running an audit.
 	set_transient( 'msa_running_audit', true );
 	delete_transient( 'msa_schedule_audit' );
 
-	// Include all the files we need
-
+	// Include all the files we need.
 	require_once( plugin_dir_path( __FILE__ ) . 'model/audits.php' );
 	require_once( plugin_dir_path( __FILE__ ) . 'model/audit-posts.php' );
 
@@ -348,8 +349,7 @@ function msa_create_audit( $audit_data ) {
 	$audit_model = new MSA_Audits_Model();
 	$audit_posts_model = new MSA_Audit_Posts_Model();
 
-	// Get all the data from the user
-
+	// Get all the data from the user.
 	$audit = array();
 
 	$audit['name']                = $audit_data['name'];
@@ -357,17 +357,16 @@ function msa_create_audit( $audit_data ) {
 	$audit['date']                = date( 'Y-m-d H:i:s' );
 	$audit['status']              = 'in-progress';
 	$audit['user']                = $audit_data['user'];
-	$audit['args']['conditions']  = json_encode( msa_get_conditions() );
+	$audit['args']['conditions']  = wp_json_encode( msa_get_conditions() );
 	$audit['args']['before_date'] = $audit_data['after-date'];
 	$audit['args']['before_date'] = $audit_data['before-date'];
 	$audit['args']['post_types']  = $audit_data['post-types'];
 	$audit['args']['max_posts']   = $audit_data['max-posts'];
 	$audit_data['after-date']     = '' !== $audit_data['after-date']  ? strip_tags( $audit_data['after-date'] ) : date( 'm/d/Y', strtotime( '-1 years' ) );
 	$audit_data['before-date']    = '' !== $audit_data['before-date'] ? strip_tags( $audit_data['before-date'] ) : date( 'm/d/Y', strtotime( 'today' ) );
-	$audit['args']['form_fields'] = json_encode( $audit_data );
+	$audit['args']['form_fields'] = wp_json_encode( $audit_data );
 
-	// Get all the posts that we are going to perform an audit on
-
+	// Get all the posts that we are going to perform an audit on.
 	$page = 1;
 	$posts_per_page = 25;
 	$total_posts = 0;
@@ -383,41 +382,30 @@ function msa_create_audit( $audit_data ) {
 			),
 		),
 		'post_type'			=> $audit_data['post-types'],
-		'posts_per_page'	=> $posts_per_page, //$audit_data['max-posts'],
+		'posts_per_page'	=> $posts_per_page, // $audit_data['max-posts'],
 		'paged'				=> $page,
 	);
 
 	$posts = get_posts( $args );
 
-	// Create the audit
-
+	// Create the audit.
 	if ( count( $posts ) > 0 ) {
 		$audit_id = $audit_model->add_data( $audit );
 	}
 
-	// Only perform the audit if there are posts to perform the audit on
-
+	// Only perform the audit if there are posts to perform the audit on.
 	while ( count( $posts ) > 0 ) {
-
 		if ( $audit_id ) {
-
 			foreach ( $posts as $post ) {
-
 				if ( -1 !== $audit_data['max-posts'] && $total_posts >= $audit_data['max-posts'] ) {
 					break 2;
 				}
 
-				// Data
-
 				$data = msa_get_post_audit_data( $post );
-
-				// Score
-
 				$score = msa_calculate_score( $post, $data );
 				$data['score'] = $score['score'];
 
-				// Add a new record in the audit posts table
-
+				// Add a new record in the audit posts table.
 				$audit_posts_model->add_data( array(
 					'audit_id' 	=> $audit_id,
 					'post'		=> $post,
@@ -457,17 +445,15 @@ function msa_create_audit( $audit_data ) {
 	$audit['status'] = 'completed';
 	$audit_model->update_data( $audit_id, $audit );
 
-	// Remove the transient once we are done with the audit
-
+	// Remove the transient once we are done with the audit.
 	delete_transient( 'msa_running_audit' );
 
-	/* ========================================================================
-	 *
+	/**
 	 * Runs when the audit is completed
 	 *
-	 * @param $audit_id
-	 *
-	 * ===================================================================== */
+	 * @param int    $audit_id      The Audit ID.
+	 * @param string $audit['name'] The Audit name.
+	 */
 	do_action( 'msa_audit_completed', $audit_id, $audit['name'] );
 }
 add_action( 'msa_run_audit_background', 'msa_create_audit', 10, 1 );

@@ -1,29 +1,10 @@
 <?php
-/* ===================================================================
+/**
+ * This file is responsible for mangaing all setting tabs.  Developers can add their
+ * own tabs to handle their data.
  *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 10/29/15
- * Package: Functions/Settings Tab
- * File: settings-tab.php
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-// Exit if accessed directly
+ * @package Functions / Settings Tab
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -33,22 +14,20 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Save all the general settings
  *
  * @access public
- * @param mixed $data
+ * @param mixed $data The settings tab form data.
  * @return void
  */
 function msa_settings_tab_settings_save( $data ) {
 
-	// Check if we have data already saved
-
+	// Check if we have data already saved.
 	if ( false === ( $settings = get_option( 'msa_settings' ) ) ) {
 		$settings = array();
 	}
 
-	//$settings['use_slow_conditions'] = isset($data['msa-use-slow-conditions']) && $data['msa-use-slow-conditions'] ? true : false;
+	// $settings['use_slow_conditions'] = isset($data['msa-use-slow-conditions']) && $data['msa-use-slow-conditions'] ? true : false;
 	$settings['notification_emails'] = isset( $data['msa-notification-emails'] ) ? sanitize_text_field( $data['msa-notification-emails'] ) : '';
 
-	// Save the data
-
+	// Save the data.
 	update_option( 'msa_settings', $settings );
 }
 add_action( 'msa_save_settings', 'msa_settings_tab_settings_save', 10, 1 );
@@ -57,24 +36,25 @@ add_action( 'msa_save_settings', 'msa_settings_tab_settings_save', 10, 1 );
  * This function will show all the general settings for My Site Audit
  *
  * @access public
- * @param mixed $content
- * @return void
+ * @param mixed $content  The original HTML output.
+ * @return mixed $content The new HTML output.
  */
 function msa_settings_tab_settings_content( $content ) {
 
-	// Check if we have data already saved
-
+	// Check if we have data already saved.
 	if ( false === ( $settings = get_option( 'msa_settings' ) ) ) {
 		$settings = array();
 	}
 
-	/*<tr>
+	/*
+	<tr>
 		<th scope="row"><label for="msa-use-slow-conditions">' . __('Use Slow Conditions', 'msa') . '</label></th>
 		<td>
 			<input type="checkbox" class="msa-use-slow-conditions" id="msa-use-slow-conditions" name="msa-use-slow-conditions" ' . ( isset($settings['use_slow_conditions']) && $settings['use_slow_conditions'] ? 'checked="checked"' : '' ) . '>
 			<p class="description">' . __('Do you want to use conditions that take a long time to compute, like checking for broken links and broken images?') . '</p>
 		</td>
-	</tr>*/
+	</tr>
+	*/
 
 	$output = '<h3 class="msa-settings-heading">' . __( 'Settings', 'msa' ) . '</h3>';
 	$output .= '<table class="form-table">
@@ -103,8 +83,7 @@ add_filter( 'msa_settings_tab_content_settings', 'msa_settings_tab_settings_cont
  */
 function msa_create_initial_settings_tabs() {
 
-	// Settings
-
+	// Settings.
 	msa_register_settings_tabs('settings', array(
 		'id'		=> 'settings',
 		'current'	=> true,
@@ -112,8 +91,7 @@ function msa_create_initial_settings_tabs() {
 		'content'	=> '',
 	));
 
-	// Extensions
-
+	// Extensions.
 	msa_register_settings_tabs('extensions', array(
 		'id'		=> 'extensions',
 		'current'	=> false,
@@ -121,8 +99,7 @@ function msa_create_initial_settings_tabs() {
 		'content'	=> '',
 	));
 
-	// System Info
-
+	// System Info.
 	msa_register_settings_tabs('system_info', array(
 		'id'		=> 'system_info',
 		'current'	=> false,
@@ -137,7 +114,7 @@ function msa_create_initial_settings_tabs() {
  * Get the settings tabs
  *
  * @access public
- * @return void
+ * @return mixed $msa_settings_tabs The setting tabs.
  */
 function msa_get_settings_tabs() {
 
@@ -154,9 +131,9 @@ function msa_get_settings_tabs() {
  * Register a new Settings Tab
  *
  * @access public
- * @param mixed $tab
- * @param array $args (default: array())
- * @return void
+ * @param mixed $tab   The slug of the new settings tab.
+ * @param array $args  The args of the new settings tab.
+ * @return array $args The args of the new settings tab.
  */
 function msa_register_settings_tabs( $tab, $args = array() ) {
 
@@ -166,16 +143,14 @@ function msa_register_settings_tabs( $tab, $args = array() ) {
 		$msa_settings_tabs = array();
 	}
 
-	// Default tab
-
+	// Default tab.
 	$default = array(
 		'tab' => __( 'Tab', 'msa' ),
 	);
 
 	$args = array_merge( $default, $args );
 
-	// Add the tab to the global dashboard tabs array
-
+	// Add the tab to the global dashboard tabs array.
 	$msa_settings_tabs[ $tab ] = apply_filters( 'msa_register_settings_tab_args', $args );
 
 	/**

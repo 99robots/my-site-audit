@@ -1,29 +1,10 @@
 <?php
-/* ===================================================================
+/**
+ * This file is responsible for the entire audit creation workflow.  It uses WP
+ * Cron to handle auditing many posts at a time.
  *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 10/30/15
- * Package: Functions/Create Audit
- * File: create-audit.php
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-// Exit if accessed directly
+ * @package Functions / Create Audit
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -37,8 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function msa_run_audit() {
 
-	// Create an audit if we have one in the queue
-
+	// Create an audit if we have one in the queue.
 	$next_audit = msa_get_next_audit_to_run();
 
 	if ( isset( $next_audit ) && is_array( $next_audit ) ) {
@@ -54,18 +34,17 @@ add_action( 'init', 'msa_run_audit' );
  * Set the current create audit data
  *
  * @access public
- * @return void
+ * @param array $data      The audit data.
+ * @return bool true|false Was the audit added to the queue?
  */
 function msa_add_audit_to_queue( $data ) {
 
-	// Check if we are already performing an audit
-
+	// Check if we are already performing an audit.
 	if ( false !== ( $current_audit = get_transient( 'msa_run_audit' ) ) || false !== ( $can_run = get_transient( 'msa_running_audit' ) ) ) {
 		return null;
 	}
 
-	// Add this audit to the queue
-
+	// Add this audit to the queue.
 	set_transient( 'msa_run_audit', $data );
 
 	return true;
@@ -75,7 +54,7 @@ function msa_add_audit_to_queue( $data ) {
  * Get the next audit to run
  *
  * @access public
- * @return void
+ * @return bool $result Was the audit queue cleared?
  */
 function msa_clear_audit_queue() {
 	$result = delete_transient( 'msa_run_audit' );
@@ -86,12 +65,11 @@ function msa_clear_audit_queue() {
  * Get the next audit to run
  *
  * @access public
- * @return void
+ * @return array $current_audit The next audit to run.
  */
 function msa_get_next_audit_to_run() {
 
-	// Check if we are already performing an audit
-
+	// Check if we are already performing an audit.
 	if ( false !== ( $current_audit = get_transient( 'msa_run_audit' ) ) && false === ( $can_run = get_transient( 'msa_running_audit' ) ) ) {
 		return $current_audit;
 	}
@@ -107,28 +85,22 @@ function msa_get_next_audit_to_run() {
  */
 function msa_add_post_to_audit() {
 
-	if ( ! isset( $_POST['audit_id'] ) || ! isset( $_POST['post_id'] ) ) { // Input var okay.
+	if ( ! isset( $_POST['audit_id'] ) || ! isset( $_POST['post_id'] ) ) { // Input var okay. WPCS: CSRF ok.
 		echo '';
 		die();
 	}
 
-	$audit_id = sanitize_text_field( wp_unslash( $_POST['audit_id'] ) ); // Input var okay.
-	$post_id = sanitize_text_field( wp_unslash( $_POST['post_id'] ) ); // Input var okay.
+	$audit_id = sanitize_text_field( wp_unslash( $_POST['audit_id'] ) ); // Input var okay. WPCS: CSRF ok.
+	$post_id = sanitize_text_field( wp_unslash( $_POST['post_id'] ) ); // Input var okay. WPCS: CSRF ok.
 
 	$audit_posts_model = new MSA_Audit_Posts_Model();
 	$post = get_post( $post_id );
 
-	// Data
-
 	$data = msa_get_post_audit_data( $post );
-
-	// Score
-
 	$score = msa_calculate_score( $post, $data );
 	$data['score'] = $score['score'];
 
-	// Add a new record in the audit posts table
-
+	// Add a new record in the audit posts table.
 	$audit_posts_model->add_data(array(
 		'audit_id' 	=> $audit_id,
 		'post'		=> $post,
@@ -152,14 +124,14 @@ add_action( 'wp_ajax_msa_add_post_to_audit', 'msa_add_post_to_audit' );
  */
 function msa_ajax_update_audit_score() {
 
-	if ( ! isset( $_POST['audit_id'] ) || ! isset( $_POST['score'] ) || ! isset( $_POST['num_posts'] ) ) { // Input var okay.
+	if ( ! isset( $_POST['audit_id'] ) || ! isset( $_POST['score'] ) || ! isset( $_POST['num_posts'] ) ) { // Input var okay. WPCS: CSRF ok.
 		echo '';
 		die();
 	}
 
-	$audit_id = sanitize_text_field( wp_unslash( $_POST['audit_id'] ) ); // Input var okay.
-	$score = sanitize_text_field( wp_unslash( $_POST['score'] ) ); // Input var okay.
-	$num_posts = sanitize_text_field( wp_unslash( $_POST['num_posts'] ) ); // Input var okay.
+	$audit_id = sanitize_text_field( wp_unslash( $_POST['audit_id'] ) ); // Input var okay. WPCS: CSRF ok.
+	$score = sanitize_text_field( wp_unslash( $_POST['score'] ) ); // Input var okay. WPCS: CSRF ok.
+	$num_posts = sanitize_text_field( wp_unslash( $_POST['num_posts'] ) ); // Input var okay. WPCS: CSRF ok.
 
 	$audit_model = new MSA_Audits_Model();
 	$audit = $audit_model->get_data_from_id( $audit_id );
@@ -180,10 +152,9 @@ add_action( 'wp_ajax_msa_update_audit_score', 'msa_ajax_update_audit_score' );
  */
 function msa_get_post_ids() {
 
-	// Check to see if we can add a new audit
-
+	// Check to see if we can add a new audit.
 	if ( ! apply_filters( 'msa_can_add_new_audit', true ) ) {
-		echo json_encode( array(
+		echo wp_json_encode( array(
 			'status'	=> 'error',
 			'message'	=> __( 'Cannot create a new audit.  You already have the maximum amount of audits saved.  Please delete one in order to create one.', 'msa' ),
 		) );
@@ -191,18 +162,16 @@ function msa_get_post_ids() {
 	}
 
 	$query_parameters = array();
-	if ( isset( $_POST['data'] ) ) { // Input var okay.
-		$query_parameters = html_entity_decode( sanitize_text_field( wp_unslash( $_POST['data'] ) ) ); // Input var okay.
+	if ( isset( $_POST['data'] ) ) { // Input var okay. WPCS: CSRF ok.
+		$query_parameters = html_entity_decode( sanitize_text_field( wp_unslash( $_POST['data'] ) ) ); // Input var okay. WPCS: CSRF ok.
 	}
 
 	parse_str( $query_parameters, $data );
 
-	// Create our Audit and Audit Post Model objects
-
+	// Create our Audit and Audit Post Model objects.
 	$audit_model = new MSA_Audits_Model();
 
-	// Get all the data from the user
-
+	// Get all the data from the user.
 	$audit = array();
 
 	$audit['name'] = stripcslashes( sanitize_text_field( $data['name'] ) );
@@ -210,14 +179,13 @@ function msa_get_post_ids() {
 	$audit['date'] = date( 'Y-m-d H:i:s' );
 	$audit['user'] = get_current_user_id();
 	$audit['args']['post_types'] = $data['post-types'];
-	$audit['args']['conditions'] = json_encode( msa_get_conditions() );
+	$audit['args']['conditions'] = wp_json_encode( msa_get_conditions() );
 	$data['after-date'] = '' !== $data['after-date'] ? strip_tags( $data['after-date'] ) : date( 'm/d/Y', strtotime( '-1 years' ) );
 	$data['before-date'] = '' !== $data['before-date'] ? strip_tags( $data['before-date'] ) : date( 'm/d/Y', strtotime( 'today' ) );
 
-	$audit['args']['form_fields'] = json_encode( $data );
+	$audit['args']['form_fields'] = wp_json_encode( $data );
 
-	// Get all the posts that we are going to perform an audit on
-
+	// Get all the posts that we are going to perform an audit on.
 	$get_posts = new WP_Query;
 	$post_ids = $get_posts->query( array(
 		'public' 			=> true,
@@ -237,7 +205,7 @@ function msa_get_post_ids() {
 		$audit['num_posts'] = count( $post_ids );
 		$audit_id = $audit_model->add_data( $audit );
 
-		echo json_encode( array(
+		echo wp_json_encode( array(
 			'status'	=> 'success',
 			'post_ids' 	=> $post_ids,
 			'audit_id' 	=> $audit_id,
@@ -245,7 +213,7 @@ function msa_get_post_ids() {
 		die();
 	}
 
-	echo json_encode( array(
+	echo wp_json_encode( array(
 		'status'	=> 'error',
 		'message'	=> __( 'No posts found.', 'msa' ),
 	) );

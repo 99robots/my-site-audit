@@ -1,29 +1,9 @@
 <?php
-/* ===================================================================
+/**
+ * Manages all the data within the {$wpdb->prefix}msa_audits table
  *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 10/26/15
- * Package: Model/Audits
- * File: audits.php
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-// Exit if accessed directly
+ * @package Model / Audits
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -31,10 +11,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'MSA_Audits_Model' ) ) :
 
+	/**
+	 * The Audits model class
+	 */
 	class MSA_Audits_Model {
 
 		/**
-		 * table_name
+		 * Table name
 		 *
 		 * (default value: 'msa_audits')
 		 *
@@ -44,7 +27,7 @@ if ( ! class_exists( 'MSA_Audits_Model' ) ) :
 		public $table_name = 'msa_audits';
 
 		/**
-		 * data_format
+		 * Data format
 		 *
 		 * (default value: 'Y-m-d H:i:s')
 		 *
@@ -57,7 +40,7 @@ if ( ! class_exists( 'MSA_Audits_Model' ) ) :
 		 * The default audit
 		 *
 		 * @access public
-		 * @return void
+		 * @return array $default_data A default audit.
 		 */
 		function default_data() {
 			return array(
@@ -97,8 +80,8 @@ if ( ! class_exists( 'MSA_Audits_Model' ) ) :
 		 * Add a new audit
 		 *
 		 * @access public
-		 * @param array $data (default: array())
-		 * @return void
+		 * @param array $data    A new audit's data.
+		 * @return int $audit_id The new audit id.
 		 */
 		function add_data( $data = array() ) {
 			$data = $this->validate_data( $data );
@@ -114,23 +97,19 @@ if ( ! class_exists( 'MSA_Audits_Model' ) ) :
 					'status'    => $data['status'],
 					'user'      => $data['user'],
 					'num_posts' => $data['num_posts'],
-					'args'      => json_encode( $data['args'] ),
+					'args'      => wp_json_encode( $data['args'] ),
 				)
 			);
 
-			// Return the recently created id for this entry
-
 			return $wpdb->insert_id;
-
 		}
 
 		/**
 		 * Update Audit
 		 *
-		 * @since 1.0.0
-		 *
-		 * @param	data to be updated
-		 * @return	false if error, otherwise nothing
+		 * @param int   $id        The audit id.
+		 * @param array $data      The new audit data.
+		 * @return bool true|false The query result.
 		 */
 		function update_data( $id = null, $data = array() ) {
 			$data = $this->validate_data( $data );
@@ -152,7 +131,7 @@ if ( ! class_exists( 'MSA_Audits_Model' ) ) :
 					'status'    => $data['status'],
 					'user'      => $data['user'],
 					'num_posts' => $data['num_posts'],
-					'args'      => json_encode( $data['args'] ),
+					'args'      => wp_json_encode( $data['args'] ),
 				),
 				array( 'id' => $id ),
 				array(
@@ -172,19 +151,16 @@ if ( ! class_exists( 'MSA_Audits_Model' ) ) :
 		/**
 		 * Get audits
 		 *
-		 * @access public
-		 * @param array $args (default: array())
-		 * @return void
+		 * @param array $args    The args to filter audits.
+		 * @return array $audits The filtered audits.
 		 */
 		function get_data( $args = array() ) {
 			global $wpdb;
 
-			// Create the WHERE clause
-
+			// Create the WHERE clause.
 			$where = ' WHERE 1=1 ';
 
-			// Search
-
+			// Search.
 			$search = '';
 
 			if ( isset( $args['s'] ) ) {
@@ -193,8 +169,7 @@ if ( ! class_exists( 'MSA_Audits_Model' ) ) :
 				$search = $wpdb->prepare( ' AND `name` LIKE %s', $s );
 			}
 
-			// Status
-
+			// Status.
 			$status = '';
 
 			if ( isset( $args['status'] ) && 'all' !== $args['status'] ) {
@@ -203,9 +178,7 @@ if ( ! class_exists( 'MSA_Audits_Model' ) ) :
 
 			$where .= $search . $status;
 
-			wp_cache_get( 'msa_audits_get_data' );
-			$data = $wpdb->get_results( 'SELECT * FROM `' . $this->get_table_name() . '` ' . $where . ' ORDER BY `id` DESC;', 'ARRAY_A' );
-			wp_cache_set( 'msa_audits_get_data', $data );
+			$data = $wpdb->get_results( 'SELECT * FROM `' . $this->get_table_name() . '` ' . $where . ' ORDER BY `id` DESC;', 'ARRAY_A' ); // WPCS: unprepared SQL ok. // WPCS: cache ok.
 
 			return $this->parse_data( $data );
 		}
@@ -213,15 +186,14 @@ if ( ! class_exists( 'MSA_Audits_Model' ) ) :
 		/**
 		 * Get audit from id
 		 *
-		 * @access public
-		 * @param mixed $id
-		 * @return void
+		 * @param mixed $id           The audit id.
+		 * @return mixed $parsed_data The audit if found and null if not.
 		 */
 		function get_data_from_id( $id ) {
 			global $wpdb;
 
 			if ( false === ( $data = wp_cache_get( 'msa_audits_get_data_' . $id ) ) ) {
-				$data = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM `' . $this->get_table_name() . '` WHERE `id` = %d', $id ), 'ARRAY_A' );
+				$data = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM `' . $this->get_table_name() . '` WHERE `id` = %d', $id ), 'ARRAY_A' ); // WPCS: unprepared SQL ok.
 				wp_cache_set( 'msa_audits_get_data_' . $id, $data );
 			}
 
@@ -237,14 +209,13 @@ if ( ! class_exists( 'MSA_Audits_Model' ) ) :
 		/**
 		 * Get the latest audit
 		 *
-		 * @access public
-		 * @return void
+		 * @return mixed $parsed_data The audit if found and null if not.
 		 */
 		function get_latest() {
 			global $wpdb;
 
 			if ( false === ( $data = wp_cache_get( 'msa_audits_get_latest' ) ) ) {
-				$data = $wpdb->get_results( 'SELECT * FROM `' . $this->get_table_name() . '` WHERE `status` = "completed" ORDER BY `id` DESC LIMIT 1', 'ARRAY_A' );
+				$data = $wpdb->get_results( 'SELECT * FROM `' . $this->get_table_name() . '` WHERE `status` = "completed" ORDER BY `id` DESC LIMIT 1', 'ARRAY_A' ); // WPCS: unprepared SQL ok.
 				wp_cache_set( 'msa_audits_get_latest', $data );
 			}
 
@@ -260,22 +231,19 @@ if ( ! class_exists( 'MSA_Audits_Model' ) ) :
 		/**
 		 * Delete some data
 		 *
-		 * @access public
-		 * @param mixed $id
+		 * @param mixed $id The audit id.
 		 * @return void
 		 */
 		function delete_data( $id ) {
-
 			global $wpdb;
-			//$sql = $wpdb->prepare( 'DELETE FROM `' . $this->get_table_name() . '` WHERE `id` = %d', $id );
 
+			// $sql = $wpdb->prepare( 'DELETE FROM `' . $this->get_table_name() . '` WHERE `id` = %d', $id );
 			$wpdb->delete(
 				$this->get_table_name(),
 				array( 'id' => $id )
 			);
 
-			// Delete all the posts in the Audit Posts Table
-
+			// Delete all the posts in the Audit Posts Table.
 			$audit_posts_model = new MSA_Audit_Posts_Model();
 			$audit_posts_model->delete_data( $id );
 		}
@@ -298,8 +266,8 @@ if ( ! class_exists( 'MSA_Audits_Model' ) ) :
 		 * Validate that the data is in the correct format
 		 *
 		 * @access public
-		 * @param mixed $data
-		 * @return void
+		 * @param mixed $data  The audit data to validate.
+		 * @return mixed $data The validated data.
 		 */
 		function validate_data( $data ) {
 			return array_merge( $this->default_data(), $data );
@@ -308,9 +276,8 @@ if ( ! class_exists( 'MSA_Audits_Model' ) ) :
 		/**
 		 * Parse the returned data
 		 *
-		 * @access public
-		 * @param mixed $data
-		 * @return void
+		 * @param mixed $data  The audit data to be parsed.
+		 * @return mixed $data The parsed audit data.
 		 */
 		function parse_data( $data ) {
 
@@ -339,9 +306,8 @@ if ( ! class_exists( 'MSA_Audits_Model' ) ) :
 		/**
 		 * Clean the data given to us
 		 *
-		 * @access public
-		 * @param mixed $data
-		 * @return void
+		 * @param mixed $data  The audit data to clean.
+		 * @return mixed $data The cleaned audit data.
 		 */
 		function clean_data( $data ) {
 			return stripcslashes( sanitize_text_field( $data ) );
@@ -350,9 +316,7 @@ if ( ! class_exists( 'MSA_Audits_Model' ) ) :
 		/**
 		 * Returns the proper table name for Multisies
 		 *
-		 * @access public
-		 * @param mixed $table_name
-		 * @return void
+		 * @return string $table_name The name of the database table.
 		 */
 		function get_table_name() {
 			global $wpdb;

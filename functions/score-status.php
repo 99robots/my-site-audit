@@ -1,29 +1,10 @@
 <?php
-/* ===================================================================
+/**
+ * This file is responsible for managing all registerd score status and determining a
+ * status given a score.
  *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 10/28/15
- * Package: Functions/Score Status
- * File: score-status.php
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-// Exit if accessed directly
+ * @package Functions / Score Status
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -33,8 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Get the status of a score
  *
  * @access public
- * @param mixed $score
- * @return void
+ * @param mixed $score The socre value.
+ * @return mixed $key  The score status or null is none found.
  */
 function msa_get_score_status( $score ) {
 
@@ -54,8 +35,8 @@ function msa_get_score_status( $score ) {
  * Get the letter grade for this score
  *
  * @access public
- * @param mixed $score
- * @return void
+ * @param mixed $score  The score value.
+ * @return mixed $grade The letter grade of that score.
  */
 function msa_get_letter_grade( $score ) {
 
@@ -94,9 +75,9 @@ function msa_get_letter_grade( $score ) {
  * Get the number of posts within an audit that have a certain status
  *
  * @access public
- * @param mixed $posts
- * @param mixed $status
- * @return void
+ * @param mixed $posts  An array of audited posts.
+ * @param mixed $status The status to count.
+ * @return void $count  The number of posts with a certain status.
  */
 function msa_get_post_count_by_status( $posts, $status ) {
 
@@ -125,40 +106,35 @@ function msa_get_post_count_by_status( $posts, $status ) {
  */
 function msa_create_initial_score_statuses() {
 
-	// Bad
-
+	// Bad.
 	msa_register_score_status('bad', array(
 		'name' 			=> __( 'Bad', 'msa' ),
 		'low'			=> 0,
 		'high'			=> 0.1999,
 	));
 
-	// Poor
-
+	// Poor.
 	msa_register_score_status('poor', array(
 		'name' 			=> __( 'Poor', 'msa' ),
 		'low'			=> 0.2,
 		'high'			=> 0.3999,
 	));
 
-	// Ok
-
+	// Ok.
 	msa_register_score_status('ok', array(
 		'name' 			=> __( 'Ok', 'msa' ),
 		'low'			=> 0.4,
 		'high'			=> 0.5999,
 	));
 
-	// Good
-
+	// Good.
 	msa_register_score_status('good', array(
 		'name' 			=> __( 'Good', 'msa' ),
 		'low'			=> 0.6,
 		'high'			=> 0.7999,
 	));
 
-	// Great
-
+	// Great.
 	msa_register_score_status('great', array(
 		'name' 			=> __( 'Great', 'msa' ),
 		'low'			=> 0.8,
@@ -172,7 +148,7 @@ function msa_create_initial_score_statuses() {
  * Get all the score statuses
  *
  * @access public
- * @return void
+ * @return mixed $msa_score_statuses The socre statuses.
  */
 function msa_get_score_statuses() {
 
@@ -189,9 +165,9 @@ function msa_get_score_statuses() {
  * Register a new score status
  *
  * @access public
- * @param mixed $score_status
- * @param array $args (default: array())
- * @return void
+ * @param mixed $score_status The slug of the new score staus.
+ * @param array $args         The args of the new score staus.
+ * @return array $args        The slug of the new score staus.
  */
 function msa_register_score_status( $score_status, $args = array() ) {
 
@@ -201,8 +177,7 @@ function msa_register_score_status( $score_status, $args = array() ) {
 		$msa_score_statuses = array();
 	}
 
-	// Default score status
-
+	// Default score status.
 	$default = array(
 		'name'			=> __( 'Bad', 'msa' ),
 		'high'			=> 0.1667,
@@ -211,8 +186,7 @@ function msa_register_score_status( $score_status, $args = array() ) {
 
 	$args = array_merge( $default, $args );
 
-	// Add the score status to the global score statuses array
-
+	// Add the score status to the global score statuses array.
 	$msa_score_statuses[ $score_status ] = apply_filters( 'msa_register_score_status_args', $args );
 
 	/**

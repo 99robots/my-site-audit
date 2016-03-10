@@ -22,7 +22,7 @@
  *
  * ================================================================= */
 
-jQuery(document).ready(function($) {
+jQuery(document).ready(function ($) {
 
 	// Move show columns around to relate to the condition categories
 
@@ -51,12 +51,12 @@ jQuery(document).ready(function($) {
 
 		$('.msa-filter').each(function(index, value) {
 
-			if ( $(value).length != 0 && $(value).val() != '' ) {
+			if ( $(value).length != 0 /* && $(value).val() != '' */ ) {
 				parameters += "&" + $(value).attr('name') + "=" + $(value).val();
 			}
 		});
 
-	    window.location += parameters;
+		window.location += parameters;
 	});
 
 	// Clear Filters

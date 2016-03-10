@@ -1,29 +1,9 @@
 <?php
-/* ===================================================================
+/**
+ * This file gives the developer common functions to use within MSA.
  *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 10/30/15
- * Package: Functions/Common
- * File: common.php
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-// Exit if accessed directly
+ * @package Functions / Common
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -33,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Force the redirect to a url
  *
  * @access public
- * @param mixed $url
+ * @param mixed $url The URL to redirect to .
  * @return void
  */
 function msa_force_redirect( $url ) {
@@ -46,13 +26,12 @@ function msa_force_redirect( $url ) {
  * Get the post excerpt
  *
  * @access public
- * @param mixed $post
- * @return void
+ * @param object $post         A WP_Post object.
+ * @return string $the_excerpt The post excerpt.
  */
 function msa_get_post_excerpt( $post ) {
 
-	// Check to see if there is excerpt data
-
+	// Check to see if there is excerpt data.
 	if ( isset( $post->post_excerpt ) && '' !== $post->post_excerpt ) {
 		$the_excerpt = $post->post_excerpt;
 	} else {
@@ -60,8 +39,7 @@ function msa_get_post_excerpt( $post ) {
 		$the_excerpt = strip_tags( strip_shortcodes( $the_excerpt ) );
 	}
 
-	// Truncate the string if its too long
-
+	// Truncate the string if its too long.
 	if ( strlen( $the_excerpt ) > 156 ) {
 		$the_excerpt = substr( $the_excerpt, 0, 156 ) . '…';
 	}
@@ -78,7 +56,7 @@ function msa_get_post_excerpt( $post ) {
  */
 function msa_show_column() {
 
-	if ( ( isset( $_POST['show_column_nonce'] ) && ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['show_column_nonce'] ) ) ) ) || ! isset( $_POST['action_needed'] ) || ! isset( $_POST['column'] ) ) { // Input var okay.
+	if ( ! isset( $_POST['action_needed'] ) || ! isset( $_POST['column'] ) ) { // Input var okay. // WPCS: CSRF ok.
 		echo '';
 		die();
 	}
@@ -87,12 +65,12 @@ function msa_show_column() {
 		$show_columns = array();
 	}
 
-	if ( 'add' === $_POST['action_needed'] && isset( $_POST['column'] ) ) { // Input var okay.
-		$show_columns[] = sanitize_text_field( wp_unslash( $_POST['column'] ) ); // Input var okay.
+	if ( 'add' === $_POST['action_needed'] && isset( $_POST['column'] ) ) { // Input var okay. // WPCS: CSRF ok.
+		$show_columns[] = sanitize_text_field( wp_unslash( $_POST['column'] ) ); // Input var okay. // WPCS: CSRF ok.
 	} else {
 
 		foreach ( $show_columns as $key => $show_column ) {
-			if ( $show_column === $_POST['column'] ) { // Input var okay.
+			if ( $show_column === $_POST['column'] ) { // Input var okay. // WPCS: CSRF ok.
 				unset( $show_columns[ $key ] );
 			}
 		}
@@ -100,7 +78,7 @@ function msa_show_column() {
 
 	update_option( 'msa_show_columns_' . get_current_user_id(), $show_columns );
 
-	echo json_encode( $show_columns );
+	echo wp_json_encode( $show_columns );
 	die();
 }
 add_action( 'wp_ajax_msa_show_column', 'msa_show_column' );
@@ -109,8 +87,8 @@ add_action( 'wp_ajax_msa_show_column', 'msa_show_column' );
  * Check to see if we can add a new audit
  *
  * @access public
- * @param mixed $data
- * @return void
+ * @param mixed $data      The audit data.
+ * @return bool true|false Determine if the audit can be added.
  */
 function msa_add_new_audit_check( $data ) {
 
@@ -129,8 +107,8 @@ add_filter( 'msa_can_add_new_audit', 'msa_add_new_audit_check', 10, 1 );
  * Filters all the audits from the list of audits
  *
  * @access public
- * @param mixed $audit
- * @return void
+ * @param mixed $audits  All of the audits.
+ * @return mixed $audits All of the audits filered.
  */
 function msa_save_more_audits_extension( $audits ) {
 
@@ -155,7 +133,7 @@ add_filter( 'msa_all_audits_table_items', 'msa_save_more_audits_extension', 10, 
  * Get the maximum number of audits a user is allowed to have
  *
  * @access public
- * @return void
+ * @return int $msa_get_max_audits The maximum number of audits.
  */
 function msa_get_max_audits() {
 	return apply_filters( 'msa_get_max_audits', MY_SITE_AUDIT_MAX_AUDITS );

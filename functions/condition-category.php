@@ -1,29 +1,10 @@
 <?php
-/* ===================================================================
+/**
+ * This file is responsible for handling all condition categories.  You can add
+ * your own just like a custom post type.
  *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 11/4/15
- * Package: Functions/Condition Category
- * File: condition-category.php
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-// Exit if accessed directly
+ * @package Functions / Conditino Categories
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -33,11 +14,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Display the conditions within a category
  *
  * @access public
- * @param mixed $category
- * @param mixed $post
- * @param mixed $data
- * @param mixed $score
- * @return void
+ * @param mixed  $category The condition category.
+ * @param object $post     The WP_Post object.
+ * @param mixed  $data     The audit data.
+ * @param mixed  $score    The post score.
+ * @return string $output The HTML output of the specifc condition category.
  */
 function msa_display_condition_category_data( $category, $post, $data, $score ) {
 
@@ -61,8 +42,7 @@ function msa_display_condition_category_data( $category, $post, $data, $score ) 
 
 	foreach ( $conditions as $key => $condition ) {
 
-		// Goal
-
+		// Goal.
 		if ( 1 === $condition['comparison'] ) {
 			$goal = __( 'Greater Than ' . $condition['min'], 'msa' );
 		} else if ( 2 === $condition['comparison'] ) {
@@ -141,26 +121,22 @@ add_filter( 'msa_condition_category_content', 'msa_display_condition_category_da
  */
 function msa_create_initial_condition_categories() {
 
-	// Content
-
+	// Content.
 	msa_register_condition_category( 'content', array(
 		'name'	=> __( 'Content', 'msa' ),
 	));
 
-	// Images
-
+	// Images.
 	msa_register_condition_category( 'images', array(
 		'name'	=> __( 'Images', 'msa' ),
 	));
 
-	// Links
-
+	// Links.
 	msa_register_condition_category( 'links', array(
 		'name'	=> __( 'Links', 'msa' ),
 	));
 
-	// Headings
-
+	// Headings.
 	msa_register_condition_category('headings', array(
 		'name'	=> __( 'Headings', 'msa' ),
 	));
@@ -173,9 +149,9 @@ function msa_create_initial_condition_categories() {
  * Get the score value for a condition category
  *
  * @access public
- * @param mixed $category
- * @param mixed $score
- * @return void
+ * @param mixed $category The condition category.
+ * @param mixed $score    The score of the category.
+ * @return float $score   The relative weight of the category score.
  */
 function msa_get_condition_catergory_score( $category, $score ) {
 
@@ -195,8 +171,8 @@ function msa_get_condition_catergory_score( $category, $score ) {
  * Get all the conditions from a specific category
  *
  * @access public
- * @param mixed $category
- * @return void
+ * @param mixed $category           The condition category.
+ * @return mixed $conditions_in_cat All of the conditions within a category.
  */
 function msa_get_conditions_from_category( $category ) {
 
@@ -221,7 +197,7 @@ function msa_get_conditions_from_category( $category ) {
  * Get all the condition categories
  *
  * @access public
- * @return void
+ * @return array $msa_condition_categories All condition categories.
  */
 function msa_get_condition_categories() {
 
@@ -238,9 +214,9 @@ function msa_get_condition_categories() {
  * Register a new condition category
  *
  * @access public
- * @param mixed $condition_category
- * @param array $args (default: array())
- * @return void
+ * @param mixed $condition_category The slug for the new condition category.
+ * @param array $args               The args for the new condition category.
+ * @return array $args              The args for the new condition category.
  */
 function msa_register_condition_category( $condition_category, $args = array() ) {
 
@@ -250,23 +226,21 @@ function msa_register_condition_category( $condition_category, $args = array() )
 		$msa_condition_categories = array();
 	}
 
-	// Default condition category
-
+	// Default condition category.
 	$default = array(
 		'name'			=> __( 'Condition Category', 'msa' ),
 	);
 
 	$args = array_merge( $default, $args );
 
-	// Add the condition to the global condition categories array
-
+	// Add the condition to the global condition categories array.
 	$msa_condition_categories[ $condition_category ] = apply_filters( 'msa_register_condition_category_args', $args );
 
 	/**
 	* Fires after a condition category is registered.
 	*
 	* @param string $condition_category Condition.
-	* @param array $args      Arguments used to register the condition.
+	* @param array $args                Arguments used to register the condition.
 	*/
 	do_action( 'msa_registed_condition_category', $condition_category, $args );
 
