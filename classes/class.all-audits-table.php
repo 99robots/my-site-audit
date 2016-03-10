@@ -314,7 +314,7 @@ if ( ! class_exists( 'MSA_All_Audits_Table' ) ) :
 
 				$actions['edit'] = $condition_modal;
 
-				return apply_filters( 'msa_all_audits_table_column_name', sprintf( '%1$s %2$s', '<a href="' . get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $item['id'] . '">' . $item['name'] . '</a><small style="opacity:0.5;padding-left:4px;">id:(' . $item['id'] . ')</small>', $this->row_actions( $actions ) ) );
+				return apply_filters( 'msa_all_audits_table_column_name', sprintf( '%1$s %2$s', '<a href="' . msa_get_single_audit_link( $item['id'] ) . '">' . $item['name'] . '</a><small style="opacity:0.5;padding-left:4px;">id:(' . $item['id'] . ')</small>', $this->row_actions( $actions ) ) );
 
 			}
 

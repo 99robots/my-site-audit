@@ -258,7 +258,7 @@ if ( ! class_exists( 'MSA_All_Posts_Table' ) ) :
 			switch ( $column_name ) {
 
 				case 'score':
-					$data = '<span>' . round( 100 * $score['score'] ) . '%</span><br/> <a href="' . get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit . '&post=' . $item['post']->ID . '">' . $item['post']->post_title . '</a>';
+					$data = '<span>' . round( 100 * $score['score'] ) . '%</span><br/> <a href="' . msa_get_single_audit_post_link( $audit, $item['post']->ID ) . '">' . $item['post']->post_title . '</a>';
 				break;
 
 				case 'modified_date':

@@ -23,6 +23,27 @@ function msa_force_redirect( $url ) {
 }
 
 /**
+ * Returns a safe link to a single audit
+ *
+ * @param int $audit_id The audit id.
+ * @return string $url  The url to an audit with a nonce.
+ */
+function msa_get_single_audit_link( $audit_id ) {
+	return wp_nonce_url( get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit_id, 'msa-single-audit' );
+}
+
+/**
+ * Returns a safe link to a single audit post
+ *
+ * @param int $audit_id The audit id.
+ * @param int $post_id  The post id.
+ * @return string $url  The url to an audit with a nonce.
+ */
+function msa_get_single_audit_post_link( $audit_id, $post_id ) {
+	return wp_nonce_url( get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit_id . '&post=' . $post_id, 'msa-single-audit-post' );
+}
+
+/**
  * Get the post excerpt
  *
  * @access public

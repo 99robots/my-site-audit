@@ -3,7 +3,7 @@
  * Plugin Name: My Site Audit
  * Plugin URI: https://99robots.com/products/my-site-audit
  * Description: The ultimate way to audit your site's content to drive more traffic to your site and enhance your user engagement.
- * version: 1.0.3
+ * version: 1.1.0
  * Author: 99 Robots
  * Author URI: https://99robots.com
  * License: GPL2
@@ -137,7 +137,7 @@ if ( ! class_exists( 'My_Site_Audit' ) ) :
 			 */
 
 			if ( ! defined( 'MY_SITE_AUDIT_VERSION' ) ) {
-				define( 'MY_SITE_AUDIT_VERSION', '1.0.3' );
+				define( 'MY_SITE_AUDIT_VERSION', '1.1.0' );
 			}
 
 			/**
@@ -340,7 +340,6 @@ function msa_create_audit( $audit_data ) {
 	require_once( plugin_dir_path( __FILE__ ) . 'functions/attribute.php' );
 	require_once( plugin_dir_path( __FILE__ ) . 'functions/score-status.php' );
 	require_once( plugin_dir_path( __FILE__ ) . 'functions/create-audit.php' );
-
 	require_once( plugin_dir_path( __FILE__ ) . 'functions/notifications.php' );
 
 	msa_create_initial_conditions();

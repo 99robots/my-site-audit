@@ -4,7 +4,7 @@ Donate link: https://99robots.com
 Tags: content audit, content, audit, seo, site, site audit
 Requires at least: 4.0.0
 Tested up to: 4.4.2
-Stable tag: 1.0.3
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,7 +47,11 @@ e.g.
 
 == Changelog ==
 
-= 1.0.3 =
+= 1.1.0 =
+* IMPROVED: Now complies to WordPress's Coding Standards Core, Docs and Extra
+* ADDED: Nonces were added to the urls to make them safer.
+
+= 1.0.3 = 2016-2-5
 * UPDATED: Store URL to support extensions
 
 = 1.0.2 = 2016-1-7

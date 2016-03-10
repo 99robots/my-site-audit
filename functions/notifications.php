@@ -39,7 +39,7 @@ function msa_notifiy_audit_is_completed( $audit_id, $audit_name ) {
 		}
 
 		$subject = $audit_name . __( ' Completed for site: ', 'msa' ) . $site_name;
-		$message = __( 'Your Audit has been completed for site: ', 'msa' ) . get_site_url() . "\r\n\r\n" . __( 'View: ', 'msa' ) . get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit_id;
+		$message = __( 'Your Audit has been completed for site: ', 'msa' ) . get_site_url() . "\r\n\r\n" . __( 'View: ', 'msa' ) . msa_get_single_audit_link( $audit_id );
 		$headers = '';
 		// $headers .= "MIME-Version: 1.0\r\n";
 		// $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";

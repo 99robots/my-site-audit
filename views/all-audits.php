@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once( 'header.php' );
 
-if ( isset( $_GET['post'] ) && isset( $_GET['audit'] ) ) { // Input var okay.
+if ( isset( $_GET['post'] ) && isset( $_GET['audit'] ) && check_admin_referer( 'msa-single-audit-post' ) ) { // Input var okay.
 
 	$post_id = sanitize_text_field( wp_unslash( $_GET['post'] ) ); // Input var okay.
 	$audit_id = sanitize_text_field( wp_unslash( $_GET['audit'] ) ); // Input var okay.
@@ -26,7 +26,7 @@ if ( isset( $_GET['post'] ) && isset( $_GET['audit'] ) ) { // Input var okay.
 	$score = $audit_post['data']['score']; ?>
 
 	<h1><?php esc_attr_e( 'Post Audit Details', 'msa' ); ?>
-		<a href="<?php esc_attr_e( get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit_id ); ?>" class="page-title-action"><?php esc_attr_e( 'All Posts', 'msa' ); ?></a>
+		<a href="<?php esc_attr_e( msa_get_single_audit_link( $audit_id ) ); ?>" class="page-title-action"><?php esc_attr_e( 'All Posts', 'msa' ); ?></a>
 	</h1>
 
 	<div class="msa-header msa-single-post">
@@ -138,7 +138,7 @@ if ( isset( $_GET['post'] ) && isset( $_GET['audit'] ) ) { // Input var okay.
 
 	</div>
 
-<?php } else if ( isset( $_GET['audit'] ) ) { // Input var okay.
+<?php } else if ( isset( $_GET['audit'] ) && check_admin_referer( 'msa-single-audit' ) ) { // Input var okay.
 
 	$audit_id = sanitize_text_field( wp_unslash( $_GET['audit'] ) ); // Input var okay.
 

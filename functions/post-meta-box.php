@@ -72,7 +72,7 @@ function msa_meta_box_callback( $post ) {
 
 			<div class="msa-post-meta-container msa-post-meta-audit-meta-values">
 				<p class="msa-post-meta-value msa-post-status-bg msa-post-status-bg-<?php esc_attr_e( msa_get_score_status( $score['score'] ) ); ?>"><?php esc_attr_e( round( $score['score'] * 100, 2 ) ); ?>%</p>
-				<p class="msa-post-meta-value"><a href="<?php esc_attr_e( get_admin_url() . 'admin.php?page=msa-all-audits&audit=' . $audit['id'] ); ?>" target="_blank"><?php esc_attr_e( $audit['name'] ); ?></a></p>
+				<p class="msa-post-meta-value"><a href="<?php esc_attr_e( msa_get_single_audit_link( $audit['id'] ) ); ?>" target="_blank"><?php esc_attr_e( $audit['name'] ); ?></a></p>
 				<p class="msa-post-meta-value"><?php esc_attr_e( date( 'M j, Y', strtotime( $audit['date'] ) ) ); ?></p>
 				<p class="msa-post-meta-value"><?php esc_attr_e( $user->display_name ); ?></p>
 			</div><?php
