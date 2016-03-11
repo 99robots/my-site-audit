@@ -47,7 +47,7 @@ e.g.
 
 == Changelog ==
 
-= 1.1.0 =
+= 1.1.0 = 2016-3-11
 * IMPROVED: Now complies to WordPress's Coding Standards Core, Docs and Extra
 * ADDED: Nonces were added to the urls to make them safer.
 
