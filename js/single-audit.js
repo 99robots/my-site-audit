@@ -1,125 +1,93 @@
-/* ===================================================================
+/**
+ * This file is responsible for all client site logic on the Single Audit Page.
  *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 11/13/15
- * Package: Javascript/Single Audit
- * File: single-audit.js
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
+ * @param  {document} document The global document object.
+ * @return {null}
+ */
+jQuery( document ).ready( function( $ ) {
 
-jQuery(document).ready(function ($) {
-
-	// Move show columns around to relate to the condition categories
-
-	$('#adv-settings h5').remove();
-
-	$.each(msa_single_audit_data.condition_categories, function(index, value){
-		$('<div class="msa-condition-category-column msa-condition-category-column-' + index + '">' +
+	// Move show columns around to relate to the condition categories.
+	$( '#adv-settings h5' ).remove();
+	$.each( msa_single_audit_data.condition_categories, function( index, value ) {
+		$( '<div class="msa-condition-category-column msa-condition-category-column-' + index + '">' +
 			'<h5>' + value.name + '</h5>' +
-		+ '</div>').insertBefore('form .metabox-prefs');
-	});
+		+ '</div>' ).insertBefore( 'form .metabox-prefs' );
+	} );
 
-	// Attributes
+	// Attributes.
+	$( '<h5>' + msa_single_audit_data.attribute_title + '</h5>' ).insertBefore( 'form .metabox-prefs' );
+	$.each( msa_single_audit_data.conditions , function( index, value ) {
+		$( 'input#' + index + '-hide' ).parent().appendTo( '.msa-condition-category-column-' + value.category );
+	} );
 
-	$('<h5>' + msa_single_audit_data.attribute_title + '</h5>').insertBefore('form .metabox-prefs');
-
-	$.each(msa_single_audit_data.conditions, function(index, value){
-		$('input#' + index + '-hide').parent().appendTo('.msa-condition-category-column-' + value.category);
-	});
-
-	// Add Filters
-
-	$('.msa-filter-button').click(function(e) {
+	// Add Filters.
+	$( '.msa-filter-button' ).click( function( e ) {
+		var parameters = '';
 		e.preventDefault();
 
-		var parameters = '';
-
-		$('.msa-filter').each(function(index, value) {
-
-			if ( $(value).length != 0 /* && $(value).val() != '' */ ) {
-				parameters += "&" + $(value).attr('name') + "=" + $(value).val();
+		$( '.msa-filter' ).each( function( index, value ) {
+			if ( 0 !== $( value ).length ) {
+				parameters += '&' + $( value ).attr( 'name' ) + '=' + $( value ).val();
 			}
 		});
 
 		window.location += parameters;
-	});
+	} );
 
-	// Clear Filters
-
-	$('.msa-clear-filters-button').click(function(e){
+	// Clear Filters.
+	$( '.msa-clear-filters-button' ).click( function( e ) {
 		e.preventDefault();
-		window.location = msa_single_audit_data.audit_page + "&audit=" + msa_get_url_parameter('audit');
-	});
+		window.location = msa_single_audit_data.audit_page + '&audit=' + msaGetUrlParameter( 'audit' );
+	} );
 
 	// Hide and show the columns
 
-	$('.hide-column-tog').each(function(index, value){
+	$( '.hide-column-tog' ).each( function( index, value ) {
+		var column = $( value );
+		column.prop( 'checked', false );
+		$( '.column-' + column.val() ).hide();
+		$( '.filter-' + column.val() ).hide();
 
-		$(value).prop('checked', false);
-		$('.column-' + $(value).val()).hide();
-		$('.filter-' + $(value).val()).hide();
-
-		var column = $(value);
-
-		$.each(msa_single_audit_data.show_columns, function(index, value) {
-
-			if ( column.val() == value ) {
-				column.prop('checked', true);
-				$('.column-' + column.val()).show();
-				$('.filter-' + column.val()).show();
+		$.each( msa_single_audit_data.show_columns, function( index, value ) {
+			if ( column.val() === value ) {
+				column.prop( 'checked', true );
+				$( '.column-' + column.val() ).show();
+				$( '.filter-' + column.val() ).show();
 				return false;
 			}
-		});
-	});
+		} );
+	} );
 
-	$('.hide-column-tog').change(function(){
+	$( '.hide-column-tog' ).change( function() {
+		if ( $( this ).prop( 'checked' ) ) {
+			$( '.column-' + $( this ).val() ).show();
+			$( '.filter-' + $( this ).val() ).show();
 
-		if ( $(this).prop('checked') ) {
-			$('.column-' + $(this).val()).show();
-			$('.filter-' + $(this).val()).show();
-
-			msa_show_column('add', $(this).val());
-
+			msaShowColumn( 'add', $( this ).val() );
 		} else {
-			$('.column-' + $(this).val()).hide();
-			$('.filter-' + $(this).val()).hide();
+			$( '.column-' + $( this ).val() ).hide();
+			$( '.filter-' + $( this ).val() ).hide();
 
-			msa_show_column('remove', $(this).val());
+			msaShowColumn( 'remove', $( this ).val() );
 		}
-	});
+	} );
 
 	/**
 	 * Either add or remove a column from the all posts table
 	 *
-	 * @access public
 	 * @param mixed action
 	 * @param mixed column
 	 * @return void
 	 */
-	function msa_show_column(action, column) {
+	function msaShowColumn( action, column ) {
 
-		$.post(ajaxurl, {
-				'action': 'msa_show_column',
+		$.post( ajaxurl, {
+				'action': 'msaShowColumn',
 				'action_needed': action,
 				'show_column_nonce': msa_single_audit_data.show_column_nonce,
-				'column': column,
-			}, function(response) {
-			console.log(response);
+				'column': column
+			}, function( response ) {
+			console.log( response );
 		});
 	}
 
@@ -127,23 +95,22 @@ jQuery(document).ready(function ($) {
 	 * Get the URL parameter
 	 * Credit: http://stackoverflow.com/questions/19491336/get-url-parameter-jquery
 	 *
-	 * @access public
 	 * @param mixed sParam
 	 * @return void
 	 */
-	function msa_get_url_parameter(sParam) {
-	    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-	        sURLVariables = sPageURL.split('&'),
-	        sParameterName,
-	        i;
+	function msaGetUrlParameter( sParam ) {
+		var sPageURL = decodeURIComponent( window.location.search.substring( 1 ) ),
+			sURLVariables = sPageURL.split( '&' ),
+			sParameterName,
+			i;
 
-	    for (i = 0; i < sURLVariables.length; i++) {
-	        sParameterName = sURLVariables[i].split('=');
+		for ( i = 0; i < sURLVariables.length; i++ ) {
+			sParameterName = sURLVariables[i].split( '=' );
 
-	        if (sParameterName[0] === sParam) {
-	            return sParameterName[1] === undefined ? true : sParameterName[1];
-	        }
-	    }
+			if ( sParameterName[0] === sParam ) {
+				return undefined === sParameterName[1] ? true : sParameterName[1];
+			}
+		}
 	}
 
 });

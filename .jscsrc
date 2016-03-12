@@ -1,0 +1,19 @@
+{
+	"preset": "wordpress",
+	"excludeFiles": [
+		"**/*.min.js",
+		"**/node_modules/**",
+		"**/vendor/**",
+		"**/bower_components/**"
+	],
+	"plugins": [
+        "jscs-jsdoc"
+    ],
+    "jsDoc": {
+        "checkAnnotations": "closurecompiler",
+        "checkTypes": "strictNativeCase",
+        "enforceExistence": {
+            "allExcept": ["exports"]
+        }
+    }
+}

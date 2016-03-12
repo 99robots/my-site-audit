@@ -22,7 +22,7 @@
  *
  * ================================================================= */
 
-jQuery(document).ready(function($) {
+jQuery(document).ready(function ($) {
 
 	var msa_audit_post_ids = [];
 	var msa_audit_score = 0;
@@ -125,7 +125,7 @@ jQuery(document).ready(function($) {
 		$.post(ajaxurl, {
 				'action': 'msa_update_audit_score',
 				'audit_id': $('.msa-audit-score').attr('data-audit-id'),
-				'update_audit_score_nonce': msa_all_audits_data.update_audit_score_nonce, 
+				'update_audit_score_nonce': msa_all_audits_data.update_audit_score_nonce,
 				'score': msa_audit_score,
 				'num_posts': msa_audit_post_ids.length,
 			}, function(response) {
