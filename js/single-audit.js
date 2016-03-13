@@ -8,15 +8,15 @@ jQuery( document ).ready( function( $ ) {
 
 	// Move show columns around to relate to the condition categories.
 	$( '#adv-settings h5' ).remove();
-	$.each( msa_single_audit_data.condition_categories, function( index, value ) {
+	$.each( msaSingleAuditData.condition_categories, function( index, value ) {
 		$( '<div class="msa-condition-category-column msa-condition-category-column-' + index + '">' +
 			'<h5>' + value.name + '</h5>' +
-		+ '</div>' ).insertBefore( 'form .metabox-prefs' );
+		'</div>' ).insertBefore( 'form .metabox-prefs' );
 	} );
 
 	// Attributes.
-	$( '<h5>' + msa_single_audit_data.attribute_title + '</h5>' ).insertBefore( 'form .metabox-prefs' );
-	$.each( msa_single_audit_data.conditions , function( index, value ) {
+	$( '<h5>' + msaSingleAuditData.attribute_title + '</h5>' ).insertBefore( 'form .metabox-prefs' );
+	$.each( msaSingleAuditData.conditions, function( index, value ) {
 		$( 'input#' + index + '-hide' ).parent().appendTo( '.msa-condition-category-column-' + value.category );
 	} );
 
@@ -37,7 +37,7 @@ jQuery( document ).ready( function( $ ) {
 	// Clear Filters.
 	$( '.msa-clear-filters-button' ).click( function( e ) {
 		e.preventDefault();
-		window.location = msa_single_audit_data.audit_page + '&audit=' + msaGetUrlParameter( 'audit' );
+		window.location = msaSingleAuditData.audit_page + '&audit=' + msaGetUrlParameter( 'audit' );
 	} );
 
 	// Hide and show the columns
@@ -48,7 +48,7 @@ jQuery( document ).ready( function( $ ) {
 		$( '.column-' + column.val() ).hide();
 		$( '.filter-' + column.val() ).hide();
 
-		$.each( msa_single_audit_data.show_columns, function( index, value ) {
+		$.each( msaSingleAuditData.show_columns, function( index, value ) {
 			if ( column.val() === value ) {
 				column.prop( 'checked', true );
 				$( '.column-' + column.val() ).show();
@@ -84,7 +84,7 @@ jQuery( document ).ready( function( $ ) {
 		$.post( ajaxurl, {
 				'action': 'msaShowColumn',
 				'action_needed': action,
-				'show_column_nonce': msa_single_audit_data.show_column_nonce,
+				'show_column_nonce': msaSingleAuditData.show_column_nonce,
 				'column': column
 			}, function( response ) {
 			console.log( response );
@@ -112,5 +112,4 @@ jQuery( document ).ready( function( $ ) {
 			}
 		}
 	}
-
 });

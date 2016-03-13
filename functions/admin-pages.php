@@ -103,7 +103,7 @@ function msa_dashboard_scripts() {
 
 	// Scripts.
 	wp_enqueue_script( 'msa-dashboard-js', 			MY_SITE_AUDIT_PLUGIN_URL . '/js/dashboard.js' );
-	wp_localize_script( 'msa-dashboard-js', 'msa_dashboard_data', array(
+	wp_localize_script( 'msa-dashboard-js', 'msaDashboardData', array(
 		'save_dashboard_panel_order_nonce'	=> wp_create_nonce( 'save_dashboard_panel_order_nonce' ),
 	) );
 	wp_enqueue_script( 'dashboard' );
@@ -154,7 +154,7 @@ function msa_all_audits_scripts() {
 	}
 
 	wp_enqueue_script( 'msa-single-audit-js', 				MY_SITE_AUDIT_PLUGIN_URL . '/js/single-audit.js' );
-	wp_localize_script( 'msa-single-audit-js', 'msa_single_audit_data', array(
+	wp_localize_script( 'msa-single-audit-js', 'msaSingleAuditData', array(
 		'audit_page'			=> get_admin_url() . 'admin.php?page=msa-all-audits',
 		'show_columns'			=> $show_columns,
 		'attribute_title'		=> __( 'Attributes', 'msa' ),
@@ -185,7 +185,7 @@ function msa_settings_scripts() {
 	// Script.
 	wp_enqueue_script( 'msa-settings-js', 			MY_SITE_AUDIT_PLUGIN_URL . '/js/settings.js' );
 	wp_enqueue_script( 'msa-licensing-js', 			MY_SITE_AUDIT_PLUGIN_URL . '/js/licensing.js', array( 'jquery' ) );
-	wp_localize_script( 'msa-licensing-js', 			'msa_licensing_data', array(
+	wp_localize_script( 'msa-licensing-js', 			'msaLicensingData', array(
 		'site_url'				=> get_site_url(),
 		'activate_text'			=> __( 'Activate', 'msa' ),
 		'deactivate_text'		=> __( 'Deactivate', 'msa' ),
