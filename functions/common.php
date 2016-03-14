@@ -102,7 +102,7 @@ function msa_show_column() {
 	echo wp_json_encode( $show_columns );
 	die();
 }
-add_action( 'wp_ajax_msa_show_column', 'msa_show_column' );
+add_action( 'wp_ajax_msaShowColumn', 'msa_show_column' );
 
 /**
  * Check to see if we can add a new audit

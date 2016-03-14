@@ -155,7 +155,7 @@ function msa_all_audits_scripts() {
 
 	wp_enqueue_script( 'msa-single-audit-js', 				MY_SITE_AUDIT_PLUGIN_URL . '/js/single-audit.js' );
 	wp_localize_script( 'msa-single-audit-js', 'msaSingleAuditData', array(
-		'audit_page'			=> get_admin_url() . 'admin.php?page=msa-all-audits',
+		'audit_page'			=> isset( $_GET['audit'] ) ? msa_get_single_audit_link( wp_unslash( $_GET['audit'] ) ) : '',
 		'show_columns'			=> $show_columns,
 		'attribute_title'		=> __( 'Attributes', 'msa' ),
 		'conditions'			=> msa_get_conditions(),

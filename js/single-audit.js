@@ -37,11 +37,10 @@ jQuery( document ).ready( function( $ ) {
 	// Clear Filters.
 	$( '.msa-clear-filters-button' ).click( function( e ) {
 		e.preventDefault();
-		window.location = msaSingleAuditData.audit_page + '&audit=' + msaGetUrlParameter( 'audit' );
+		window.location = msaSingleAuditData.audit_page;
 	} );
 
-	// Hide and show the columns
-
+	// Hide and show the columns.
 	$( '.hide-column-tog' ).each( function( index, value ) {
 		var column = $( value );
 		column.prop( 'checked', false );

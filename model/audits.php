@@ -122,7 +122,7 @@ if ( ! class_exists( 'MSA_Audits_Model' ) ) :
 
 			wp_cache_delete( 'msa_audits_get_data' );
 
-			$wpdb->update(
+			$result = $wpdb->update(
 				$this->get_table_name(),
 				array(
 					'name'      => $data['name'],

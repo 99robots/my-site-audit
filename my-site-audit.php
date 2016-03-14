@@ -331,9 +331,9 @@ function msa_create_audit( $audit_data ) {
 	delete_transient( 'msa_schedule_audit' );
 
 	// Include all the files we need.
+	require_once( plugin_dir_path( __FILE__ ) . 'functions/common.php' );
 	require_once( plugin_dir_path( __FILE__ ) . 'model/audits.php' );
 	require_once( plugin_dir_path( __FILE__ ) . 'model/audit-posts.php' );
-
 	require_once( plugin_dir_path( __FILE__ ) . 'functions/audit-data.php' );
 	require_once( plugin_dir_path( __FILE__ ) . 'functions/condition.php' );
 	require_once( plugin_dir_path( __FILE__ ) . 'functions/condition-category.php' );
@@ -356,6 +356,7 @@ function msa_create_audit( $audit_data ) {
 	$audit['date']                = date( 'Y-m-d H:i:s' );
 	$audit['status']              = 'in-progress';
 	$audit['user']                = $audit_data['user'];
+	$audit['num_posts']           = 0;
 	$audit['args']['conditions']  = wp_json_encode( msa_get_conditions() );
 	$audit['args']['before_date'] = $audit_data['after-date'];
 	$audit['args']['before_date'] = $audit_data['before-date'];
