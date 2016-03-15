@@ -75,7 +75,7 @@ jQuery( document ).ready( function( $ ) {
 		} else {
 			element.addClass( 'msa-license-key-valid' );
 			element.parent().append( licenseActivateButton );
-			element.parent().append( '<p class="description msa-activation-message">' + msaLicensingData.no_licenseKey + '</p>' );
+			element.parent().append( '<p class="description msa-activation-message">' + msaLicensingData.no_license_key + '</p>' );
 		}
 	}
 

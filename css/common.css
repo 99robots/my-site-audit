@@ -1,32 +1,6 @@
-/* ===================================================================
- *
- * My Site Audit https://mysiteaudit.com
- *
- * Created: 10/26/15
- * Package: Style/Common
- * File: common.css
- * Author: Kyle Benk
- *
- *
- * Copyright 2015
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * ================================================================= */
-
-/* =====================================================
- *
+/**
  * Helper Classes
- *
- ==================================================== */
+ */
 
 /* Modal */
 
@@ -192,11 +166,9 @@ td.msa-system-status-row.bad {
 	border-color: #dd3d36;
 }
 
-/* =====================================================
- *
+/**
  * Status Colors
- *
- ==================================================== */
+ */
 
 .msa-post-status > td:first-of-type {
 	border-left: 3px solid;
@@ -304,11 +276,9 @@ td.msa-system-status-row.bad {
 	border-color: #B20000 !important;
 }
 
-/* =====================================================
- *
+/**
  * Media Queries
- *
- ==================================================== */
+ */
 
 @media screen and (max-width: 768px) {
 
