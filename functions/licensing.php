@@ -69,6 +69,7 @@ function msa_settings_tab_extensions_content( $content ) {
 		if ( isset( $extension['settings'] ) ) {
 
 			$setting = $extension['settings'];
+			$item_id = isset( $extension['item_id'] ) ? $extension['item_id'] : -1;
 			$license_key = isset( $settings[ $key ]['license_key'] ) ? $settings[ $key ]['license_key'] : $extension['license_key'];
 
 			$output .= '<h3 class="msa-settings-heading">' . $extension['title'] . '</h3>';
@@ -77,7 +78,7 @@ function msa_settings_tab_extensions_content( $content ) {
 					<tr>
 						<th scope="row"><label for="' . $setting['id'] . '">' . __( 'License Key', 'msa' ) . '</label></th>
 						<td>
-							<input type="text" data-extension="' . $key . '" class="regular-text msa-license-key ' . $setting['class'] . '-license-key" id="' . $setting['id'] . '-license-key" name="msa-extension-' . $key . '-license-key" value="' . $license_key . '">
+							<input type="text" data-extension="' . $item_id . '" class="regular-text msa-license-key ' . $setting['class'] . '-license-key" id="' . $setting['id'] . '-license-key" name="msa-extension-' . $key . '-license-key" value="' . $license_key . '">
 						</td>
 					</tr>
 				</tbody>
@@ -114,7 +115,7 @@ function msa_license_action() {
 	$api_params = array(
 		'edd_action'	=> sanitize_text_field( wp_unslash( $_POST['license_action'] ) ), // Input var okay. WPCS: CSRF ok.
 		'license' 		=> sanitize_text_field( wp_unslash( $_POST['license_key'] ) ), // Input var okay. WPCS: CSRF ok.
-		'item_name' 	=> urlencode( MY_SITE_AUDIT_ITEM_NAME ), // The name of our product in EDD.
+		'item_id' 		=> urlencode( sanitize_text_field( wp_unslash( $_POST['extension'] ) ) ), // The name of our product in EDD. Input var okay. WPCS: CSRF ok.
 		'url'       	=> is_multisite() ? network_home_url() : home_url(),
 	);
 
