@@ -47,8 +47,9 @@ e.g.
 
 == Changelog ==
 
-= 1.2.0 = 2016-3-15
+= 1.2.0 = 2016-3-16
 * IMPROVED: Now complies to WordPress's Coding Standards for Javascript and CSS
+* FIXED: Extensions licensing
 
 = 1.1.0 = 2016-3-11
 * IMPROVED: Now complies to WordPress's Coding Standards Core, Docs and Extra
