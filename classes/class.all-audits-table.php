@@ -292,7 +292,7 @@ if ( ! class_exists( 'MSA_All_Audits_Table' ) ) :
 					$value = __( 'Pass or Fail', 'msa' );
 
 					if ( 2 === $condition['value'] ) {
-						$value = __( 'Precentage', 'msa' );
+						$value = __( 'Percentage', 'msa' );
 					}
 
 					$condition_modal .= '<tr>
