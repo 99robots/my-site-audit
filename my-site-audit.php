@@ -3,7 +3,7 @@
  * Plugin Name: My Site Audit
  * Plugin URI: https://99robots.com/products/my-site-audit
  * Description: The ultimate way to audit your site's content to drive more traffic to your site and enhance your user engagement.
- * version: 1.2.1
+ * version: 1.2.2
  * Author: 99 Robots
  * Author URI: https://99robots.com
  * License: GPL2
@@ -63,7 +63,7 @@ if ( ! class_exists( 'My_Site_Audit' ) ) :
 		 * @return void
 		 */
 		public function __clone() {
-			_doing_it_wrong( __FUNCTION__, esc_attr__( 'You cannot __clone an instance of the My_Site_Audit class.', MY_SITE_AUDIT_TEXT_DOMAIN ), '1.6' );
+			_doing_it_wrong( __FUNCTION__, esc_attr__( 'You cannot __clone an instance of the My_Site_Audit class.', 'msa' ), '1.6' );
 		}
 
 		/**
@@ -73,7 +73,7 @@ if ( ! class_exists( 'My_Site_Audit' ) ) :
 		 * @return void
 		 */
 		public function __wakeup() {
-			_doing_it_wrong( __FUNCTION__, esc_attr__( 'You cannot __wakeup an instance of the My_Site_Audit class.', MY_SITE_AUDIT_TEXT_DOMAIN ), '1.6' );
+			_doing_it_wrong( __FUNCTION__, esc_attr__( 'You cannot __wakeup an instance of the My_Site_Audit class.', 'msa' ), '1.6' );
 		}
 
 		/**
@@ -125,19 +125,11 @@ if ( ! class_exists( 'My_Site_Audit' ) ) :
 			}
 
 			/**
-			 * Plugin text domain
-			 */
-
-			if ( ! defined( 'MY_SITE_AUDIT_TEXT_DOMAIN' ) ) {
-				define( 'MY_SITE_AUDIT_TEXT_DOMAIN', 'msa' );
-			}
-
-			/**
 			 * Plugin version
 			 */
 
 			if ( ! defined( 'MY_SITE_AUDIT_VERSION' ) ) {
-				define( 'MY_SITE_AUDIT_VERSION', '1.2.1' );
+				define( 'MY_SITE_AUDIT_VERSION', '1.2.2' );
 			}
 
 			/**
@@ -296,7 +288,7 @@ if ( ! class_exists( 'My_Site_Audit' ) ) :
 		 * @return void
 		 */
 		public function load_textdomain() {
-			load_textdomain( MY_SITE_AUDIT_TEXT_DOMAIN , dirname( plugin_basename( MY_SITE_AUDIT_PLUGIN_FILE ) ) . '/languages/' );
+			load_textdomain( 'msa' , dirname( plugin_basename( MY_SITE_AUDIT_PLUGIN_FILE ) ) . '/languages/' );
 		}
 	}
 

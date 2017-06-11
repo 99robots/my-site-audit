@@ -3,8 +3,8 @@ Contributors: 99robots, kjbenk, charliepatel
 Donate link: https://99robots.com
 Tags: content audit, content, audit, seo, site, site audit
 Requires at least: 4.0.0
-Tested up to: 4.4.2
-Stable tag: 1.2.1
+Tested up to: 4.8.0
+Stable tag: 1.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,9 @@ e.g.
 
 
 == Changelog ==
+
+= 1.2.2 = 2017-06-11
+* Made compatible with WordPress 4.8
 
 = 1.2.1 =
 * FIXED: Corrected spelling errors
