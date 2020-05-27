@@ -3,7 +3,7 @@
  * Plugin Name: My Site Audit
  * Plugin URI: https://draftpress.com/products/my-site-audit
  * Description: The ultimate way to audit your site's content to drive more traffic to your site and enhance your user engagement.
- * version: 1.2.2
+ * version: 1.2.3
  * Author: 99 Robots
  * Author URI: https://draftpress.com
  * License: GPL2
@@ -129,7 +129,7 @@ if ( ! class_exists( 'My_Site_Audit' ) ) :
 			 */
 
 			if ( ! defined( 'MY_SITE_AUDIT_VERSION' ) ) {
-				define( 'MY_SITE_AUDIT_VERSION', '1.2.2' );
+				define( 'MY_SITE_AUDIT_VERSION', '1.2.3' );
 			}
 
 			/**

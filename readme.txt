@@ -47,7 +47,7 @@ e.g.
 
 == Changelog ==
 
-= 1.2.2 = 2020-05-27
+= 1.2.3 = 2020-05-27
 * Made compatible with WordPress 5.4.1
 * DraftPress added as a Contributor
 
