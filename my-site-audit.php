@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: My Site Audit
- * Plugin URI: https://99robots.com/products/my-site-audit
+ * Plugin URI: https://draftpress.com/products/my-site-audit
  * Description: The ultimate way to audit your site's content to drive more traffic to your site and enhance your user engagement.
  * version: 1.2.2
  * Author: 99 Robots
- * Author URI: https://99robots.com
+ * Author URI: https://draftpress.com
  * License: GPL2
  *
  * @package Main File
@@ -97,7 +97,7 @@ if ( ! class_exists( 'My_Site_Audit' ) ) :
 			 */
 
 			if ( ! defined( 'MY_SITE_AUDIT_STORE_URL' ) ) {
-				define( 'MY_SITE_AUDIT_STORE_URL', 'https://99robots.com' );
+				define( 'MY_SITE_AUDIT_STORE_URL', 'https://draftpress.com' );
 			}
 
 			/**
@@ -105,7 +105,7 @@ if ( ! class_exists( 'My_Site_Audit' ) ) :
 			 */
 
 			if ( ! defined( 'MY_SITE_AUDIT_EXT_URL' ) ) {
-				define( 'MY_SITE_AUDIT_EXT_URL' , 'https://99robots.com/products/category/my-site-audit/?&utm_source=plugin_pages' );
+				define( 'MY_SITE_AUDIT_EXT_URL' , 'https://draftpress.com/products/category/my-site-audit/?&utm_source=plugin_pages' );
 			}
 
 			/**

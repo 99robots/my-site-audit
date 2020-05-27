@@ -7,11 +7,11 @@
     "authors": [
         {
             "name": "99 Robots",
-            "homepage": "http://99robots.com"
+            "homepage": "http://draftpress.com"
         }
     ],
     "support": {
-        "issues": "http://99robots.com/support"
+        "issues": "http://draftpress.com/support"
     },
 	"require": {
         "composer/installers": "~1.0"

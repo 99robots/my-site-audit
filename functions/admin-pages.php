@@ -189,10 +189,10 @@ function msa_settings_scripts() {
 		'site_url'				=> get_site_url(),
 		'activate_text'			=> __( 'Activate', 'msa' ),
 		'deactivate_text'		=> __( 'Deactivate', 'msa' ),
-		'no_license_key'		=> __( 'Please add or activate your License Key to get automatic updates.  Without a valid license key you will not receive regular updates. You can find your license key', 'msa' ) . ' <a href="https://99robots.com/dashboard" target="_blank">here</a>',
-		'expired'				=> __( 'EXPIRED LICENSE KEY: This license key has expired.  Please renew your license key', 'msa' ) . ' <a href="https://99robots.com/dashboard" target="_blank">here</a>',
+		'no_license_key'		=> __( 'Please add or activate your License Key to get automatic updates.  Without a valid license key you will not receive regular updates. You can find your license key', 'msa' ) . ' <a href="https://draftpress.com/dashboard" target="_blank">here</a>',
+		'expired'				=> __( 'EXPIRED LICENSE KEY: This license key has expired.  Please renew your license key', 'msa' ) . ' <a href="https://draftpress.com/dashboard" target="_blank">here</a>',
 		'inactive'				=> __( 'INACTIVE LICENSE KEY: The license key is not active for this site.  Please activate it by clicking the Activate button to the right.', 'msa' ),
-		'activation_error'		=> __( 'INVALID LICENSE KEY: The license key is not valid please try again. You can find your license key', 'msa' ) . ' <a href="https://99robots.com/dashboard" target="_blank">here</a>.',
+		'activation_error'		=> __( 'INVALID LICENSE KEY: The license key is not valid please try again. You can find your license key', 'msa' ) . ' <a href="https://draftpress.com/dashboard" target="_blank">here</a>.',
 		'activation_valid'		=> __( 'SUCCESS: Your license key is valid.', 'msa' ),
 		'deactivation_valid'	=> __( 'SUCCESS: This site has been deactivated.', 'msa' ),
 		'deactivation_error'	=> __( 'DEACTIVATION FAILED: This site could not be deactivated.', 'msa' ),
@@ -343,5 +343,5 @@ function msa_settings() {
  * @return void
  */
 function msa_extensions() {
-	msa_force_redirect( 'https://99robots.com/products/category/my-site-audit/' );
+	msa_force_redirect( 'https://draftpress.com/products/category/my-site-audit/' );
 }

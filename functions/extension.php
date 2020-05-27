@@ -29,7 +29,7 @@ function msa_create_initial_extensions() {
 function msa_get_remote_extensions() {
 
 	$remote_extensions = array();
-	$response = vip_safe_wp_remote_get( 'https://99robots.com/msa-extensions.json' );
+	$response = vip_safe_wp_remote_get( 'https://draftpress.com/msa-extensions.json' );
 
 	if ( is_array( $response ) ) {
 		$remote_extensions = json_decode( $response['body'], true );

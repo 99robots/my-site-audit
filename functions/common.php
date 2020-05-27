@@ -137,7 +137,7 @@ function msa_save_more_audits_extension( $audits ) {
 
 		$audits[] = array(
 			'extension'			=> true,
-			'extension-link' 	=> 'https://99robots.com/products/msa-conditions-control?utm_source=plugin&utm_campaign=extension',
+			'extension-link' 	=> 'https://draftpress.com/products/msa-conditions-control?utm_source=plugin&utm_campaign=extension',
 			'score'				=> 1,
 			'name'				=> __( 'Want to Save more Audits? Get the Extension!', 'msa' ),
 			'date'				=> date( 'Y-m-d H:i:s' ),

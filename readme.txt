@@ -1,10 +1,10 @@
 === My Site Audit ===
-Contributors: 99robots, kjbenk, charliepatel
-Donate link: https://99robots.com
+Contributors: 99robots, kjbenk, charliepatel, draftpress
+Donate link: https://draftpress.com
 Tags: content audit, content, audit, seo, site, site audit
 Requires at least: 4.0.0
-Tested up to: 4.8.0
-Stable tag: 1.2.2
+Tested up to: 5.4.1
+Stable tag: 1.2.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,7 +22,7 @@ My Site Audit is the ultimate way to audit your site's content, drive more traff
 * Set a maximum number of posts to audit
 * Sort and Filter Posts based on any attribute
 
-Visit our [website](https://99robots.com?utm_source=readme) for more information about how to use My Site Audit to improve your content.
+Visit our [website](https://draftpress.com?utm_source=readme) for more information about how to use My Site Audit to improve your content.
 
 **Follow this plugin on [GitHub](https://github.com/99robots/my-site-audit)**
 
@@ -46,6 +46,10 @@ e.g.
 
 
 == Changelog ==
+
+= 1.2.2 = 2020-05-27
+* Made compatible with WordPress 5.4.1
+* DraftPress added as a Contributor
 
 = 1.2.2 = 2017-06-11
 * Made compatible with WordPress 4.8

@@ -50,7 +50,7 @@ function msa_admin_notices() {
 	if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
 		?>
 		<div class="error">
-			<p><?php esc_attr_e( 'WP Cron is <span style="color:red;font-weight:bold;">DISABLED</span>! My Site Audit needs WP Cron to be enabled in order to create an audit. Please read our', 'msa' ); ?> <a href="https://99robots.com/docs/how-to-enable-wp-cron/" target="_blank"><?php esc_attr_e( 'documentation page', 'msa' ); ?></a> <?php esc_attr_e( 'about how to enable WP Cron.', 'msa' ); ?></p>
+			<p><?php esc_attr_e( 'WP Cron is <span style="color:red;font-weight:bold;">DISABLED</span>! My Site Audit needs WP Cron to be enabled in order to create an audit. Please read our', 'msa' ); ?> <a href="https://draftpress.com/docs/how-to-enable-wp-cron/" target="_blank"><?php esc_attr_e( 'documentation page', 'msa' ); ?></a> <?php esc_attr_e( 'about how to enable WP Cron.', 'msa' ); ?></p>
 		</div>
 		<?php
 	}
