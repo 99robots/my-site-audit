@@ -4,10 +4,10 @@
  * @param  {document} document The global document object.
  * @return {null}
  */
-jQuery( document ).ready( function( $ ) {
+jQuery(function( $ ) {
 
 	// Tabs.
-	$( '.msa-vertical-tabs-item a' ).click( function( e ) {
+	$( '.msa-vertical-tabs-item a' ).on("click", function( e ) {
 		$( '.msa-vertical-tabs-content-item' ).hide();
 		$( $( this ).attr( 'href' ) ).show();
 

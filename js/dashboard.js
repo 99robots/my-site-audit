@@ -4,7 +4,7 @@
  * @param  {document} document The global document object.
  * @return {null}
  */
-jQuery( document ).ready( function( $ ) {
+jQuery(function( $ ) {
 
 	// Save sort order.
 	$( '.meta-box-sortables-left' ).sortable( {
