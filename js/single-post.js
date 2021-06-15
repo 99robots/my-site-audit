@@ -4,7 +4,7 @@
  * @param  {document} document The global document.
  * @return {null}
  */
-jQuery( document ).ready( function( $ ) {
+jQuery(function( $ ) {
 
 	// Move modal to end of body.
 	$( '.msa-condition-more-info' ).each( function( index, value ) {
@@ -12,19 +12,19 @@ jQuery( document ).ready( function( $ ) {
 	});
 
 	// Show more info modal.
-	$( '.msa-condition-more-info' ).click( function( e ) {
+	$( '.msa-condition-more-info' ).on("click", function( e ) {
 		e.preventDefault();
 		$( '.msa-modal[data-condition="' + $( this ).data( 'condition' ) + '"]' ).show();
 	});
 
 	// Hide modal.
-	$( '.msa-modal' ).click( function( e ) {
+	$( '.msa-modal' ).on("click", function( e ) {
 		if ( $( e.target ).is( $( this ) ) ) {
 			$( this ).hide();
 		}
 	});
 
-	$( '.msa-modal-close' ).click( function() {
+	$( '.msa-modal-close' ).on("click", function() {
 		$( this ).parent().parent().parent().hide();
 	});
 });

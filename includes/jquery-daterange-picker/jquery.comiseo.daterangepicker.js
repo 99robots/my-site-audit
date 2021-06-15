@@ -127,7 +127,7 @@
 		}
 
 		function reset() {
-			$originalElement.val('').change();
+			$originalElement.val('').on("change");
 			setLabel(options.initialText);
 		}
 
@@ -171,7 +171,7 @@
 				$('<li><a href="#">' + this.text + '</a></li>')
 				.data('dateStart', this.dateStart)
 				.data('dateEnd', this.dateEnd)
-				.click(onClick)
+				.on("click")
 				.appendTo($menu);
 			});
 
@@ -340,15 +340,15 @@
 		function bindEvents() {
 			if (handlers) {
                 if(applyButton){
-                    applyButton.click(handlers.onApply);
+                    applyButton.on("click", handlers.onApply);
                 }
 
                 if(clearButton) {
-                    clearButton.click(handlers.onClear);
+                    clearButton.on("click", handlers.onClear);
                 }
 
                 if(cancelButton) {
-                    cancelButton.click(handlers.onCancel);
+                    cancelButton.on("click", handlers.onCancel);
                 }
 			}
 		}
@@ -458,10 +458,10 @@
 		}
 
 		function bindEvents() {
-			triggerButton.getElement().click(toggle);
-			triggerButton.getElement().keydown(keyPressTriggerOpenOrClose);
-			$mask.click(close);
-			$(window).resize(function() { isOpen ? autoFit() : autoFitNeeded = true; });
+			triggerButton.getElement().on("click", toggle);
+			triggerButton.getElement().on("keydown", keyPressTriggerOpenOrClose);
+			$mask.on("click", close);
+			$(window).on("resize", function() { isOpen ? autoFit() : autoFitNeeded = true; });
 		}
 
 		function formatRangeForDisplay(range) {
@@ -513,7 +513,7 @@
 			}
 			value && calendar.setRange(range);
 			triggerButton.setLabel(formatRangeForDisplay(range));
-			$originalElement.val(formatRange(range)).change();
+			$originalElement.val(formatRange(range)).on("change");
 			if (options.onChange) {
 				options.onChange();
 			}
