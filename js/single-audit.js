@@ -4,7 +4,7 @@
  * @param  {document} document The global document object.
  * @return {null}
  */
-jQuery( document ).ready( function( $ ) {
+jQuery(function( $ ) {
 
 	// Move show columns around to relate to the condition categories.
 	$( '#adv-settings h5' ).remove();
@@ -21,7 +21,7 @@ jQuery( document ).ready( function( $ ) {
 	} );
 
 	// Add Filters.
-	$( '.msa-filter-button' ).click( function( e ) {
+	$( '.msa-filter-button' ).on("click", function( e ) {
 		var parameters = '';
 		e.preventDefault();
 
@@ -35,7 +35,7 @@ jQuery( document ).ready( function( $ ) {
 	} );
 
 	// Clear Filters.
-	$( '.msa-clear-filters-button' ).click( function( e ) {
+	$( '.msa-clear-filters-button' ).on("click", function( e ) {
 		e.preventDefault();
 		window.location = msaSingleAuditData.audit_page;
 	} );
@@ -57,7 +57,7 @@ jQuery( document ).ready( function( $ ) {
 		} );
 	} );
 
-	$( '.hide-column-tog' ).change( function() {
+	$( '.hide-column-tog' ).on("change", function() {
 		if ( $( this ).prop( 'checked' ) ) {
 			$( '.column-' + $( this ).val() ).show();
 			$( '.filter-' + $( this ).val() ).show();

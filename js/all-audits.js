@@ -4,10 +4,10 @@
  * @param  {document} document The global document object.
  * @return {null}
  */
-jQuery( document ).ready( function( $ ) {
+jQuery(function( $ ) {
 
 	// Show the modal.
-	$( '.msa-audit-conditions-button' ).click( function( e ) {
+	$( '.msa-audit-conditions-button' ).on("click", function( e ) {
 		e.preventDefault();
 
 		$( '.msa-audit-conditions-modal' ).hide();
@@ -20,7 +20,7 @@ jQuery( document ).ready( function( $ ) {
 	} );
 
 	// Close Modal.
-	$( '.msa-audit-conditions-modal' ).click( function( e ) {
+	$( '.msa-audit-conditions-modal' ).on("click", function( e ) {
 		if ( $( e.target ).is( $( this ) ) ) {
 			$( this ).hide();
 		}
@@ -103,7 +103,7 @@ jQuery( document ).ready( function( $ ) {
 	}
 
 	// Hide and show the create new settings.
-	$( '.msa-add-new-audit' ).click( function() {
+	$( '.msa-add-new-audit' ).on("click", function() {
 		if ( 'none' !== $( '.msa-create-audit-wrap' ).css( 'display' ) ) {
 			$( '.msa-create-audit-wrap' ).slideUp();
 		} else {

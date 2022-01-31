@@ -297,7 +297,6 @@ add_filter( 'set-screen-option', 'msa_set_per_page_value', 10, 3 );
  * @return array $columns The modified columns.
  */
 function msa_all_audits_add_column( $columns ) {
-
 	/**
 	 * Conditions
 	 */

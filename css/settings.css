@@ -54,9 +54,10 @@
 
 .msa-vertical-tabs-item a {
 	width: 100%;
-	padding: 12px 6px;
+	padding: 12px 0px;
 	display: inline-block;
 	text-decoration: none;
+	text-align: center;
 	color: #333;
 }
 

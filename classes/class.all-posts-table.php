@@ -191,12 +191,12 @@ if ( ! class_exists( 'MSA_All_Posts_Table' ) ) :
 		function usort_reorder( $a, $b ) {
 
 			$orderby = 'score';
-			if ( isset( $_GET['orderby'] ) && ! empty( $_GET['orderby'] ) ) { // Input var okay.
+			if ( ! empty( $_GET['orderby'] ) ) { // Input var okay.
 				$orderby = sanitize_text_field( wp_unslash( $_GET['orderby'] ) ); // Input var okay.
 			}
 
 			$order = 'desc';
-			if ( isset( $_GET['order'] ) && ! empty( $_GET['order'] ) ) { // Input var okay.
+			if ( ! empty( $_GET['order'] ) ) { // Input var okay.
 				$order = sanitize_text_field( wp_unslash( $_GET['order'] ) ); // Input var okay.
 			}
 

@@ -595,7 +595,7 @@ function msa_show_invalid_headings( $invalid_headings ) {
 function msa_filter_posts( $posts ) {
 
 	// Score.
-	if ( isset( $_GET['score-low'] ) && '' !== $_GET['score-low'] && isset( $_GET['score-high'] ) && '' !== $_GET['score-high'] ) { // Input var okay.
+	if ( !empty( $_GET['score-low'] ) && !empty( $_GET['score-high'] ) ) { // Input var okay.
 
 		$score_low = floatval( sanitize_text_field( wp_unslash( $_GET['score-low'] ) ) ); // Input var okay.
 		$score_high = floatval( sanitize_text_field( wp_unslash( $_GET['score-high'] ) ) ); // Input var okay.
@@ -656,7 +656,7 @@ function msa_filter_posts( $posts ) {
 
 	foreach ( $attributes as $attribute ) {
 
-		if ( isset( $attribute['filter'] ) && isset( $_GET[ $attribute['filter']['name'] ] ) && '' !== $_GET[ $attribute['filter']['name'] ] ) { // Input var okay.
+		if ( isset( $attribute['filter'] ) && !empty( $_GET[ $attribute['filter']['name'] ] ) ) { // Input var okay.
 			$name = $attribute['filter']['name'];
 
 			$get_name = null;

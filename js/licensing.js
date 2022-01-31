@@ -4,7 +4,7 @@
  * @param  {document} document The global document object.
  * @return {null}
  */
-jQuery( document ).ready( function( $ ) {
+jQuery(function( $ ) {
 
 	// Define the variables.
 	var licenseActivateButton = '<span class="button button-default ' +

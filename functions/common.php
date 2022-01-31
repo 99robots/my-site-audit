@@ -90,8 +90,10 @@ function msa_show_column() {
 		$show_columns[] = sanitize_text_field( wp_unslash( $_POST['column'] ) ); // Input var okay. // WPCS: CSRF ok.
 	} else {
 
+        $post_column = sanitize_text_field( wp_unslash( $_POST['column'] ) );
+
 		foreach ( $show_columns as $key => $show_column ) {
-			if ( $show_column === $_POST['column'] ) { // Input var okay. // WPCS: CSRF ok.
+			if ( $show_column === $post_column ) { // Input var okay. // WPCS: CSRF ok.
 				unset( $show_columns[ $key ] );
 			}
 		}

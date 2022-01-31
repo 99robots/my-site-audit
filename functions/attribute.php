@@ -61,6 +61,10 @@ add_filter( 'msa_all_posts_table_column_data', 'msa_attribute_table_column_post_
  */
 function msa_filter_attribute_post_type_options( $content ) {
 
+    if(empty($content)) {
+        $content = array();
+    }
+
 	$audit = -1;
 	if ( isset( $_GET['audit'] ) ) { // Input var okay.
 		$audit = sanitize_text_field( wp_unslash( $_GET['audit'] ) ); // Input var okay.

@@ -151,12 +151,12 @@ if ( ! class_exists( 'MSA_All_Audits_Table' ) ) :
 		function usort_reorder( $a, $b ) {
 
 			$orderby = 'score';
-			if ( isset( $_GET['orderby'] ) && ! empty( $_GET['orderby'] ) ) { // Input var okay.
+			if ( ! empty( $_GET['orderby'] ) ) { // Input var okay.
 				$orderby = sanitize_text_field( wp_unslash( $_GET['orderby'] ) ); // Input var okay.
 			}
 
 			$order = 'asc';
-			if ( isset( $_GET['order'] ) && ! empty( $_GET['order'] ) ) { // Input var okay.
+			if ( ! empty( $_GET['order'] ) ) { // Input var okay.
 				$order = sanitize_text_field( wp_unslash( $_GET['order'] ) ); // Input var okay.
 			}
 
@@ -237,7 +237,7 @@ if ( ! class_exists( 'MSA_All_Audits_Table' ) ) :
 		 */
 		public function column_name( $item ) {
 
-			if ( isset( $item['status'] ) && 'in-progress' === $item['status'] ) {
+			if ( !empty( $item['status'] ) && 'in-progress' === $item['status'] ) {
 				return apply_filters( 'msa_all_audits_table_column_name_extension', $item['name'] );
 			}
 
@@ -314,7 +314,7 @@ if ( ! class_exists( 'MSA_All_Audits_Table' ) ) :
 
 				$actions['edit'] = $condition_modal;
 
-				return apply_filters( 'msa_all_audits_table_column_name', sprintf( '%1$s %2$s', '<a href="' . msa_get_single_audit_link( $item['id'] ) . '">' . $item['name'] . '</a><small style="opacity:0.5;padding-left:4px;">id:(' . $item['id'] . ')</small>', $this->row_actions( $actions ) ) );
+				return apply_filters( 'msa_all_audits_table_column_name', sprintf( '%1$s %2$s', '<a href="' . msa_get_single_audit_link( $item['id'] ) . '">' . ($item['name']) . '</a><small style="opacity:0.5;padding-left:4px;">id:(' . $item['id'] . ')</small>', $this->row_actions( $actions ) ) );
 
 			}
 

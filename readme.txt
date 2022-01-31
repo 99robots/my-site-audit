@@ -1,10 +1,10 @@
 === My Site Audit ===
-Contributors: 99robots, kjbenk, charliepatel, draftpress
+Contributors: 99robots, charliepatel, draftpress
 Donate link: https://draftpress.com
 Tags: content audit, content, audit, seo, site, site audit
 Requires at least: 4.5
-Tested up to: 5.5.1
-Stable tag: 1.2.4
+Tested up to: 5.8.3
+Stable tag: 1.2.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,11 @@ e.g.
 
 
 == Changelog ==
+
+= 1.2.5 = 2022-01-18
+* Made compatible with WordPress 5.8.3
+* Compatible with WordPress Coding Standards
+* Fix security issue when creating an audit
 
 = 1.2.4 = 2020-09-14
 * Made compatible with WordPress 5.5.1
